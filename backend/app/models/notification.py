@@ -34,8 +34,8 @@ class Notification(BaseModel):
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     extra_data: Mapped[dict | None] = mapped_column(JSONType(), default=dict)
 
-    organization = relationship("Organization")
-    user = relationship("User")
+    organization = relationship("Organization", lazy="selectin")
+    user = relationship("User", lazy="selectin")
 
 
 class NotificationPreference(BaseModel):

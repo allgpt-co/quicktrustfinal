@@ -22,8 +22,8 @@ class AccessReviewCampaign(BaseModel):
     due_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    organization = relationship("Organization", back_populates="access_review_campaigns")
-    reviewer = relationship("User", foreign_keys=[reviewer_id])
+    organization = relationship("Organization", back_populates="access_review_campaigns", lazy="selectin")
+    reviewer = relationship("User", foreign_keys=[reviewer_id], lazy="selectin")
     entries = relationship(
         "AccessReviewEntry", back_populates="campaign", lazy="selectin",
         cascade="all, delete-orphan"
@@ -51,5 +51,5 @@ class AccessReviewEntry(BaseModel):
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     notes: Mapped[str | None] = mapped_column(Text)
 
-    campaign = relationship("AccessReviewCampaign", back_populates="entries")
-    decided_by = relationship("User", foreign_keys=[decided_by_id])
+    campaign = relationship("AccessReviewCampaign", back_populates="entries", lazy="selectin")
+    decided_by = relationship("User", foreign_keys=[decided_by_id], lazy="selectin")

@@ -29,6 +29,6 @@ class AuditFinding(BaseModel):
         GUID(), ForeignKey("users.id")
     )
 
-    audit = relationship("Audit", back_populates="findings")
-    control = relationship("Control")
-    remediation_owner = relationship("User")
+    audit = relationship("Audit", back_populates="findings", lazy="selectin")
+    control = relationship("Control", lazy="selectin")
+    remediation_owner = relationship("User", lazy="selectin")

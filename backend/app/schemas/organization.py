@@ -9,8 +9,8 @@ class OrganizationCreate(BaseModel):
     slug: str = Field(..., min_length=1, max_length=255, pattern=r"^[a-z0-9-]+$")
     industry: str | None = None
     company_size: str | None = None
-    cloud_providers: dict | None = None
-    tech_stack: dict | None = None
+    cloud_providers: list | dict | None = None
+    tech_stack: list | dict | None = None
     settings: dict | None = None
 
 
@@ -18,8 +18,8 @@ class OrganizationUpdate(BaseModel):
     name: str | None = None
     industry: str | None = None
     company_size: str | None = None
-    cloud_providers: dict | None = None
-    tech_stack: dict | None = None
+    cloud_providers: list | dict | None = None
+    tech_stack: list | dict | None = None
     settings: dict | None = None
 
 
@@ -29,8 +29,8 @@ class OrganizationResponse(BaseModel):
     slug: str
     industry: str | None
     company_size: str | None
-    cloud_providers: dict | None
-    tech_stack: dict | None
+    cloud_providers: list | dict | None
+    tech_stack: list | dict | None
     settings: dict | None
     created_at: datetime
     updated_at: datetime

@@ -20,7 +20,7 @@ class Questionnaire(BaseModel):
     total_questions: Mapped[int] = mapped_column(Integer, default=0)
     answered_count: Mapped[int] = mapped_column(Integer, default=0)
 
-    organization = relationship("Organization", back_populates="questionnaires")
+    organization = relationship("Organization", back_populates="questionnaires", lazy="selectin")
     responses = relationship(
         "QuestionnaireResponse", back_populates="questionnaire", lazy="selectin",
         cascade="all, delete-orphan"
@@ -47,5 +47,5 @@ class QuestionnaireResponse(BaseModel):
         GUID(), ForeignKey("users.id")
     )
 
-    questionnaire = relationship("Questionnaire", back_populates="responses")
-    approved_by = relationship("User", foreign_keys=[approved_by_id])
+    questionnaire = relationship("Questionnaire", back_populates="responses", lazy="selectin")
+    approved_by = relationship("User", foreign_keys=[approved_by_id], lazy="selectin")

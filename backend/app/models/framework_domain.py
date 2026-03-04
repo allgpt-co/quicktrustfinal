@@ -17,7 +17,7 @@ class FrameworkDomain(BaseModel):
     description: Mapped[str | None] = mapped_column(Text)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
-    framework = relationship("Framework", back_populates="domains")
+    framework = relationship("Framework", back_populates="domains", lazy="selectin")
     requirements = relationship(
         "FrameworkRequirement", back_populates="domain", lazy="selectin"
     )

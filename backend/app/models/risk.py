@@ -42,9 +42,9 @@ class Risk(BaseModel):
     last_review_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     next_review_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    organization = relationship("Organization", back_populates="risks")
-    owner = relationship("User", foreign_keys=[owner_id])
-    reviewer = relationship("User", foreign_keys=[reviewer_id])
+    organization = relationship("Organization", back_populates="risks", lazy="selectin")
+    owner = relationship("User", foreign_keys=[owner_id], lazy="selectin")
+    reviewer = relationship("User", foreign_keys=[reviewer_id], lazy="selectin")
     control_mappings = relationship(
         "RiskControlMapping", back_populates="risk", lazy="selectin",
         cascade="all, delete-orphan"

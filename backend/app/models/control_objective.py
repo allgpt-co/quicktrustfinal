@@ -17,4 +17,4 @@ class ControlObjective(BaseModel):
     description: Mapped[str | None] = mapped_column(Text)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
-    requirement = relationship("FrameworkRequirement", back_populates="objectives")
+    requirement = relationship("FrameworkRequirement", back_populates="objectives", lazy="selectin")

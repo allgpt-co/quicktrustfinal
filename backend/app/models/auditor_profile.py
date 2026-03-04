@@ -32,4 +32,4 @@ class AuditorProfile(BaseModel):
     website_url: Mapped[str | None] = mapped_column(String(500))
     linkedin_url: Mapped[str | None] = mapped_column(String(500))
 
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")

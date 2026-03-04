@@ -27,4 +27,4 @@ class CollectionJob(BaseModel):
     evidence_id: Mapped[uuid.UUID | None] = mapped_column(GUID())
     error_message: Mapped[str | None] = mapped_column(Text)
 
-    integration = relationship("Integration", back_populates="collection_jobs")
+    integration = relationship("Integration", back_populates="collection_jobs", lazy="selectin")

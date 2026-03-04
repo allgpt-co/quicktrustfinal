@@ -25,8 +25,8 @@ class Audit(BaseModel):
     scheduled_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     readiness_score: Mapped[float | None] = mapped_column(Float)
 
-    organization = relationship("Organization", back_populates="audits")
-    framework = relationship("Framework")
+    organization = relationship("Organization", back_populates="audits", lazy="selectin")
+    framework = relationship("Framework", lazy="selectin")
     findings = relationship(
         "AuditFinding", back_populates="audit", lazy="selectin",
         cascade="all, delete-orphan"

@@ -17,7 +17,7 @@ class FrameworkRequirement(BaseModel):
     description: Mapped[str | None] = mapped_column(Text)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
-    domain = relationship("FrameworkDomain", back_populates="requirements")
+    domain = relationship("FrameworkDomain", back_populates="requirements", lazy="selectin")
     objectives = relationship(
         "ControlObjective", back_populates="requirement", lazy="selectin"
     )

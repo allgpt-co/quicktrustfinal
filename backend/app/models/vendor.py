@@ -28,7 +28,7 @@ class Vendor(BaseModel):
     notes: Mapped[str | None] = mapped_column(Text)
     tags: Mapped[dict | None] = mapped_column(JSONType(), default=list)
 
-    organization = relationship("Organization", back_populates="vendors")
+    organization = relationship("Organization", back_populates="vendors", lazy="selectin")
     assessments = relationship(
         "VendorAssessment", back_populates="vendor", lazy="selectin",
         cascade="all, delete-orphan"
@@ -53,5 +53,5 @@ class VendorAssessment(BaseModel):
     notes: Mapped[str | None] = mapped_column(Text)
     questionnaire_data: Mapped[dict | None] = mapped_column(JSONType(), default=dict)
 
-    vendor = relationship("Vendor", back_populates="assessments")
-    assessed_by = relationship("User", foreign_keys=[assessed_by_id])
+    vendor = relationship("Vendor", back_populates="assessments", lazy="selectin")
+    assessed_by = relationship("User", foreign_keys=[assessed_by_id], lazy="selectin")

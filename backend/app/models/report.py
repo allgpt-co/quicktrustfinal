@@ -25,5 +25,5 @@ class Report(BaseModel):
     )
     error_message: Mapped[str | None] = mapped_column(Text)
 
-    organization = relationship("Organization", back_populates="reports")
-    requested_by = relationship("User", foreign_keys=[requested_by_id])
+    organization = relationship("Organization", back_populates="reports", lazy="selectin")
+    requested_by = relationship("User", foreign_keys=[requested_by_id], lazy="selectin")

@@ -26,7 +26,7 @@ class ControlFrameworkMapping(Base):
         GUID(), ForeignKey("control_objectives.id")
     )
 
-    control = relationship("Control", back_populates="framework_mappings")
-    framework = relationship("Framework")
-    requirement = relationship("FrameworkRequirement")
-    objective = relationship("ControlObjective")
+    control = relationship("Control", back_populates="framework_mappings", lazy="selectin")
+    framework = relationship("Framework", lazy="selectin")
+    requirement = relationship("FrameworkRequirement", lazy="selectin")
+    objective = relationship("ControlObjective", lazy="selectin")

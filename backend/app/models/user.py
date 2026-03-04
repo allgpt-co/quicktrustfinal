@@ -19,5 +19,5 @@ class User(BaseModel):
     department: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    organization = relationship("Organization", back_populates="users")
-    owned_controls = relationship("Control", back_populates="owner", lazy="selectin")
+    organization = relationship("Organization", back_populates="users", lazy="selectin")
+    owned_controls = relationship("Control", back_populates="owner", lazy="noload")

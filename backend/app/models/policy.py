@@ -35,8 +35,8 @@ class Policy(BaseModel):
         GUID(), ForeignKey("agent_runs.id")
     )
 
-    organization = relationship("Organization", back_populates="policies")
-    owner = relationship("User", foreign_keys=[owner_id])
-    approved_by = relationship("User", foreign_keys=[approved_by_id])
-    template = relationship("PolicyTemplate")
-    agent_run = relationship("AgentRun", back_populates="policies")
+    organization = relationship("Organization", back_populates="policies", lazy="selectin")
+    owner = relationship("User", foreign_keys=[owner_id], lazy="selectin")
+    approved_by = relationship("User", foreign_keys=[approved_by_id], lazy="selectin")
+    template = relationship("PolicyTemplate", lazy="selectin")
+    agent_run = relationship("AgentRun", back_populates="policies", lazy="selectin")

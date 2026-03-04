@@ -29,7 +29,7 @@ class NotificationResponse(BaseModel):
     is_read: bool
     read_at: datetime | None = None
     sent_at: datetime | None = None
-    metadata: dict | None = None
+    extra_data: dict | None = None
     created_at: datetime
     updated_at: datetime
 

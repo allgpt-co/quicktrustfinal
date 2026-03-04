@@ -25,8 +25,8 @@ class MonitorRule(BaseModel):
     last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_result: Mapped[str | None] = mapped_column(String(20))  # pass, fail, error
 
-    organization = relationship("Organization", back_populates="monitor_rules")
-    control = relationship("Control", foreign_keys=[control_id])
+    organization = relationship("Organization", back_populates="monitor_rules", lazy="selectin")
+    control = relationship("Control", foreign_keys=[control_id], lazy="selectin")
     alerts = relationship(
         "MonitorAlert", back_populates="rule", lazy="selectin",
         cascade="all, delete-orphan"
@@ -52,5 +52,5 @@ class MonitorAlert(BaseModel):
         GUID(), ForeignKey("users.id")
     )
 
-    rule = relationship("MonitorRule", back_populates="alerts")
-    acknowledged_by = relationship("User", foreign_keys=[acknowledged_by_id])
+    rule = relationship("MonitorRule", back_populates="alerts", lazy="selectin")
+    acknowledged_by = relationship("User", foreign_keys=[acknowledged_by_id], lazy="selectin")

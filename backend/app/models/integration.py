@@ -20,7 +20,7 @@ class Integration(BaseModel):
     credentials_ref: Mapped[str | None] = mapped_column(String(500))
     last_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    organization = relationship("Organization", back_populates="integrations")
+    organization = relationship("Organization", back_populates="integrations", lazy="selectin")
     collection_jobs = relationship(
         "CollectionJob", back_populates="integration", lazy="selectin"
     )

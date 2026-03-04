@@ -15,29 +15,19 @@ export function getKeycloak(): Keycloak {
   return keycloakInstance;
 }
 
-// Track whether Keycloak is reachable
-let keycloakAvailable = false;
-
-export function isKeycloakAvailable(): boolean {
-  return keycloakAvailable;
-}
-
 export async function initKeycloak(): Promise<boolean> {
   const kc = getKeycloak();
   try {
+    // check-sso: if user has an active Keycloak session, auto-authenticate.
+    // If not, return false without redirecting to login page.
     const authenticated = await kc.init({
       onLoad: "check-sso",
       pkceMethod: "S256",
-      silentCheckSsoRedirectUri:
-        typeof window !== "undefined"
-          ? `${window.location.origin}/silent-check-sso.html`
-          : undefined,
+      checkLoginIframe: false,
     });
-    keycloakAvailable = true;
     return authenticated;
   } catch (error) {
     console.error("Keycloak init failed:", error);
-    keycloakAvailable = false;
     return false;
   }
 }
@@ -49,6 +39,7 @@ export function login() {
 
 export function logout() {
   const kc = getKeycloak();
+  sessionStorage.removeItem("qt_was_auth");
   kc.logout({ redirectUri: window.location.origin });
 }
 
@@ -59,8 +50,7 @@ export function getToken(): string | undefined {
 export async function refreshToken(): Promise<boolean> {
   const kc = getKeycloak();
   try {
-    const refreshed = await kc.updateToken(30);
-    return refreshed;
+    return await kc.updateToken(30);
   } catch {
     return false;
   }

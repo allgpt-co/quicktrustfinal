@@ -22,6 +22,6 @@ class ControlTemplateFrameworkMapping(Base):
     requirement_code: Mapped[str] = mapped_column(String(50), nullable=False)
 
     control_template = relationship(
-        "ControlTemplate", back_populates="framework_mappings"
+        "ControlTemplate", back_populates="framework_mappings", lazy="selectin"
     )
-    framework = relationship("Framework")
+    framework = relationship("Framework", lazy="selectin")

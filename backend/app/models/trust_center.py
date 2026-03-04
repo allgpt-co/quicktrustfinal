@@ -22,7 +22,7 @@ class TrustCenterConfig(BaseModel):
     certifications: Mapped[dict | None] = mapped_column(JSONType(), default=list)
     branding: Mapped[dict | None] = mapped_column(JSONType(), default=dict)
 
-    organization = relationship("Organization", back_populates="trust_center_config")
+    organization = relationship("Organization", back_populates="trust_center_config", lazy="selectin")
     documents = relationship(
         "TrustCenterDocument", back_populates="config",
         foreign_keys="TrustCenterDocument.org_id",
@@ -51,4 +51,5 @@ class TrustCenterDocument(BaseModel):
         foreign_keys=[org_id],
         primaryjoin="TrustCenterDocument.org_id == TrustCenterConfig.org_id",
         viewonly=True,
+        lazy="selectin",
     )

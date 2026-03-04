@@ -26,8 +26,8 @@ class Incident(BaseModel):
     post_mortem_notes: Mapped[str | None] = mapped_column(Text)
     related_control_ids: Mapped[dict | None] = mapped_column(JSONType(), default=list)
 
-    organization = relationship("Organization", back_populates="incidents")
-    assigned_to = relationship("User", foreign_keys=[assigned_to_id])
+    organization = relationship("Organization", back_populates="incidents", lazy="selectin")
+    assigned_to = relationship("User", foreign_keys=[assigned_to_id], lazy="selectin")
     timeline_events = relationship(
         "IncidentTimelineEvent", back_populates="incident", lazy="selectin",
         cascade="all, delete-orphan"
@@ -49,5 +49,5 @@ class IncidentTimelineEvent(BaseModel):
         DateTime(timezone=True), nullable=False
     )
 
-    incident = relationship("Incident", back_populates="timeline_events")
-    actor = relationship("User", foreign_keys=[actor_id])
+    incident = relationship("Incident", back_populates="timeline_events", lazy="selectin")
+    actor = relationship("User", foreign_keys=[actor_id], lazy="selectin")

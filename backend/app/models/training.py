@@ -22,7 +22,7 @@ class TrainingCourse(BaseModel):
     is_required: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    organization = relationship("Organization", back_populates="training_courses")
+    organization = relationship("Organization", back_populates="training_courses", lazy="selectin")
     assignments = relationship(
         "TrainingAssignment", back_populates="course", lazy="selectin",
         cascade="all, delete-orphan"
@@ -50,6 +50,6 @@ class TrainingAssignment(BaseModel):
         GUID(), ForeignKey("users.id")
     )
 
-    course = relationship("TrainingCourse", back_populates="assignments")
-    user = relationship("User", foreign_keys=[user_id])
-    assigned_by = relationship("User", foreign_keys=[assigned_by_id])
+    course = relationship("TrainingCourse", back_populates="assignments", lazy="selectin")
+    user = relationship("User", foreign_keys=[user_id], lazy="selectin")
+    assigned_by = relationship("User", foreign_keys=[assigned_by_id], lazy="selectin")

@@ -32,10 +32,10 @@ class Control(BaseModel):
         GUID(), ForeignKey("agent_runs.id")
     )
 
-    organization = relationship("Organization", back_populates="controls")
-    template = relationship("ControlTemplate")
-    owner = relationship("User", back_populates="owned_controls")
-    agent_run = relationship("AgentRun", back_populates="controls")
+    organization = relationship("Organization", back_populates="controls", lazy="selectin")
+    template = relationship("ControlTemplate", lazy="selectin")
+    owner = relationship("User", back_populates="owned_controls", lazy="selectin")
+    agent_run = relationship("AgentRun", back_populates="controls", lazy="selectin")
     framework_mappings = relationship(
         "ControlFrameworkMapping", back_populates="control", lazy="selectin"
     )

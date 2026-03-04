@@ -4,10 +4,9 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
-  useCallback,
 } from "react";
-import { getKeycloak, initKeycloak, login, logout } from "@/lib/auth";
 import api from "@/lib/api";
 
 interface AuthContextType {
@@ -35,57 +34,96 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // Show loading spinner only if user was previously logged in
+  // (avoids blank screen for new/unauthenticated users)
+  const [loading, setLoading] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("qt_was_auth") === "1";
+  });
   const [token, setToken] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<AuthContextType["userInfo"]>(null);
+  const initDone = useRef(false);
 
   useEffect(() => {
-    // Race Keycloak init against a timeout so we never hang on "Loading..."
+    if (initDone.current) return;
+    initDone.current = true;
+
+    // Timeout: never hang on loading longer than 6 seconds
     const timeout = new Promise<boolean>((resolve) =>
-      setTimeout(() => resolve(false), 10000)
+      setTimeout(() => resolve(false), 6000)
     );
 
-    Promise.race([initKeycloak(), timeout]).then((auth) => {
-      setAuthenticated(auth);
-      if (auth) {
-        const kc = getKeycloak();
-        const t = kc.token || null;
-        setToken(t);
-        api.setToken(t);
-        setUserInfo({
-          name: kc.tokenParsed?.name || kc.tokenParsed?.preferred_username || "",
-          email: kc.tokenParsed?.email || "",
-          roles: kc.tokenParsed?.realm_roles || [],
-          org_id: kc.tokenParsed?.org_id || null,
-        });
+    import("@/lib/auth").then(({ initKeycloak, getKeycloak }) => {
+      Promise.race([initKeycloak(), timeout])
+        .then(async (auth) => {
+          setAuthenticated(auth);
 
-        // Token refresh interval
-        const interval = setInterval(async () => {
-          try {
-            await kc.updateToken(30);
-            const newToken = kc.token || null;
-            setToken(newToken);
-            api.setToken(newToken);
-          } catch {
-            setAuthenticated(false);
+          if (auth) {
+            // Remember user was logged in so next refresh shows spinner
+            sessionStorage.setItem("qt_was_auth", "1");
+
+            const kc = getKeycloak();
+            const t = kc.token || null;
+            setToken(t);
+            api.setToken(t);
+
+            let orgId: string | null = kc.tokenParsed?.org_id || null;
+            try {
+              const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`,
+                { headers: { Authorization: `Bearer ${t}` } }
+              );
+              if (res.ok) {
+                const me = await res.json();
+                orgId = me.org_id || orgId;
+              }
+            } catch {
+              // fall back to token org_id
+            }
+
+            setUserInfo({
+              name: kc.tokenParsed?.name || kc.tokenParsed?.preferred_username || "",
+              email: kc.tokenParsed?.email || "",
+              roles: kc.tokenParsed?.realm_roles || [],
+              org_id: orgId,
+            });
+
+            setInterval(async () => {
+              try {
+                await kc.updateToken(30);
+                const newToken = kc.token || null;
+                setToken(newToken);
+                api.setToken(newToken);
+              } catch {
+                setAuthenticated(false);
+                sessionStorage.removeItem("qt_was_auth");
+              }
+            }, 60000);
+          } else {
+            // Not authenticated — clear the flag so next visit is instant
+            sessionStorage.removeItem("qt_was_auth");
           }
-        }, 60000);
 
-        return () => clearInterval(interval);
-      }
-
-      // User is not logged in — stay unauthenticated
-      setLoading(false);
+          setLoading(false);
+        })
+        .catch(() => {
+          sessionStorage.removeItem("qt_was_auth");
+          setLoading(false);
+        });
     });
   }, []);
 
-  useEffect(() => {
-    if (authenticated) setLoading(false);
-  }, [authenticated]);
+  const doLogin = () => {
+    import("@/lib/auth").then(({ login }) => login());
+  };
+
+  const doLogout = () => {
+    import("@/lib/auth").then(({ logout }) => logout());
+  };
 
   return (
     <AuthContext.Provider
-      value={{ authenticated, loading, token, userInfo, login, logout }}
+      value={{ authenticated, loading, token, userInfo, login: doLogin, logout: doLogout }}
     >
       {children}
     </AuthContext.Provider>
