@@ -18,6 +18,10 @@ TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 test_session = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
 
+# Stable IDs so the test user's org_id matches orgs created via API
+TEST_USER_ID = uuid.UUID("aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa")
+TEST_ORG_ID = uuid.UUID("bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb")
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -40,10 +44,10 @@ async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-def make_test_user() -> User:
+def make_test_user(org_id: uuid.UUID | None = None) -> User:
     return User(
-        id=uuid.uuid4(),
-        org_id=uuid.uuid4(),
+        id=TEST_USER_ID,
+        org_id=org_id or TEST_ORG_ID,
         keycloak_id="test-keycloak-id",
         email="test@quicktrust.dev",
         full_name="Test User",
@@ -79,10 +83,35 @@ async def test_org(client):
     return resp.json()["id"]
 
 
+@pytest_asyncio.fixture
+async def org_id(client):
+    """Create an org and return its ID. Also patches the test user to use this org."""
+    resp = await client.post(
+        "/api/v1/organizations",
+        json={"name": "Fixture Test Org", "slug": "fixture-test-org"},
+    )
+    created_org_id = resp.json()["id"]
+
+    # Patch the dependency override so the test user belongs to this org
+    async def _override():
+        return make_test_user(org_id=uuid.UUID(created_org_id))
+
+    app.dependency_overrides[get_current_user] = _override
+    yield created_org_id
+    # Restore default override
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+
+@pytest_asyncio.fixture
+async def auth_headers():
+    """Auth headers stub — authentication is handled by dependency override."""
+    return {}
+
+
 def make_test_user_with_role(role: str) -> User:
     return User(
         id=uuid.uuid4(),
-        org_id=uuid.uuid4(),
+        org_id=TEST_ORG_ID,
         keycloak_id=f"test-{role}-id",
         email=f"{role}@quicktrust.dev",
         full_name=f"Test {role.title()}",

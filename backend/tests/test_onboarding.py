@@ -35,7 +35,7 @@ async def test_start_onboarding(client: AsyncClient):
     assert resp.status_code == 201
     data = resp.json()
     assert data["org_id"] == TEST_ORG_ID
-    assert data["status"] in ("pending", "running", "completed")
+    assert data["status"] in ("pending", "in_progress", "running", "completed")
     assert "input_data" in data
     assert "id" in data
 

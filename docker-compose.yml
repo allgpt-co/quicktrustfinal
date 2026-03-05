@@ -109,8 +109,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_OUTPUT_STANDALONE: "true"
+      target: development
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       NEXT_PUBLIC_KEYCLOAK_URL: ${NEXT_PUBLIC_KEYCLOAK_URL:-http://localhost:8080}
@@ -120,10 +119,15 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+      - web_node_modules:/app/node_modules
     depends_on:
       - api
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   traefik:
     image: traefik:v3.2
@@ -143,3 +147,4 @@ volumes:
   postgres_data:
   redis_data:
   minio_data:
+  web_node_modules:

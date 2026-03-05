@@ -56,14 +56,30 @@ async def decode_token(token: str) -> dict:
 
         issuer = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}"
 
-        payload = jwt.decode(
-            token,
-            rsa_key,
-            algorithms=["RS256"],
-            audience="account",
-            issuer=issuer,
-            options={"verify_aud": False},
-        )
+        # Accept tokens issued by localhost (browser) or Docker hostname (internal)
+        try:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=["RS256"],
+                audience="account",
+                issuer=issuer,
+                options={"verify_aud": False},
+            )
+        except JWTError:
+            # Retry with localhost issuer for Docker environments
+            localhost_issuer = f"http://localhost:8080/realms/{settings.KEYCLOAK_REALM}"
+            if localhost_issuer != issuer:
+                payload = jwt.decode(
+                    token,
+                    rsa_key,
+                    algorithms=["RS256"],
+                    audience="account",
+                    issuer=localhost_issuer,
+                    options={"verify_aud": False},
+                )
+            else:
+                raise
         return payload
 
     except JWTError as e:

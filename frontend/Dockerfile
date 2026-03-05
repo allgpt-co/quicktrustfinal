@@ -7,9 +7,9 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install
 
 FROM base AS development
-COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-lock.yaml* ./
 COPY . .
-CMD ["pnpm", "dev"]
+CMD ["sh", "-c", "pnpm install && pnpm dev"]
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules

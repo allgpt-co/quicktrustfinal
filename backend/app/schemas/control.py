@@ -1,7 +1,30 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+ControlStatus = Literal[
+    "draft",
+    "not_implemented",
+    "in_progress",
+    "implemented",
+    "not_applicable",
+    "needs_review",
+]
+
+ControlEffectiveness = Literal[
+    "effective",
+    "partially_effective",
+    "not_effective",
+    "not_rated",
+]
+
+AutomationLevel = Literal[
+    "manual",
+    "semi_automated",
+    "automated",
+]
 
 
 class ControlCreate(BaseModel):
@@ -10,8 +33,8 @@ class ControlCreate(BaseModel):
     description: str | None = None
     implementation_details: str | None = None
     owner_id: UUID | None = None
-    status: str = "draft"
-    automation_level: str = "manual"
+    status: ControlStatus = "draft"
+    automation_level: AutomationLevel = "manual"
     test_procedure: str | None = None
 
 
@@ -20,10 +43,18 @@ class ControlUpdate(BaseModel):
     description: str | None = None
     implementation_details: str | None = None
     owner_id: UUID | None = None
-    status: str | None = None
-    effectiveness: str | None = None
-    automation_level: str | None = None
+    status: ControlStatus | None = None
+    effectiveness: ControlEffectiveness | None = None
+    automation_level: AutomationLevel | None = None
     test_procedure: str | None = None
+
+    @model_validator(mode="after")
+    def check_effectiveness_requires_implemented(self):
+        if self.effectiveness and self.status and self.status != "implemented":
+            raise ValueError(
+                "Effectiveness can only be set when status is 'implemented'"
+            )
+        return self
 
 
 class ControlFrameworkMappingResponse(BaseModel):
@@ -76,7 +107,7 @@ class ControlResponse(BaseModel):
 
 class BulkApproveRequest(BaseModel):
     control_ids: list[UUID]
-    status: str = "implemented"
+    status: ControlStatus = "implemented"
 
 
 class ControlStatsResponse(BaseModel):

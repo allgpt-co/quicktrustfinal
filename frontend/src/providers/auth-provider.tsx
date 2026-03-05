@@ -34,12 +34,9 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
-  // Show loading spinner only if user was previously logged in
-  // (avoids blank screen for new/unauthenticated users)
-  const [loading, setLoading] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return sessionStorage.getItem("qt_was_auth") === "1";
-  });
+  // Start with loading=true to avoid hydration mismatch (server and client
+  // must render the same initial HTML). Resolved in the useEffect below.
+  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<AuthContextType["userInfo"]>(null);
   const initDone = useRef(false);
