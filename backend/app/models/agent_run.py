@@ -22,6 +22,11 @@ class AgentRun(BaseModel):
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     tokens_used: Mapped[int | None] = mapped_column(Integer)
+    approval_status: Mapped[str] = mapped_column(
+        String(50), default="auto"
+    )  # auto, pending_review, approved, rejected
+    approved_by: Mapped[uuid.UUID | None] = mapped_column(GUID())
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     organization = relationship("Organization", back_populates="agent_runs")
     controls = relationship("Control", back_populates="agent_run", lazy="selectin")

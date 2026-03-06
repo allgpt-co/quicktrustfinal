@@ -114,7 +114,7 @@ async def customize_controls(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -122,7 +122,10 @@ async def customize_controls(
             max_tokens=8192,
         )
         controls = result.get("controls", [])
-        return {"customized_controls": controls}
+        return {
+            "customized_controls": controls,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: use templates as-is with basic substitution
         fallback = []
@@ -186,7 +189,7 @@ async def suggest_owners(
             ),
         )
 
-        result = await call_llm_json(
+        result, _usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},

@@ -117,6 +117,7 @@ class OktaMfaEnrollment(BaseCollector):
             return {
                 "status": "success",
                 "summary": "Okta MFA enrollment report collected via Okta API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "total_users": total_users,
@@ -136,6 +137,7 @@ class OktaMfaEnrollment(BaseCollector):
         return {
             "status": "success",
             "summary": "Okta MFA enrollment report collected (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "total_users": 120,

@@ -309,7 +309,7 @@ async def _llm_auto_fill(
         )
 
         try:
-            llm_result = await call_llm_json(
+            llm_result, _usage = await call_llm_json(
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},

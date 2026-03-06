@@ -165,7 +165,7 @@ async def generate_policy_content(
         )
 
         try:
-            result = await call_llm_json(
+            result, _usage = await call_llm_json(
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},

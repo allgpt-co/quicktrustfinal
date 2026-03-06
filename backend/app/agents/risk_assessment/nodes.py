@@ -5,6 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.common.llm import call_llm_json
+from app.agents.common.sanitize import sanitize_for_prompt, wrap_user_data
+from app.agents.common.validation import ValidatedRisk, validate_agent_output
 from app.agents.risk_assessment.prompts import (
     SYSTEM_PROMPT,
     IDENTIFY_RISKS_PROMPT,
@@ -51,12 +53,21 @@ async def identify_risk_areas(
     """Use LLM to identify potential risk areas based on control coverage."""
     controls = state["controls"]
 
+    sanitized_controls = [
+        {
+            "id": c["id"],
+            "title": sanitize_for_prompt(c.get("title", ""), 200),
+            "description": sanitize_for_prompt(c.get("description", ""), 500),
+            "status": c.get("status", ""),
+        }
+        for c in controls
+    ]
     prompt = IDENTIFY_RISKS_PROMPT.format(
-        controls_json=json.dumps(controls, indent=2),
+        controls_json=wrap_user_data(json.dumps(sanitized_controls, indent=2), "CONTROLS"),
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -64,7 +75,10 @@ async def identify_risk_areas(
             max_tokens=8192,
         )
         risks = result.get("risks", [])
-        return {"identified_risks": risks}
+        return {
+            "identified_risks": risks,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: generate basic risks from control gaps
         fallback_risks = []
@@ -113,7 +127,7 @@ async def score_risks(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -121,7 +135,10 @@ async def score_risks(
             max_tokens=8192,
         )
         scored = result.get("scored_risks", [])
-        return {"scored_risks": scored}
+        return {
+            "scored_risks": scored,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: assign default scores
         fallback = []
@@ -148,20 +165,23 @@ async def save_to_db(
     scored_risks = state["scored_risks"]
     org_id = state["org_id"]
 
+    # Validate AI outputs before persisting
+    validated_risks, validation_errors = validate_agent_output(scored_risks, ValidatedRisk)
+
     created_risks = []
-    for risk_data in scored_risks:
+    for vr in validated_risks:
         risk = Risk(
             org_id=org_id,
-            title=risk_data.get("title", "Untitled Risk"),
-            description=risk_data.get("description", ""),
-            category=risk_data.get("category", "operational"),
-            likelihood=risk_data.get("likelihood", 3),
-            impact=risk_data.get("impact", 3),
-            risk_score=risk_data.get("risk_score", 9),
-            risk_level=risk_data.get("risk_level", "medium"),
+            title=vr.title,
+            description=vr.description,
+            category=vr.category,
+            likelihood=vr.likelihood,
+            impact=vr.impact,
+            risk_score=vr.risk_score,
+            risk_level=vr.risk_level,
             status="identified",
-            treatment_type=risk_data.get("treatment_type", "mitigate"),
-            treatment_plan=risk_data.get("treatment_recommendation", ""),
+            treatment_type=vr.treatment_type,
+            treatment_plan=vr.treatment_recommendation,
         )
         db.add(risk)
         await db.flush()
@@ -179,4 +199,6 @@ async def save_to_db(
     return {
         "final_risks": created_risks,
         "risks_count": len(created_risks),
+        "validation_errors": validation_errors,
+        "total_tokens": state.get("total_tokens", 0),
     }

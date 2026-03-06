@@ -30,6 +30,7 @@ class Evidence(BaseModel):
     data: Mapped[dict | None] = mapped_column(JSONType(), default=dict)
     collection_method: Mapped[str] = mapped_column(String(50), default="manual")
     collector: Mapped[str | None] = mapped_column(String(255))
+    data_source: Mapped[str] = mapped_column(String(20), default="live")  # live, mock, fallback
 
     organization = relationship("Organization", back_populates="evidence", lazy="selectin")
     control = relationship("Control", back_populates="evidence", lazy="selectin")

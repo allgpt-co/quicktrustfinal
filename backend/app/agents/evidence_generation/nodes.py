@@ -144,6 +144,7 @@ async def finalize_evidence(state: EvidenceGenerationState, db: AsyncSession) ->
             data=item.get("evidence_data", {}),
             collection_method=item.get("collection_method", "automated"),
             collector="evidence_generation_agent",
+            data_source="mock",
         )
         db.add(evidence)
         created.append({

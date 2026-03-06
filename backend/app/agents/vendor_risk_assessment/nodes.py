@@ -73,7 +73,7 @@ async def analyze_vendor_risk(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -81,7 +81,10 @@ async def analyze_vendor_risk(
             max_tokens=4096,
         )
         analysis = result.get("analysis", {})
-        return {"risk_analysis": analysis}
+        return {
+            "risk_analysis": analysis,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: generate basic risk analysis
         category_risk_map = {
@@ -119,7 +122,7 @@ async def score_vendor(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -132,6 +135,7 @@ async def score_vendor(
             "risk_score": risk_score,
             "recommendations": recommendations,
             "assessment_criteria": result,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
         }
     except Exception as e:
         # Fallback: calculate score from risk levels

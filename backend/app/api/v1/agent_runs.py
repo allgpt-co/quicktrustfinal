@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 from sqlalchemy import select, func
 
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
@@ -9,7 +9,7 @@ from app.core.exceptions import NotFoundError
 from app.core.rate_limit import limiter
 from app.core.task_runner import create_safe_task
 from app.models.agent_run import AgentRun
-from app.schemas.agent_run import AgentRunResponse, AgentRunTrigger, AgentRunTriggerGeneric
+from app.schemas.agent_run import AgentRunApproval, AgentRunResponse, AgentRunTrigger, AgentRunTriggerGeneric
 from app.schemas.common import PaginatedResponse
 
 router = APIRouter(prefix="/organizations/{org_id}/agents", tags=["agents"])
@@ -65,6 +65,7 @@ async def _run_agent(agent_run_id: str, org_id: str):
                 company_context=run.input_data.get("company_context", {}),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -125,6 +126,7 @@ async def _run_policy_agent(agent_run_id: str, org_id: str):
                 company_context=run.input_data.get("company_context", {}),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -184,6 +186,7 @@ async def _run_evidence_agent(agent_run_id: str, org_id: str):
                 company_context=run.input_data.get("company_context", {}),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -235,6 +238,7 @@ async def _run_risk_assessment_agent(agent_run_id: str, org_id: str):
                 framework_id=run.input_data.get("framework_id"),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -280,6 +284,7 @@ async def _run_remediation_agent(agent_run_id: str, org_id: str):
         try:
             result = await run_remediation(db=db, org_id=org_id, agent_run_id=agent_run_id)
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -330,6 +335,7 @@ async def _run_audit_prep_agent(agent_run_id: str, org_id: str):
                 audit_id=run.input_data.get("audit_id"),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -380,6 +386,7 @@ async def _run_vendor_risk_agent(agent_run_id: str, org_id: str):
                 vendor_id=run.input_data.get("vendor_id"),
             )
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -425,6 +432,7 @@ async def _run_pentest_agent(agent_run_id: str, org_id: str):
         try:
             result = await run_pentest_orchestrator(db=db, org_id=org_id, agent_run_id=agent_run_id)
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -470,6 +478,7 @@ async def _run_monitoring_daemon_agent(agent_run_id: str, org_id: str):
         try:
             result = await run_monitoring_daemon(db=db, org_id=org_id, agent_run_id=agent_run_id)
             run.status = "completed"
+            run.approval_status = "pending_review"
             run.output_data = result
             run.completed_at = datetime.now(timezone.utc)
         except Exception as e:
@@ -477,6 +486,57 @@ async def _run_monitoring_daemon_agent(agent_run_id: str, org_id: str):
             run.error_message = str(e)
             run.completed_at = datetime.now(timezone.utc)
         await db.commit()
+
+
+@router.post("/runs/{run_id}/approve", response_model=AgentRunResponse)
+async def approve_agent_run(
+    org_id: VerifiedOrgId,
+    run_id: UUID,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Approve AI-generated outputs and commit them to the database."""
+    result = await db.execute(
+        select(AgentRun).where(AgentRun.id == run_id, AgentRun.org_id == org_id)
+    )
+    run = result.scalar_one_or_none()
+    if not run:
+        raise NotFoundError(f"Agent run {run_id} not found")
+    if run.approval_status != "pending_review":
+        raise HTTPException(400, "Agent run is not pending review")
+
+    run.approval_status = "approved"
+    run.approved_by = current_user.id
+    run.approved_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(run)
+    return run
+
+
+@router.post("/runs/{run_id}/reject", response_model=AgentRunResponse)
+async def reject_agent_run(
+    org_id: VerifiedOrgId,
+    run_id: UUID,
+    body: AgentRunApproval,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Reject AI-generated outputs."""
+    result = await db.execute(
+        select(AgentRun).where(AgentRun.id == run_id, AgentRun.org_id == org_id)
+    )
+    run = result.scalar_one_or_none()
+    if not run:
+        raise NotFoundError(f"Agent run {run_id} not found")
+    if run.approval_status != "pending_review":
+        raise HTTPException(400, "Agent run is not pending review")
+
+    run.approval_status = "rejected"
+    reason = body.reason or "No reason provided"
+    run.error_message = f"Rejected: {reason}"
+    await db.commit()
+    await db.refresh(run)
+    return run
 
 
 @router.get("/runs", response_model=PaginatedResponse)

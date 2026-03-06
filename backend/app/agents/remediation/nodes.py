@@ -59,7 +59,7 @@ async def generate_remediation_plans(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -67,7 +67,10 @@ async def generate_remediation_plans(
             max_tokens=8192,
         )
         plans = result.get("plans", [])
-        return {"remediation_plans": plans}
+        return {
+            "remediation_plans": plans,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: generate basic remediation plans
         fallback = []

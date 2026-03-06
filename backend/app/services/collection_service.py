@@ -76,6 +76,7 @@ async def trigger_collection(
             data=result_data.get("data", {}),
             collection_method="automated",
             collector=data.collector_type,
+            data_source=result_data.get("data_source", "live"),
         )
         db.add(evidence)
         await db.flush()

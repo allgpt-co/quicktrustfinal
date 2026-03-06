@@ -83,6 +83,7 @@ class AwsIamMfaReport(BaseCollector):
             return {
                 "status": "success",
                 "summary": "IAM MFA compliance report collected via AWS API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "total_users": total_users,
@@ -101,6 +102,7 @@ class AwsIamMfaReport(BaseCollector):
         return {
             "status": "success",
             "summary": "IAM MFA compliance report collected (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "total_users": 45,
@@ -156,6 +158,7 @@ class AwsCloudTrailStatus(BaseCollector):
             return {
                 "status": "success",
                 "summary": "CloudTrail configuration verified via AWS API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "trails": trails,
@@ -171,6 +174,7 @@ class AwsCloudTrailStatus(BaseCollector):
         return {
             "status": "success",
             "summary": "CloudTrail configuration verified (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "trails": [
@@ -251,6 +255,7 @@ class AwsEncryptionAtRest(BaseCollector):
             return {
                 "status": "success",
                 "summary": "Encryption at rest status collected via AWS API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "kms_keys": {
@@ -273,6 +278,7 @@ class AwsEncryptionAtRest(BaseCollector):
         return {
             "status": "success",
             "summary": "Encryption at rest status collected (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "services": {

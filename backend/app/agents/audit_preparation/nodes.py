@@ -136,7 +136,7 @@ async def identify_gaps(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -144,7 +144,10 @@ async def identify_gaps(
             max_tokens=8192,
         )
         gaps = result.get("gaps", [])
-        return {"gaps": gaps}
+        return {
+            "gaps": gaps,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: generate gaps from controls without evidence
         fallback_gaps = []
@@ -185,7 +188,7 @@ async def generate_workpapers(
     )
 
     try:
-        result = await call_llm_json(
+        result, usage = await call_llm_json(
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -193,7 +196,10 @@ async def generate_workpapers(
             max_tokens=8192,
         )
         workpapers = result.get("workpapers", [])
-        return {"workpapers": workpapers}
+        return {
+            "workpapers": workpapers,
+            "total_tokens": state.get("total_tokens", 0) + usage.get("total_tokens", 0),
+        }
     except Exception as e:
         # Fallback: generate basic workpapers
         fallback = []

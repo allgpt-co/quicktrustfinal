@@ -109,6 +109,7 @@ class GitHubBranchProtection(BaseCollector):
             return {
                 "status": "success",
                 "summary": "Branch protection rules verified via GitHub API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "repositories": results,
@@ -125,6 +126,7 @@ class GitHubBranchProtection(BaseCollector):
         return {
             "status": "success",
             "summary": "Branch protection rules verified (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "repositories": [
@@ -225,6 +227,7 @@ class GitHubDependabotAlerts(BaseCollector):
             return {
                 "status": "success",
                 "summary": "Dependabot vulnerability alerts collected via GitHub API",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "total_alerts": len(all_alerts),
@@ -241,6 +244,7 @@ class GitHubDependabotAlerts(BaseCollector):
         return {
             "status": "success",
             "summary": "Dependabot vulnerability alerts collected (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "total_alerts": 7,

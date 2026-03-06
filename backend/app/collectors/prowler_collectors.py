@@ -181,6 +181,7 @@ class ProwlerAwsFullScan(BaseCollector):
             return {
                 "status": "success",
                 "summary": f"Prowler full AWS scan: {summary['total']} checks, {summary['pass_rate']}% pass rate",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "scan_type": "full",
@@ -216,6 +217,7 @@ class ProwlerAwsFullScan(BaseCollector):
         return {
             "status": "success",
             "summary": f"Prowler full AWS scan: {summary['total']} checks, {summary['pass_rate']}% pass rate (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "scan_type": "full",
@@ -242,6 +244,7 @@ class ProwlerAwsServiceScan(BaseCollector):
             return {
                 "status": "success",
                 "summary": f"Prowler service scan ({', '.join(services)}): {summary['total']} checks, {summary['pass_rate']}% pass rate",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "scan_type": "service",
@@ -272,6 +275,7 @@ class ProwlerAwsServiceScan(BaseCollector):
         return {
             "status": "success",
             "summary": f"Prowler service scan ({', '.join(services)}): {summary['total']} checks, {summary['pass_rate']}% pass rate (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "scan_type": "service",
@@ -299,6 +303,7 @@ class ProwlerAwsComplianceScan(BaseCollector):
             return {
                 "status": "success",
                 "summary": f"Prowler compliance scan ({framework}): {summary['total']} checks, {summary['pass_rate']}% pass rate",
+                "data_source": "live",
                 "data": {
                     "collected_at": datetime.now(timezone.utc).isoformat(),
                     "scan_type": "compliance",
@@ -330,6 +335,7 @@ class ProwlerAwsComplianceScan(BaseCollector):
         return {
             "status": "success",
             "summary": f"Prowler compliance scan ({framework}): {summary['total']} checks, {summary['pass_rate']}% pass rate (mock)",
+            "data_source": "mock",
             "data": {
                 "collected_at": datetime.now(timezone.utc).isoformat(),
                 "scan_type": "compliance",

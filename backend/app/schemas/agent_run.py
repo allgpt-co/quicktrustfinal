@@ -17,6 +17,10 @@ class AgentRunTriggerGeneric(BaseModel):
     company_context: dict | None = None
 
 
+class AgentRunApproval(BaseModel):
+    reason: str | None = None
+
+
 class AgentRunResponse(BaseModel):
     id: UUID
     org_id: UUID
@@ -29,6 +33,9 @@ class AgentRunResponse(BaseModel):
     started_at: datetime | None
     completed_at: datetime | None
     tokens_used: int | None
+    approval_status: str | None = None
+    approved_by: UUID | None = None
+    approved_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
