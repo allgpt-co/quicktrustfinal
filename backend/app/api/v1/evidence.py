@@ -1,7 +1,7 @@
 import hashlib
 from uuid import UUID
 
-from fastapi import APIRouter, Query, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import RedirectResponse
 
 from app.core.audit_middleware import log_audit
@@ -10,6 +10,18 @@ from app.core.exceptions import BadRequestError
 from app.schemas.common import PaginatedResponse
 from app.schemas.evidence import EvidenceCreate, EvidenceResponse
 from app.services import evidence_service
+
+EVIDENCE_ALLOWED_CONTENT_TYPES = {
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "text/csv",
+    "application/json",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain",
+}
+EVIDENCE_MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
 
 router = APIRouter(prefix="/organizations/{org_id}/evidence", tags=["evidence"])
 
@@ -60,7 +72,26 @@ async def upload_evidence_file(
 
     evidence = await evidence_service.get_evidence(db, org_id, evidence_id)
 
-    contents = await file.read()
+    # Validate content type
+    if file.content_type not in EVIDENCE_ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type '{file.content_type}' is not allowed for evidence upload.",
+        )
+
+    # Read with size limit (chunked to avoid loading huge files into memory)
+    contents = bytearray()
+    while True:
+        chunk = await file.read(8192)
+        if not chunk:
+            break
+        contents.extend(chunk)
+        if len(contents) > EVIDENCE_MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File exceeds maximum size of {EVIDENCE_MAX_FILE_SIZE // (1024 * 1024)}MB.",
+            )
+    contents = bytes(contents)
 
     # Compute SHA-256 hash of the uploaded file for integrity tracking
     file_hash = hashlib.sha256(contents).hexdigest()

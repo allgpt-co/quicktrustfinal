@@ -1,9 +1,9 @@
-import asyncio
 from uuid import UUID
 
 from fastapi import APIRouter
 
 from app.core.dependencies import DB, CurrentUser, ComplianceUser, VerifiedOrgId
+from app.core.task_runner import create_safe_task
 from app.schemas.onboarding import OnboardingWizardInput, OnboardingSessionResponse
 from app.services import onboarding_service
 
@@ -19,8 +19,11 @@ async def start_onboarding(
 ):
     session = await onboarding_service.start_onboarding(db, org_id, data)
 
-    # Launch the pipeline as a background task
-    asyncio.create_task(_run_pipeline(str(session.id), str(org_id)))
+    # Launch the pipeline as a background task with error handling
+    create_safe_task(
+        _run_pipeline(str(session.id), str(org_id)),
+        org_id=org_id,
+    )
 
     return session
 

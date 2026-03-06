@@ -1,6 +1,7 @@
+import time
+
 import httpx
 from jose import JWTError, jwt
-from functools import lru_cache
 
 from app.config import get_settings
 from app.core.exceptions import UnauthorizedError
@@ -8,11 +9,13 @@ from app.core.exceptions import UnauthorizedError
 settings = get_settings()
 
 _jwks_cache: dict | None = None
+_jwks_cache_time: float = 0
+JWKS_CACHE_TTL = 300  # 5 minutes
 
 
 async def get_jwks() -> dict:
-    global _jwks_cache
-    if _jwks_cache is not None:
+    global _jwks_cache, _jwks_cache_time
+    if _jwks_cache is not None and (time.monotonic() - _jwks_cache_time) < JWKS_CACHE_TTL:
         return _jwks_cache
 
     jwks_url = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}/protocol/openid-connect/certs"
@@ -20,12 +23,14 @@ async def get_jwks() -> dict:
         resp = await client.get(jwks_url)
         resp.raise_for_status()
         _jwks_cache = resp.json()
+        _jwks_cache_time = time.monotonic()
         return _jwks_cache
 
 
 def clear_jwks_cache():
-    global _jwks_cache
+    global _jwks_cache, _jwks_cache_time
     _jwks_cache = None
+    _jwks_cache_time = 0
 
 
 async def decode_token(token: str) -> dict:
@@ -83,6 +88,20 @@ async def decode_token(token: str) -> dict:
                 )
             else:
                 raise
+
+        # Check token blacklist (revoked tokens)
+        jti = payload.get("jti")
+        if jti:
+            try:
+                from app.core.token_blacklist import is_token_blacklisted
+
+                if await is_token_blacklisted(jti):
+                    raise UnauthorizedError("Token has been revoked")
+            except UnauthorizedError:
+                raise
+            except Exception:
+                pass  # Redis unavailable — allow token (fail open for availability)
+
         return payload
 
     except JWTError as e:

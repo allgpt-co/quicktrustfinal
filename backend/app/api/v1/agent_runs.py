@@ -1,13 +1,13 @@
-import asyncio
 from uuid import UUID
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import NotFoundError
+from app.core.rate_limit import limiter
+from app.core.task_runner import create_safe_task
 from app.models.agent_run import AgentRun
 from app.schemas.agent_run import AgentRunResponse, AgentRunTrigger, AgentRunTriggerGeneric
 from app.schemas.common import PaginatedResponse
@@ -16,8 +16,9 @@ router = APIRouter(prefix="/organizations/{org_id}/agents", tags=["agents"])
 
 
 @router.post("/controls-generation/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_controls_generation(
-    org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -33,8 +34,10 @@ async def trigger_controls_generation(
     await db.commit()
     await db.refresh(agent_run)
 
-    # Launch the agent graph as a background task
-    asyncio.create_task(_run_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
 
     return agent_run
 
@@ -73,8 +76,9 @@ async def _run_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/policy-generation/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_policy_generation(
-    org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -90,7 +94,10 @@ async def trigger_policy_generation(
     await db.commit()
     await db.refresh(agent_run)
 
-    asyncio.create_task(_run_policy_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_policy_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
 
     return agent_run
 
@@ -129,8 +136,9 @@ async def _run_policy_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/evidence-generation/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_evidence_generation(
-    org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTrigger, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -146,7 +154,10 @@ async def trigger_evidence_generation(
     await db.commit()
     await db.refresh(agent_run)
 
-    asyncio.create_task(_run_evidence_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_evidence_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
 
     return agent_run
 
@@ -184,8 +195,9 @@ async def _run_evidence_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/risk-assessment/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_risk_assessment(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -199,7 +211,10 @@ async def trigger_risk_assessment(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_risk_assessment_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_risk_assessment_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 
@@ -230,8 +245,9 @@ async def _run_risk_assessment_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/remediation/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_remediation(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -243,7 +259,10 @@ async def trigger_remediation(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_remediation_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_remediation_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 
@@ -271,8 +290,9 @@ async def _run_remediation_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/audit-preparation/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_audit_preparation(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -286,7 +306,10 @@ async def trigger_audit_preparation(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_audit_prep_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_audit_prep_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 
@@ -317,8 +340,9 @@ async def _run_audit_prep_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/vendor-risk-assessment/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_vendor_risk_assessment(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -332,7 +356,10 @@ async def trigger_vendor_risk_assessment(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_vendor_risk_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_vendor_risk_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 
@@ -363,8 +390,9 @@ async def _run_vendor_risk_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/pentest-orchestrator/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_pentest_orchestrator(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -376,7 +404,10 @@ async def trigger_pentest_orchestrator(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_pentest_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_pentest_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 
@@ -404,8 +435,9 @@ async def _run_pentest_agent(agent_run_id: str, org_id: str):
 
 
 @router.post("/monitoring-daemon/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
 async def trigger_monitoring_daemon(
-    org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric, db: DB, current_user: ComplianceUser
 ):
     agent_run = AgentRun(
         org_id=org_id,
@@ -417,7 +449,10 @@ async def trigger_monitoring_daemon(
     db.add(agent_run)
     await db.commit()
     await db.refresh(agent_run)
-    asyncio.create_task(_run_monitoring_daemon_agent(str(agent_run.id), str(org_id)))
+    create_safe_task(
+        _run_monitoring_daemon_agent(str(agent_run.id), str(org_id)),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
     return agent_run
 
 

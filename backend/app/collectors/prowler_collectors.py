@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from typing import Any
@@ -16,6 +17,46 @@ from app.collectors.base import BaseCollector, register_collector
 from app.config import get_settings
 
 logger = logging.getLogger(__name__)
+
+# Prowler CLI argument sanitization
+ALLOWED_SERVICES = frozenset({
+    "accessanalyzer", "account", "acm", "apigateway", "autoscaling",
+    "cloudformation", "cloudfront", "cloudtrail", "cloudwatch", "config",
+    "dynamodb", "ec2", "ecr", "ecs", "eks", "elasticache", "elb", "emr",
+    "guardduty", "iam", "inspector2", "kms", "lambda", "opensearch",
+    "organizations", "rds", "redshift", "route53", "s3", "sagemaker",
+    "secretsmanager", "securityhub", "ses", "sns", "sqs", "ssm",
+    "trustedadvisor", "vpc", "wafv2",
+})
+
+ALLOWED_FRAMEWORKS = frozenset({
+    "aws_audit_manager_control_tower_guardrails",
+    "cis_1.4_aws", "cis_1.5_aws", "cis_2.0_aws", "cis_3.0_aws",
+    "soc2_aws", "pci_3.2.1_aws", "hipaa_aws", "iso27001_aws",
+    "nist_800_53_revision_5_aws", "nist_csf_1.1_aws",
+    "gdpr_aws", "fedramp_moderate_revision_4_aws",
+})
+
+ALLOWED_PROVIDERS = frozenset({"aws", "gcp", "azure"})
+
+_SAFE_PATTERN = re.compile(r"^[a-zA-Z0-9_.\-]+$")
+
+
+def _validate_prowler_args(
+    cloud_provider: str,
+    services: list[str] | None,
+    framework: str | None,
+):
+    """Validate Prowler CLI arguments against allowlists to prevent command injection."""
+    if cloud_provider not in ALLOWED_PROVIDERS:
+        raise ValueError(f"Invalid cloud provider: {cloud_provider}")
+    if services:
+        for s in services:
+            if s.lower() not in ALLOWED_SERVICES or not _SAFE_PATTERN.match(s):
+                raise ValueError(f"Invalid Prowler service: {s}")
+    if framework:
+        if framework.lower() not in ALLOWED_FRAMEWORKS or not _SAFE_PATTERN.match(framework):
+            raise ValueError(f"Invalid Prowler framework: {framework}")
 
 
 async def _run_prowler_scan(
@@ -28,6 +69,13 @@ async def _run_prowler_scan(
     settings = get_settings()
     output_dir = output_dir or settings.PROWLER_OUTPUT_DIR
     os.makedirs(output_dir, exist_ok=True)
+
+    # Validate all user-provided arguments before building the command
+    _validate_prowler_args(
+        cloud_provider,
+        scan_scope.get("services") if scan_scope else None,
+        scan_scope.get("compliance_framework") if scan_scope else None,
+    )
 
     cmd = ["prowler", cloud_provider, "-M", "json", "-o", output_dir, "-F", "prowler-output"]
 
