@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import DB
+from app.core.dependencies import DB, AnyInternalUser
 from app.core.exceptions import NotFoundError
 from app.models.control_template import ControlTemplate
 from app.schemas.common import PaginatedResponse
@@ -16,6 +16,7 @@ router = APIRouter(prefix="/control-templates", tags=["control-templates"])
 @router.get("", response_model=PaginatedResponse)
 async def list_control_templates(
     db: DB,
+    current_user: AnyInternalUser,
     domain: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
@@ -42,7 +43,7 @@ async def list_control_templates(
 
 
 @router.get("/{template_id}", response_model=ControlTemplateResponse)
-async def get_control_template(template_id: UUID, db: DB):
+async def get_control_template(template_id: UUID, db: DB, current_user: AnyInternalUser):
     result = await db.execute(
         select(ControlTemplate).where(ControlTemplate.id == template_id)
     )

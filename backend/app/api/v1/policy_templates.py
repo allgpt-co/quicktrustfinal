@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from app.core.dependencies import DB
+from app.core.dependencies import DB, AnyInternalUser
 from app.schemas.common import PaginatedResponse
 from app.schemas.policy import PolicyTemplateResponse
 from app.services import policy_service
@@ -13,6 +13,7 @@ router = APIRouter(prefix="/policy-templates", tags=["policy-templates"])
 @router.get("", response_model=PaginatedResponse)
 async def list_policy_templates(
     db: DB,
+    current_user: AnyInternalUser,
     category: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
@@ -30,5 +31,5 @@ async def list_policy_templates(
 
 
 @router.get("/{template_id}", response_model=PolicyTemplateResponse)
-async def get_policy_template(template_id: UUID, db: DB):
+async def get_policy_template(template_id: UUID, db: DB, current_user: AnyInternalUser):
     return await policy_service.get_policy_template(db, template_id)

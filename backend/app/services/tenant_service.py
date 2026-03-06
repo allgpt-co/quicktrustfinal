@@ -7,6 +7,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import select, func, text
+from sqlalchemy.sql.elements import quoted_name
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestError, ConflictError, NotFoundError
@@ -136,15 +137,23 @@ async def verify_tenant_isolation(
     results = []
     violations = []
 
+    # Whitelist of allowed table names to prevent SQL injection
+    allowed_tables = frozenset(scoped_tables)
+
     for table in scoped_tables:
+        if table not in allowed_tables:
+            continue
         try:
+            # Use quoted identifier to prevent injection (table name is from whitelist above)
+            safe_table = quoted_name(table, quote=True)
+
             # Count total rows
-            total_result = await db.execute(text(f"SELECT COUNT(*) FROM {table}"))
+            total_result = await db.execute(text(f"SELECT COUNT(*) FROM {safe_table}"))
             total = total_result.scalar() or 0
 
             # Count rows for this org
             org_result = await db.execute(
-                text(f"SELECT COUNT(*) FROM {table} WHERE org_id = :org_id"),
+                text(f"SELECT COUNT(*) FROM {safe_table} WHERE org_id = :org_id"),
                 {"org_id": str(org_id)},
             )
             org_count = org_result.scalar() or 0

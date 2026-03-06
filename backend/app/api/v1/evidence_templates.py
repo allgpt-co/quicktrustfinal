@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query
 from sqlalchemy import select, func
 
-from app.core.dependencies import DB
+from app.core.dependencies import DB, AnyInternalUser
 from app.core.exceptions import NotFoundError
 from app.models.evidence_template import EvidenceTemplate
 from app.schemas.common import PaginatedResponse
@@ -15,6 +15,7 @@ router = APIRouter(prefix="/evidence-templates", tags=["evidence-templates"])
 @router.get("", response_model=PaginatedResponse)
 async def list_evidence_templates(
     db: DB,
+    current_user: AnyInternalUser,
     evidence_type: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
@@ -41,7 +42,7 @@ async def list_evidence_templates(
 
 
 @router.get("/{template_id}", response_model=EvidenceTemplateResponse)
-async def get_evidence_template(template_id: UUID, db: DB):
+async def get_evidence_template(template_id: UUID, db: DB, current_user: AnyInternalUser):
     result = await db.execute(
         select(EvidenceTemplate).where(EvidenceTemplate.id == template_id)
     )

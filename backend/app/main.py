@@ -52,5 +52,5 @@ async def health_ready():
         async with async_session() as session:
             await session.execute(text("SELECT 1"))
         return {"status": "ready", "database": "ok"}
-    except Exception as e:
-        return {"status": "not_ready", "database": str(e)}
+    except Exception:
+        return {"status": "not_ready", "database": "unavailable"}

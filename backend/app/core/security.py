@@ -56,15 +56,18 @@ async def decode_token(token: str) -> dict:
 
         issuer = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}"
 
+        # Accept tokens issued for the API client, web client, or default Keycloak audience
+        valid_audiences = [settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"]
+
         # Accept tokens issued by localhost (browser) or Docker hostname (internal)
         try:
             payload = jwt.decode(
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience="account",
+                audience=valid_audiences,
                 issuer=issuer,
-                options={"verify_aud": False},
+                options={"verify_aud": True},
             )
         except JWTError:
             # Retry with localhost issuer for Docker environments
@@ -74,9 +77,9 @@ async def decode_token(token: str) -> dict:
                     token,
                     rsa_key,
                     algorithms=["RS256"],
-                    audience="account",
+                    audience=valid_audiences,
                     issuer=localhost_issuer,
-                    options={"verify_aud": False},
+                    options={"verify_aud": True},
                 )
             else:
                 raise
