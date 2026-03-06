@@ -13,8 +13,8 @@ class Evidence(BaseModel):
     org_id: Mapped[uuid.UUID] = mapped_column(
         GUID(), ForeignKey("organizations.id"), nullable=False
     )
-    control_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("controls.id"), nullable=False
+    control_id: Mapped[uuid.UUID | None] = mapped_column(
+        GUID(), ForeignKey("controls.id"), nullable=True
     )
     template_id: Mapped[uuid.UUID | None] = mapped_column(
         GUID(), ForeignKey("evidence_templates.id")

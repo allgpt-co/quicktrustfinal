@@ -108,10 +108,10 @@ async def auth_headers():
     return {}
 
 
-def make_test_user_with_role(role: str) -> User:
+def make_test_user_with_role(role: str, org_id: uuid.UUID | None = None) -> User:
     return User(
         id=uuid.uuid4(),
-        org_id=TEST_ORG_ID,
+        org_id=org_id or TEST_ORG_ID,
         keycloak_id=f"test-{role}-id",
         email=f"{role}@quicktrust.dev",
         full_name=f"Test {role.title()}",

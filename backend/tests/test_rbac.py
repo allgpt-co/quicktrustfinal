@@ -15,7 +15,7 @@ TEST_ORG_ID = None
 def _override_user_factory(role: str):
     """Return an async callable that provides a User with the given role."""
     async def _override():
-        return make_test_user_with_role(role)
+        return make_test_user_with_role(role, org_id=uuid.UUID(TEST_ORG_ID))
     return _override
 
 
@@ -30,19 +30,18 @@ async def setup_org(client: AsyncClient):
 
 
 @pytest.fixture
-async def admin_client():
+async def admin_client(setup_org):
     """Client authenticated as admin role."""
     app.dependency_overrides[get_current_user] = _override_user_factory("admin")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
-    # Restore super_admin override
     from tests.conftest import override_get_current_user
     app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 @pytest.fixture
-async def employee_client():
+async def employee_client(setup_org):
     """Client authenticated as employee role."""
     app.dependency_overrides[get_current_user] = _override_user_factory("employee")
     transport = ASGITransport(app=app)
@@ -53,7 +52,7 @@ async def employee_client():
 
 
 @pytest.fixture
-async def compliance_manager_client():
+async def compliance_manager_client(setup_org):
     """Client authenticated as compliance_manager role."""
     app.dependency_overrides[get_current_user] = _override_user_factory("compliance_manager")
     transport = ASGITransport(app=app)
@@ -64,7 +63,7 @@ async def compliance_manager_client():
 
 
 @pytest.fixture
-async def auditor_external_client():
+async def auditor_external_client(setup_org):
     """Client authenticated as auditor_external role."""
     app.dependency_overrides[get_current_user] = _override_user_factory("auditor_external")
     transport = ASGITransport(app=app)
