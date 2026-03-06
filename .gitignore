@@ -63,3 +63,5 @@ frontend/node_modules/
 
 # Playwright MCP
 .playwright-mcp/
+samplesql.sql
+test.md

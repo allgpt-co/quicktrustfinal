@@ -3,12 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import PolicyStatus
+
 
 class PolicyCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
     content: str | None = None
     template_id: UUID | None = None
-    status: str = "draft"
+    status: PolicyStatus = PolicyStatus.DRAFT
     version: str = "1.0"
     owner_id: UUID | None = None
     framework_ids: list[str] | None = None
@@ -16,9 +18,9 @@ class PolicyCreate(BaseModel):
 
 
 class PolicyUpdate(BaseModel):
-    title: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
     content: str | None = None
-    status: str | None = None
+    status: PolicyStatus | None = None
     version: str | None = None
     owner_id: UUID | None = None
     approved_by_id: UUID | None = None

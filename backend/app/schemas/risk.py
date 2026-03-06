@@ -3,16 +3,18 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import RiskCategory, RiskTreatment
+
 
 class RiskCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
-    description: str | None = None
-    category: str = "operational"
+    description: str | None = Field(None, max_length=5000)
+    category: RiskCategory = RiskCategory.OPERATIONAL
     likelihood: int = Field(3, ge=1, le=5)
     impact: int = Field(3, ge=1, le=5)
     status: str = "identified"
-    treatment_plan: str | None = None
-    treatment_type: str | None = None
+    treatment_plan: str | None = Field(None, max_length=5000)
+    treatment_type: RiskTreatment | None = None
     treatment_status: str | None = None
     treatment_due_date: datetime | None = None
     residual_likelihood: int | None = Field(None, ge=1, le=5)
@@ -23,9 +25,9 @@ class RiskCreate(BaseModel):
 
 
 class RiskUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    category: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
+    description: str | None = Field(None, max_length=5000)
+    category: RiskCategory | None = None
     likelihood: int | None = Field(None, ge=1, le=5)
     impact: int | None = Field(None, ge=1, le=5)
     status: str | None = None

@@ -3,18 +3,20 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
+from app.schemas.enums import UserRole
+
 
 class UserCreate(BaseModel):
     email: EmailStr
     full_name: str = Field(..., min_length=1, max_length=255)
-    role: str = Field(default="employee", pattern=r"^(super_admin|compliance_manager|control_owner|employee|auditor)$")
-    department: str | None = None
+    role: UserRole = UserRole.EMPLOYEE
+    department: str | None = Field(None, max_length=100)
 
 
 class UserUpdate(BaseModel):
-    full_name: str | None = None
-    role: str | None = None
-    department: str | None = None
+    full_name: str | None = Field(None, max_length=255)
+    role: UserRole | None = None
+    department: str | None = Field(None, max_length=100)
     is_active: bool | None = None
 
 

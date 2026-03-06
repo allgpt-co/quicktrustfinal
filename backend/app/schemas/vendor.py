@@ -3,12 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import VendorRiskTier
+
 
 class VendorCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=500)
     category: str | None = None
     website: str | None = None
-    risk_tier: str = "medium"
+    risk_tier: VendorRiskTier = VendorRiskTier.MEDIUM
     status: str = "active"
     contact_name: str | None = None
     contact_email: str | None = None
@@ -19,10 +21,10 @@ class VendorCreate(BaseModel):
 
 
 class VendorUpdate(BaseModel):
-    name: str | None = None
+    name: str | None = Field(None, min_length=1, max_length=500)
     category: str | None = None
     website: str | None = None
-    risk_tier: str | None = None
+    risk_tier: VendorRiskTier | None = None
     status: str | None = None
     contact_name: str | None = None
     contact_email: str | None = None
@@ -37,7 +39,7 @@ class VendorUpdate(BaseModel):
 class VendorAssessmentCreate(BaseModel):
     assessment_date: datetime | None = None
     score: int | None = Field(None, ge=0, le=100)
-    risk_tier_assigned: str | None = None
+    risk_tier_assigned: VendorRiskTier | None = None
     notes: str | None = None
     questionnaire_data: dict | None = None
 

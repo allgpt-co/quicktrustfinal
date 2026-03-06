@@ -3,22 +3,24 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import AlertSeverity, AlertStatus, MonitorCheckType, MonitorSchedule
+
 
 class MonitorRuleCreate(BaseModel):
     control_id: UUID | None = None
     title: str = Field(..., min_length=1, max_length=500)
-    description: str | None = None
-    check_type: str = "manual"
-    schedule: str = "daily"
+    description: str | None = Field(None, max_length=2000)
+    check_type: MonitorCheckType = MonitorCheckType.MANUAL
+    schedule: MonitorSchedule = MonitorSchedule.DAILY
     is_active: bool = True
     config: dict | None = None
 
 
 class MonitorRuleUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    check_type: str | None = None
-    schedule: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
+    description: str | None = Field(None, max_length=2000)
+    check_type: MonitorCheckType | None = None
+    schedule: MonitorSchedule | None = None
     is_active: bool | None = None
     config: dict | None = None
 

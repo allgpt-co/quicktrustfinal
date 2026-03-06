@@ -79,3 +79,13 @@ class BaseModel(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(GUID(), nullable=True)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(GUID(), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, default=None
+    )
+
+
+def soft_delete_filter(query, model_class):
+    """Apply soft-delete filter to exclude deleted records by default."""
+    return query.where(model_class.deleted_at.is_(None))

@@ -3,11 +3,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import ReportFormat
+
 
 class ReportCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
     report_type: str = "compliance_summary"
-    format: str = "json"
+    format: ReportFormat = ReportFormat.JSON
     parameters: dict | None = None
 
 

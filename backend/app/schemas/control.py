@@ -1,52 +1,31 @@
 from datetime import datetime
-from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, model_validator
 
-ControlStatus = Literal[
-    "draft",
-    "not_implemented",
-    "in_progress",
-    "implemented",
-    "not_applicable",
-    "needs_review",
-]
-
-ControlEffectiveness = Literal[
-    "effective",
-    "partially_effective",
-    "not_effective",
-    "not_rated",
-]
-
-AutomationLevel = Literal[
-    "manual",
-    "semi_automated",
-    "automated",
-]
+from app.schemas.enums import ControlStatus, ControlEffectiveness, AutomationLevel
 
 
 class ControlCreate(BaseModel):
     template_id: UUID | None = None
     title: str = Field(..., min_length=1, max_length=500)
-    description: str | None = None
-    implementation_details: str | None = None
+    description: str | None = Field(None, max_length=5000)
+    implementation_details: str | None = Field(None, max_length=10000)
     owner_id: UUID | None = None
-    status: ControlStatus = "draft"
-    automation_level: AutomationLevel = "manual"
-    test_procedure: str | None = None
+    status: ControlStatus = ControlStatus.DRAFT
+    automation_level: AutomationLevel = AutomationLevel.MANUAL
+    test_procedure: str | None = Field(None, max_length=5000)
 
 
 class ControlUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    implementation_details: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
+    description: str | None = Field(None, max_length=5000)
+    implementation_details: str | None = Field(None, max_length=10000)
     owner_id: UUID | None = None
     status: ControlStatus | None = None
     effectiveness: ControlEffectiveness | None = None
     automation_level: AutomationLevel | None = None
-    test_procedure: str | None = None
+    test_procedure: str | None = Field(None, max_length=5000)
 
     @model_validator(mode="after")
     def check_effectiveness_requires_implemented(self):
@@ -107,7 +86,7 @@ class ControlResponse(BaseModel):
 
 class BulkApproveRequest(BaseModel):
     control_ids: list[UUID]
-    status: ControlStatus = "implemented"
+    status: ControlStatus = ControlStatus.IMPLEMENTED
 
 
 class ControlStatsResponse(BaseModel):

@@ -3,12 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import EvidenceStatus
+
 
 class EvidenceCreate(BaseModel):
     control_id: UUID
     template_id: UUID | None = None
     title: str = Field(..., min_length=1, max_length=500)
-    status: str = "pending"
+    status: EvidenceStatus = EvidenceStatus.PENDING
     artifact_url: str | None = None
     data: dict | None = None
     collection_method: str = "manual"

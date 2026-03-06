@@ -3,12 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import IncidentSeverity, IncidentStatus
+
 
 class IncidentCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
-    description: str | None = None
-    severity: str = "P3"
-    status: str = "open"
+    description: str | None = Field(None, max_length=5000)
+    severity: IncidentSeverity = IncidentSeverity.P3
+    status: IncidentStatus = IncidentStatus.OPEN
     category: str | None = None
     assigned_to_id: UUID | None = None
     detected_at: datetime | None = None
@@ -16,10 +18,10 @@ class IncidentCreate(BaseModel):
 
 
 class IncidentUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    severity: str | None = None
-    status: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
+    description: str | None = Field(None, max_length=5000)
+    severity: IncidentSeverity | None = None
+    status: IncidentStatus | None = None
     category: str | None = None
     assigned_to_id: UUID | None = None
     detected_at: datetime | None = None

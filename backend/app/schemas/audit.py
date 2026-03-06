@@ -3,25 +3,27 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.enums import AuditStatus, AuditType, FindingSeverity, FindingStatus
+
 
 # --- Audit ---
 class AuditCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
     framework_id: UUID | None = None
-    audit_type: str = "external"
-    auditor_firm: str | None = None
-    lead_auditor_name: str | None = None
+    audit_type: AuditType = AuditType.EXTERNAL
+    auditor_firm: str | None = Field(None, max_length=255)
+    lead_auditor_name: str | None = Field(None, max_length=255)
     scheduled_start: datetime | None = None
     scheduled_end: datetime | None = None
 
 
 class AuditUpdate(BaseModel):
-    title: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=500)
     framework_id: UUID | None = None
-    audit_type: str | None = None
-    status: str | None = None
-    auditor_firm: str | None = None
-    lead_auditor_name: str | None = None
+    audit_type: AuditType | None = None
+    status: AuditStatus | None = None
+    auditor_firm: str | None = Field(None, max_length=255)
+    lead_auditor_name: str | None = Field(None, max_length=255)
     scheduled_start: datetime | None = None
     scheduled_end: datetime | None = None
 
