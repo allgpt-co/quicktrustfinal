@@ -5,8 +5,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-quicktrust}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quicktrust_dev}
       POSTGRES_DB: ${POSTGRES_DB:-quicktrust}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -15,18 +15,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-quicktrust_redis_dev}
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-quicktrust_redis_dev}", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   minio:
     image: minio/minio:latest
@@ -34,8 +39,9 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-quicktrust}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-quicktrust_dev}
+    expose:
+      - "9000"
     ports:
-      - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_data:/data
@@ -44,6 +50,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -56,6 +64,8 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER:-quicktrust}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-quicktrust_dev}
       KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_PROXY: edge
     ports:
       - "8080:8080"
     volumes:
@@ -69,6 +79,9 @@ services:
       timeout: 10s
       retries: 15
       start_period: 30s
+    networks:
+      - backend
+      - frontend
 
   api:
     build:
@@ -76,7 +89,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://quicktrust:quicktrust_dev@postgres:5432/quicktrust}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      REDIS_URL: ${REDIS_URL:-redis://:quicktrust_redis_dev@redis:6379/0}
       KEYCLOAK_URL: ${KEYCLOAK_URL:-http://keycloak:8080}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-quicktrust}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-quicktrust-api}
@@ -104,6 +117,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
+      - frontend
 
   web:
     build:
@@ -128,23 +144,35 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - frontend
 
   traefik:
     image: traefik:v3.2
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
-      - "8081:8080"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./infra/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - letsencrypt:/letsencrypt
+    networks:
+      - frontend
 
 volumes:
   postgres_data:
   redis_data:
   minio_data:
   web_node_modules:
+  letsencrypt:
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge

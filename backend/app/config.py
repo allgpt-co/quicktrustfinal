@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./quicktrust.db"
 
     # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_URL: str = "redis://:quicktrust_redis_dev@localhost:6379/0"
 
     # Keycloak
     KEYCLOAK_URL: str = "http://localhost:8080"

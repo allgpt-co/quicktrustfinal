@@ -1,5 +1,6 @@
 FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN adduser -D -u 1001 appuser
 WORKDIR /app
 
 FROM base AS deps
@@ -9,6 +10,8 @@ RUN pnpm install --frozen-lockfile || pnpm install
 FROM base AS development
 COPY package.json pnpm-lock.yaml* ./
 COPY . .
+RUN chown -R appuser:appuser /app
+USER appuser
 CMD ["sh", "-c", "pnpm install && pnpm dev"]
 
 FROM base AS builder
@@ -21,4 +24,6 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+RUN chown -R appuser:appuser /app
+USER appuser
 CMD ["pnpm", "start"]
