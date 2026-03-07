@@ -65,6 +65,12 @@ async def trigger_collection(
         job.result_data = result_data
         job.status = "completed"
 
+        # Hash collected data for integrity verification
+        import json as _json
+        from app.core.hashing import compute_sha256
+        data_bytes = _json.dumps(result_data.get("data", {}), sort_keys=True).encode()
+        artifact_hash = compute_sha256(data_bytes)
+
         # Create evidence record
         evidence = Evidence(
             org_id=org_id,
@@ -77,6 +83,7 @@ async def trigger_collection(
             collection_method="automated",
             collector=data.collector_type,
             data_source=result_data.get("data_source", "live"),
+            artifact_hash=artifact_hash,
         )
         db.add(evidence)
         await db.flush()

@@ -32,6 +32,24 @@ class Evidence(BaseModel):
     collector: Mapped[str | None] = mapped_column(String(255))
     data_source: Mapped[str] = mapped_column(String(20), default="live")  # live, mock, fallback
 
+    # Chain of custody
+    collected_by: Mapped[uuid.UUID | None] = mapped_column(
+        GUID(), ForeignKey("users.id")
+    )
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(
+        GUID(), ForeignKey("users.id")
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    approved_by: Mapped[uuid.UUID | None] = mapped_column(
+        GUID(), ForeignKey("users.id")
+    )
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rejected_by: Mapped[uuid.UUID | None] = mapped_column(
+        GUID(), ForeignKey("users.id")
+    )
+    rejected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rejection_reason: Mapped[str | None] = mapped_column(String(1000))
+
     organization = relationship("Organization", back_populates="evidence", lazy="selectin")
     control = relationship("Control", back_populates="evidence", lazy="selectin")
     template = relationship("EvidenceTemplate", lazy="selectin")

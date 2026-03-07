@@ -32,6 +32,8 @@ from app.models.monitoring import MonitorRule, MonitorAlert
 from app.models.questionnaire import Questionnaire, QuestionnaireResponse
 from app.models.trust_center import TrustCenterConfig, TrustCenterDocument
 from app.models.report import Report
+from app.models.cross_framework_mapping import CrossFrameworkMapping
+from app.models.compliance_snapshot import ComplianceSnapshot
 
 __all__ = [
     "BaseModel",
@@ -75,4 +77,6 @@ __all__ = [
     "TrustCenterConfig",
     "TrustCenterDocument",
     "Report",
+    "CrossFrameworkMapping",
+    "ComplianceSnapshot",
 ]

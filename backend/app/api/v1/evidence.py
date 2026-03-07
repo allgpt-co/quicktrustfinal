@@ -1,4 +1,4 @@
-import hashlib
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
@@ -8,7 +8,7 @@ from app.core.audit_middleware import log_audit
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import BadRequestError
 from app.schemas.common import PaginatedResponse
-from app.schemas.evidence import EvidenceCreate, EvidenceResponse
+from app.schemas.evidence import EvidenceCreate, EvidenceReject, EvidenceResponse
 from app.services import evidence_service
 
 EVIDENCE_ALLOWED_CONTENT_TYPES = {
@@ -68,6 +68,7 @@ async def upload_evidence_file(
     file: UploadFile = File(...),
 ):
     """Upload an evidence file to object storage and associate it with the evidence record."""
+    from app.core.hashing import compute_sha256
     from app.core.storage import upload_file
 
     evidence = await evidence_service.get_evidence(db, org_id, evidence_id)
@@ -94,7 +95,7 @@ async def upload_evidence_file(
     contents = bytes(contents)
 
     # Compute SHA-256 hash of the uploaded file for integrity tracking
-    file_hash = hashlib.sha256(contents).hexdigest()
+    file_hash = compute_sha256(contents)
 
     # Determine content type
     content_type = file.content_type or "application/octet-stream"
@@ -145,3 +146,45 @@ async def download_evidence_file(
         raise BadRequestError("File storage is currently unavailable.")
 
     return RedirectResponse(url=presigned_url, status_code=307)
+
+
+@router.post("/{evidence_id}/approve", response_model=EvidenceResponse)
+async def approve_evidence(
+    org_id: VerifiedOrgId,
+    evidence_id: UUID,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Approve evidence, marking it as reviewed and approved in the chain of custody."""
+    evidence = await evidence_service.get_evidence(db, org_id, evidence_id)
+    if evidence.status != "collected":
+        raise HTTPException(400, "Evidence must be in 'collected' status to approve")
+    evidence.status = "approved"
+    evidence.approved_by = current_user.id
+    evidence.approved_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(evidence)
+    await log_audit(db, current_user, "approve", "evidence", str(evidence_id), org_id)
+    return evidence
+
+
+@router.post("/{evidence_id}/reject", response_model=EvidenceResponse)
+async def reject_evidence(
+    org_id: VerifiedOrgId,
+    evidence_id: UUID,
+    body: EvidenceReject,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Reject evidence with a reason, recording who rejected and when."""
+    evidence = await evidence_service.get_evidence(db, org_id, evidence_id)
+    if evidence.status not in ("collected", "approved"):
+        raise HTTPException(400, "Evidence must be in 'collected' or 'approved' status to reject")
+    evidence.status = "rejected"
+    evidence.rejected_by = current_user.id
+    evidence.rejected_at = datetime.now(timezone.utc)
+    evidence.rejection_reason = body.reason
+    await db.commit()
+    await db.refresh(evidence)
+    await log_audit(db, current_user, "reject", "evidence", str(evidence_id), org_id)
+    return evidence

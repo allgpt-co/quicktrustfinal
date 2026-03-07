@@ -17,6 +17,10 @@ class EvidenceCreate(BaseModel):
     collector: str | None = None
 
 
+class EvidenceReject(BaseModel):
+    reason: str = Field(..., min_length=1, max_length=1000)
+
+
 class EvidenceResponse(BaseModel):
     id: UUID
     org_id: UUID
@@ -33,6 +37,15 @@ class EvidenceResponse(BaseModel):
     data: dict | None
     collection_method: str
     collector: str | None
+    data_source: str | None = None
+    collected_by: UUID | None = None
+    reviewed_by: UUID | None = None
+    reviewed_at: datetime | None = None
+    approved_by: UUID | None = None
+    approved_at: datetime | None = None
+    rejected_by: UUID | None = None
+    rejected_at: datetime | None = None
+    rejection_reason: str | None = None
     created_at: datetime
     updated_at: datetime
 
