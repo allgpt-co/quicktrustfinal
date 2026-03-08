@@ -4,6 +4,8 @@ import { useAuth } from "@/providers/auth-provider";
 import { login } from "@/lib/auth";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { Toaster } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -40,8 +42,11 @@ export default function DashboardLayout({
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </main>
       </div>
+      <Toaster richColors position="top-right" />
     </div>
   );
 }
