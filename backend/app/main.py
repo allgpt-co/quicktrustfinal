@@ -9,8 +9,17 @@ from app.api.v1.router import api_router
 from app.core.database import engine
 from app.core.rate_limit import limiter, rate_limit_exceeded_handler
 from app.core.security_headers import SecurityHeadersMiddleware
+from app.core.correlation import CorrelationIdMiddleware
+from app.core.logging_config import setup_logging
+from app.core.rls import register_rls_hook
 
 settings = get_settings()
+
+# Configure structured logging with correlation IDs
+setup_logging(settings.LOG_LEVEL)
+
+# Register RLS session variable hook for PostgreSQL tenant isolation
+register_rls_hook()
 
 
 @asynccontextmanager
@@ -33,6 +42,9 @@ app = FastAPI(
 # Rate limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
+# Correlation ID middleware (adds X-Request-ID to every request/response)
+app.add_middleware(CorrelationIdMiddleware)
 
 # Security headers
 app.add_middleware(SecurityHeadersMiddleware)

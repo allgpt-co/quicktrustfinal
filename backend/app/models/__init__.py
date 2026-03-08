@@ -34,6 +34,7 @@ from app.models.trust_center import TrustCenterConfig, TrustCenterDocument
 from app.models.report import Report
 from app.models.cross_framework_mapping import CrossFrameworkMapping
 from app.models.compliance_snapshot import ComplianceSnapshot
+from app.models.data_retention import DataRetentionPolicy, DeletionRequest
 
 __all__ = [
     "BaseModel",
@@ -79,4 +80,6 @@ __all__ = [
     "Report",
     "CrossFrameworkMapping",
     "ComplianceSnapshot",
+    "DataRetentionPolicy",
+    "DeletionRequest",
 ]

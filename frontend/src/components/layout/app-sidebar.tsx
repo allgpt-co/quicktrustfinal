@@ -106,17 +106,17 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-sidebar text-sidebar-foreground">
+    <aside className="flex h-screen w-64 flex-col border-r bg-sidebar text-sidebar-foreground" role="complementary" aria-label="Sidebar">
       <div className="flex h-14 items-center border-b px-6">
-        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg">
-          <Shield className="h-6 w-6 text-primary" />
+        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg" aria-label="QuickTrust — go to dashboard">
+          <Shield className="h-6 w-6 text-primary" aria-hidden="true" />
           <span>QuickTrust</span>
         </Link>
       </div>
-      <nav className="flex-1 overflow-y-auto p-4">
+      <nav className="flex-1 overflow-y-auto p-4" role="navigation" aria-label="Main navigation">
         {sections.map((section) => (
-          <div key={section.name} className="mb-3">
-            <div className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+          <div key={section.name} className="mb-3" role="group" aria-label={section.name}>
+            <div className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40" aria-hidden="true">
               {section.name}
             </div>
             <div className="space-y-0.5">
@@ -126,6 +126,7 @@ export function AppSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                       isActive
@@ -133,7 +134,7 @@ export function AppSidebar() {
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                     )}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4" aria-hidden="true" />
                     {item.label}
                   </Link>
                 );

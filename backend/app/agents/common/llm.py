@@ -1,13 +1,34 @@
-"""LiteLLM wrapper for configurable LLM access with token tracking."""
+"""LiteLLM wrapper for configurable LLM access with token tracking.
+
+When ``OPENAI_API_KEY`` (or another provider key) is configured, calls
+are routed through LiteLLM to the real model.  When no key is set the
+functions return deterministic mock responses so the application still
+works in development / CI without an API key.
+"""
+
 import json
+import logging
 
 import litellm
 from app.config import get_settings
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
 # Configure LiteLLM
 litellm.set_verbose = False
+
+_MOCK_USAGE = {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+    "model": "mock",
+}
+
+
+def _has_api_key() -> bool:
+    """Return True if any LLM provider key is configured."""
+    return bool(settings.OPENAI_API_KEY)
 
 
 def _extract_usage(response) -> dict:
@@ -22,13 +43,36 @@ def _extract_usage(response) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Mock responses for development / CI
+# ---------------------------------------------------------------------------
+
+_MOCK_TEXT = (
+    "This is a mock LLM response. Configure OPENAI_API_KEY (or another "
+    "LiteLLM-supported provider key) to enable real AI features."
+)
+
+_MOCK_JSON: dict = {
+    "items": [],
+    "summary": "Mock response — no LLM API key configured.",
+    "confidence": 0.0,
+}
+
+
 async def call_llm(
     messages: list[dict],
     model: str | None = None,
     temperature: float = 0.3,
     max_tokens: int = 4096,
 ) -> tuple[str, dict]:
-    """Returns (content, usage_info)."""
+    """Returns (content, usage_info).
+
+    Falls back to a mock response when no API key is available.
+    """
+    if not _has_api_key():
+        logger.debug("No LLM API key configured — returning mock text response.")
+        return _MOCK_TEXT, _MOCK_USAGE.copy()
+
     model = model or settings.LITELLM_MODEL
     try:
         response = await litellm.acompletion(
@@ -52,7 +96,14 @@ async def call_llm_json(
     temperature: float = 0.1,
     max_tokens: int = 4096,
 ) -> tuple[dict, dict]:
-    """Call LLM with JSON response format. Returns (parsed_json, usage_info)."""
+    """Call LLM with JSON response format. Returns (parsed_json, usage_info).
+
+    Falls back to a mock JSON response when no API key is available.
+    """
+    if not _has_api_key():
+        logger.debug("No LLM API key configured — returning mock JSON response.")
+        return _MOCK_JSON.copy(), _MOCK_USAGE.copy()
+
     model = model or settings.LITELLM_MODEL
     try:
         response = await litellm.acompletion(

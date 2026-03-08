@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import async_session
 from app.core.exceptions import ForbiddenError, NotFoundError, UnauthorizedError
+from app.core.request_context import current_org_var
 from app.core.security import decode_token
 from app.models.user import User
 from app.models.organization import Organization
@@ -90,9 +91,11 @@ async def verify_org_access(
     to the organization specified in the URL path.
     """
     if current_user.role == SUPER_ADMIN:
+        current_org_var.set(str(org_id))
         return org_id
     if str(current_user.org_id) != str(org_id):
         raise ForbiddenError("Access denied: you do not belong to this organization")
+    current_org_var.set(str(org_id))
     return org_id
 
 

@@ -33,6 +33,16 @@ async def start_scheduler() -> None:
         async with async_session() as db:
             await sync_monitoring_rules(db)
 
+        # Nightly data-retention enforcement (GDPR / Fix 10.5)
+        scheduler.add_job(
+            _run_retention_enforcement,
+            trigger="cron",
+            hour=2,
+            minute=0,
+            id="data_retention_enforcement",
+            replace_existing=True,
+        )
+
         scheduler.start()
         logger.info("APScheduler started with monitoring jobs.")
     except Exception as exc:
@@ -108,3 +118,19 @@ async def _run_monitoring_check(org_id: str, rule_id: str) -> None:
                 logger.debug("Monitoring rule %s passed.", rule_id)
     except Exception as exc:
         logger.error("Error running monitoring check for rule %s: %s", rule_id, exc)
+
+
+async def _run_retention_enforcement() -> None:
+    """Nightly job: purge records that exceed their retention policy."""
+    from app.core.database import async_session
+    from app.services import privacy_service
+
+    try:
+        async with async_session() as db:
+            purged = await privacy_service.enforce_retention(db)
+            if purged:
+                logger.info("Data retention: purged %d expired records.", purged)
+            else:
+                logger.debug("Data retention: no records to purge.")
+    except Exception as exc:
+        logger.error("Error enforcing data retention: %s", exc)
