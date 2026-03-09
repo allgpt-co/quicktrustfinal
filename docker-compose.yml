@@ -64,8 +64,7 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER:-quicktrust}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-quicktrust_dev}
       KC_HEALTH_ENABLED: "true"
-      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
-      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: "false"
     ports:
       - "8080:8080"
     volumes:
@@ -74,7 +73,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080; echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -q '200'"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -q '200'"]
       interval: 10s
       timeout: 10s
       retries: 15
@@ -127,6 +126,7 @@ services:
       dockerfile: Dockerfile
       target: development
     environment:
+      COREPACK_ENABLE_NETWORK: "0"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       NEXT_PUBLIC_KEYCLOAK_URL: ${NEXT_PUBLIC_KEYCLOAK_URL:-http://localhost:8080}
       NEXT_PUBLIC_KEYCLOAK_REALM: ${NEXT_PUBLIC_KEYCLOAK_REALM:-quicktrust}

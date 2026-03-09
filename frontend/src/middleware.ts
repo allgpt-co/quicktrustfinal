@@ -17,13 +17,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // For dashboard routes, check for auth cookie/token
-  // This is a basic check - the real auth happens in the AuthProvider
-  const hasAuth = request.cookies.get("kc-access") || request.headers.get("authorization");
-  if (!hasAuth && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
+  // Dashboard auth is handled client-side by the AuthProvider + keycloak-js.
+  // keycloak-js stores tokens in memory (not cookies), so middleware cannot
+  // check auth state.  The dashboard layout shows a sign-in prompt when
+  // the user is not authenticated.
   return NextResponse.next();
 }
 

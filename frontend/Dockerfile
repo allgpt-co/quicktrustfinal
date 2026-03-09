@@ -1,5 +1,5 @@
 FROM node:20-alpine AS base
-RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+RUN npm install -g pnpm@9.15.4
 RUN adduser -D -u 1001 appuser
 WORKDIR /app
 
@@ -10,8 +10,13 @@ RUN pnpm install --frozen-lockfile || pnpm install
 FROM base AS development
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN chown -R appuser:appuser /app
-USER appuser
+# Save a backup of node_modules so the entrypoint can restore
+# them when the named volume is empty (bind mount overrides image data).
+RUN cp -a node_modules /opt/node_modules_cache
+RUN chmod +x docker-entrypoint.sh
+# Development runs as root to match host bind-mount permissions.
+# Production stage uses a non-root user.
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["pnpm", "dev"]
 
 FROM base AS builder

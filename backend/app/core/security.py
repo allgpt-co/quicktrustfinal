@@ -61,8 +61,10 @@ async def decode_token(token: str) -> dict:
 
         issuer = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}"
 
-        # Accept tokens issued for the API client, web client, or default Keycloak audience
-        valid_audiences = [settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"]
+        # Accept tokens issued for the API client, web client, or default Keycloak audience.
+        # python-jose audience param only accepts a single string, so we verify
+        # the audience manually after decoding.
+        valid_audiences = {settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"}
 
         # Accept tokens issued by localhost (browser) or Docker hostname (internal)
         try:
@@ -70,9 +72,8 @@ async def decode_token(token: str) -> dict:
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience=valid_audiences,
                 issuer=issuer,
-                options={"verify_aud": True},
+                options={"verify_aud": False},
             )
         except JWTError:
             # Retry with localhost issuer for Docker environments
@@ -82,12 +83,22 @@ async def decode_token(token: str) -> dict:
                     token,
                     rsa_key,
                     algorithms=["RS256"],
-                    audience=valid_audiences,
                     issuer=localhost_issuer,
-                    options={"verify_aud": True},
+                    options={"verify_aud": False},
                 )
             else:
                 raise
+
+        # Manual audience check: token aud can be a string, list, or absent.
+        # Keycloak often omits "aud" and uses "azp" (authorized party) instead.
+        token_aud = payload.get("aud") or []
+        if isinstance(token_aud, str):
+            token_aud = [token_aud]
+        azp = payload.get("azp")
+        if azp:
+            token_aud.append(azp)
+        if token_aud and not valid_audiences.intersection(token_aud):
+            raise JWTError("Token audience not accepted")
 
         # Check token blacklist (revoked tokens)
         jti = payload.get("jti")

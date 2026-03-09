@@ -43,6 +43,17 @@ async def get_current_user(
     user = result.scalar_one_or_none()
 
     if user is None:
+        # Check if a user with this email already exists (e.g. Keycloak DB was reset)
+        email = payload.get("email", "")
+        if email:
+            result = await db.execute(select(User).where(User.email == email))
+            user = result.scalar_one_or_none()
+            if user is not None:
+                user.keycloak_id = keycloak_id
+                await db.commit()
+                await db.refresh(user)
+                return user
+
         # Auto-provision user on first Keycloak login
         org_result = await db.execute(
             select(Organization).where(Organization.id == DEFAULT_ORG_ID)
