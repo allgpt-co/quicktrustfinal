@@ -2,12 +2,13 @@
   "realm": "quicktrust",
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": false,
+  "registrationAllowed": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": true,
+  "defaultRoles": ["employee", "offline_access", "uma_authorization"],
   "roles": {
     "realm": [
       {

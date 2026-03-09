@@ -30,9 +30,9 @@ async def start_onboarding(
 
 async def _run_pipeline(session_id: str, org_id: str):
     """Background task that runs the onboarding pipeline."""
-    from app.core.database import async_session
+    from app.core.database import bg_async_session
 
-    async with async_session() as db:
+    async with bg_async_session() as db:
         await onboarding_service.run_onboarding_pipeline(db, session_id, org_id)
 
 

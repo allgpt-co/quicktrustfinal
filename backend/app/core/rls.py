@@ -13,14 +13,13 @@ from sqlalchemy.orm import Session
 from app.core.request_context import current_org_var
 
 
-def _set_rls_var(session, _transaction, _connection):
+def _set_rls_var(session, _transaction, connection):
     """SQLAlchemy ``after_begin`` event: set the RLS session variable."""
-    bind = session.get_bind()
-    if bind.dialect.name != "postgresql":
+    if connection.dialect.name != "postgresql":
         return
     org_id = current_org_var.get("")
     if org_id:
-        session.execute(text(f"SET LOCAL app.current_org = '{org_id}'"))
+        connection.execute(text(f"SET LOCAL app.current_org = '{org_id}'"))
 
 
 def register_rls_hook() -> None:

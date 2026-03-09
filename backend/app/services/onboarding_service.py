@@ -1,15 +1,19 @@
 """Onboarding orchestrator — runs all generation agents in sequence."""
+import logging
 from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.core.exceptions import NotFoundError
 from app.models.agent_run import AgentRun
 from app.models.onboarding_session import OnboardingSession
 from app.models.organization import Organization
 from app.schemas.onboarding import OnboardingWizardInput
+
+logger = logging.getLogger(__name__)
 
 
 async def start_onboarding(
@@ -58,12 +62,16 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         _update_progress(session, "updating_organization")
         org = await db.get(Organization, org_id)
         if org:
+            if input_data.get("company_name"):
+                org.name = input_data["company_name"]
+                org.slug = input_data["company_name"].lower().replace(" ", "-")[:100]
             org.industry = input_data.get("industry")
             org.company_size = input_data.get("company_size")
             org.cloud_providers = input_data.get("cloud_providers")
             org.tech_stack = input_data.get("tech_stack")
             await db.commit()
         session.progress["steps_completed"].append("organization_updated")
+        flag_modified(session, "progress")
         await db.commit()
 
         # Step 2: Generate controls for each framework
@@ -80,7 +88,6 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
             )
             db.add(agent_run)
             await db.commit()
-            await db.refresh(agent_run)
 
             try:
                 result = await run_controls_generation(
@@ -103,6 +110,7 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
             agent_run_ids[f"controls_{fw_id}"] = str(agent_run.id)
 
         session.progress["steps_completed"].append("controls_generated")
+        flag_modified(session, "progress")
         results["controls_count"] = total_controls
         await db.commit()
 
@@ -121,7 +129,6 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         )
         db.add(policy_run)
         await db.commit()
-        await db.refresh(policy_run)
 
         try:
             policy_result = await run_policy_generation(
@@ -144,6 +151,7 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         await db.commit()
         agent_run_ids["policies"] = str(policy_run.id)
         session.progress["steps_completed"].append("policies_generated")
+        flag_modified(session, "progress")
         await db.commit()
 
         # Step 4: Generate evidence
@@ -158,7 +166,6 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         )
         db.add(evidence_run)
         await db.commit()
-        await db.refresh(evidence_run)
 
         try:
             evidence_result = await run_evidence_generation(
@@ -188,15 +195,20 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         session.progress["current_step"] = "completed"
 
     except Exception as e:
+        logger.error("Onboarding pipeline failed: %s", e, exc_info=True)
         session.status = "failed"
         session.progress["current_step"] = "failed"
         session.progress["error"] = str(e)
 
+    flag_modified(session, "progress")
+    flag_modified(session, "results")
+    flag_modified(session, "agent_run_ids")
     await db.commit()
 
 
 def _update_progress(session: OnboardingSession, step: str):
     session.progress["current_step"] = step
+    flag_modified(session, "progress")
 
 
 async def get_session(db: AsyncSession, org_id: UUID, session_id: UUID) -> OnboardingSession:

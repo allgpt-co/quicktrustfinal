@@ -28,6 +28,6 @@ class AgentRun(BaseModel):
     approved_by: Mapped[uuid.UUID | None] = mapped_column(GUID())
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    organization = relationship("Organization", back_populates="agent_runs")
-    controls = relationship("Control", back_populates="agent_run", lazy="selectin")
-    policies = relationship("Policy", back_populates="agent_run", lazy="selectin")
+    organization = relationship("Organization", back_populates="agent_runs", lazy="noload")
+    controls = relationship("Control", back_populates="agent_run", lazy="noload")
+    policies = relationship("Policy", back_populates="agent_run", lazy="noload")

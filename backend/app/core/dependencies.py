@@ -1,3 +1,4 @@
+import uuid
 from functools import wraps
 from typing import Annotated
 from uuid import UUID
@@ -12,9 +13,6 @@ from app.core.request_context import current_org_var
 from app.core.security import decode_token
 from app.models.user import User
 from app.models.organization import Organization
-
-# Default org for auto-provisioned users
-DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000000"
 
 
 async def get_db():
@@ -54,37 +52,39 @@ async def get_current_user(
                 await db.refresh(user)
                 return user
 
-        # Auto-provision user on first Keycloak login
-        org_result = await db.execute(
-            select(Organization).where(Organization.id == DEFAULT_ORG_ID)
+        # Auto-provision user on first Keycloak login — each user gets their own org
+        user_name = payload.get("name", payload.get("preferred_username", "User"))
+        user_email = payload.get("email", "")
+        org_name = f"{user_name}'s Organization"
+        org_slug = f"org-{uuid.uuid4().hex[:8]}"
+
+        org = Organization(
+            name=org_name,
+            slug=org_slug,
+            industry="Technology",
+            company_size="1-50",
         )
-        org = org_result.scalar_one_or_none()
-        if org is None:
-            org = Organization(
-                id=DEFAULT_ORG_ID,
-                name="Default Organization",
-                slug="default-org",
-                industry="Technology",
-                company_size="1-50",
-            )
-            db.add(org)
-            await db.flush()
+        db.add(org)
+        await db.flush()
 
         roles = payload.get("realm_roles", [])
-        role = "super_admin" if "super_admin" in roles else (
-            "compliance_manager" if "compliance_manager" in roles else "employee"
-        )
+        if "super_admin" in roles:
+            role = "super_admin"
+        elif "compliance_manager" in roles:
+            role = "compliance_manager"
+        else:
+            # Self-registered users are admins of their own org
+            role = "compliance_manager"
         user = User(
-            org_id=DEFAULT_ORG_ID,
+            org_id=org.id,
             keycloak_id=keycloak_id,
-            email=payload.get("email", ""),
-            full_name=payload.get("name", payload.get("preferred_username", "")),
+            email=user_email,
+            full_name=user_name,
             role=role,
             is_active=True,
         )
         db.add(user)
         await db.commit()
-        await db.refresh(user)
 
     if not user.is_active:
         raise ForbiddenError("User account is deactivated")

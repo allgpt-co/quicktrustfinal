@@ -15,6 +15,16 @@ engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
 
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+# Separate engine for background tasks (agent runs) to avoid connection pool
+# conflicts with request-scoped sessions.
+_bg_engine_kwargs = {"echo": False}
+if "sqlite" not in settings.DATABASE_URL:
+    _bg_engine_kwargs["pool_size"] = 5
+    _bg_engine_kwargs["max_overflow"] = 5
+
+bg_engine = create_async_engine(settings.DATABASE_URL, **_bg_engine_kwargs)
+bg_async_session = async_sessionmaker(bg_engine, class_=AsyncSession, expire_on_commit=False)
+
 
 class Base(DeclarativeBase):
     pass
