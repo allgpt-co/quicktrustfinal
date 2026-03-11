@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEvidence, useCreateEvidence, useUploadEvidence } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
+import api from "@/lib/api";
 import {
   Shield,
   FileCheck,
@@ -16,6 +17,8 @@ import {
   Loader2,
   FileUp,
   Download,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: string | undefined }[] = [
@@ -59,12 +62,24 @@ export default function EvidencePage() {
   const [methodFilter, setMethodFilter] = useState<string | undefined>(
     undefined
   );
+
+  // Reset to page 1 when filters change
+  function handleStatusFilter(value: string | undefined) {
+    setStatusFilter(value);
+    setPage(1);
+  }
+  function handleMethodFilter(value: string | undefined) {
+    setMethodFilter(value);
+    setPage(1);
+  }
   const [showCreate, setShowCreate] = useState(false);
   const [createTitle, setCreateTitle] = useState("");
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading, error } = useEvidence(orgId);
+  const { data, isLoading, error } = useEvidence(orgId, { page });
   const createEvidence = useCreateEvidence(orgId);
   const uploadEvidence = useUploadEvidence(orgId);
 
@@ -108,8 +123,18 @@ export default function EvidencePage() {
     );
   }
 
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  async function handleDownload(evidenceId: string) {
+    setDownloadingId(evidenceId);
+    try {
+      await api.downloadRedirect(
+        `/organizations/${orgId}/evidence/${evidenceId}/download`
+      );
+    } catch (err) {
+      console.error("Download failed:", err);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
 
   if (error) {
     return (
@@ -136,6 +161,10 @@ export default function EvidencePage() {
       </div>
     );
   }
+
+  const totalPages = data?.total_pages || 1;
+  const showingFiltered = !!(statusFilter || methodFilter);
+  const filteredCount = evidenceItems.length;
 
   return (
     <div className="space-y-6">
@@ -207,7 +236,7 @@ export default function EvidencePage() {
               key={f.label}
               variant={statusFilter === f.value ? "default" : "outline"}
               size="sm"
-              onClick={() => setStatusFilter(f.value)}
+              onClick={() => handleStatusFilter(f.value)}
             >
               {f.label}
             </Button>
@@ -222,7 +251,7 @@ export default function EvidencePage() {
               key={f.label}
               variant={methodFilter === f.value ? "default" : "outline"}
               size="sm"
-              onClick={() => setMethodFilter(f.value)}
+              onClick={() => handleMethodFilter(f.value)}
             >
               {f.label}
             </Button>
@@ -282,16 +311,19 @@ export default function EvidencePage() {
                 <div className="flex items-center gap-2 shrink-0">
                   {/* Upload / Download button */}
                   {evidence.file_url ? (
-                    <a
-                      href={`${apiUrl}/api/v1/organizations/${orgId}/evidence/${evidence.id}/download`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDownload(evidence.id)}
+                      disabled={downloadingId === evidence.id}
                     >
-                      <Button size="sm" variant="outline">
+                      {downloadingId === evidence.id ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      ) : (
                         <Download className="mr-1 h-4 w-4" />
-                        Download
-                      </Button>
-                    </a>
+                      )}
+                      Download
+                    </Button>
                   ) : (
                     <Button
                       size="sm"
@@ -344,11 +376,30 @@ export default function EvidencePage() {
         </Card>
       )}
 
-      {data && data.total_pages > 1 && (
-        <div className="flex justify-center gap-2 pt-4">
-          <p className="text-sm text-muted-foreground">
-            Page {data.page} of {data.total_pages} ({data.total} total)
-          </p>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages} ({data?.total || 0} total{showingFiltered ? `, ${filteredCount} shown` : ""})
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+          >
+            Next
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </Button>
         </div>
       )}
     </div>

@@ -52,31 +52,41 @@ async def get_current_user(
                 await db.refresh(user)
                 return user
 
-        # Auto-provision user on first Keycloak login — each user gets their own org
+        # Auto-provision user on first Keycloak login
         user_name = payload.get("name", payload.get("preferred_username", "User"))
         user_email = payload.get("email", "")
-        org_name = f"{user_name}'s Organization"
-        org_slug = f"org-{uuid.uuid4().hex[:8]}"
 
-        org = Organization(
-            name=org_name,
-            slug=org_slug,
-            industry="Technology",
-            company_size="1-50",
-        )
-        db.add(org)
-        await db.flush()
+        # Check if this user was invited to an existing organization
+        from app.services.invitation_service import find_pending_invitation_by_email
 
-        roles = payload.get("realm_roles", [])
-        if "super_admin" in roles:
-            role = "super_admin"
-        elif "compliance_manager" in roles:
-            role = "compliance_manager"
+        invitation = await find_pending_invitation_by_email(db, user_email) if user_email else None
+
+        if invitation:
+            # Invited user — join existing org with assigned role
+            org_id = invitation.org_id
+            role = invitation.role
+            invitation.status = "accepted"
+            from datetime import datetime, timezone as tz
+            invitation.accepted_at = datetime.now(tz.utc)
         else:
-            # Self-registered users are admins of their own org
-            role = "compliance_manager"
+            # New user (no invite) — create their own org as admin
+            org_name = f"{user_name}'s Organization"
+            org_slug = f"org-{uuid.uuid4().hex[:8]}"
+            org = Organization(
+                name=org_name,
+                slug=org_slug,
+                industry="Technology",
+                company_size="1-50",
+            )
+            db.add(org)
+            await db.flush()
+            org_id = org.id
+
+            # First user of their own org is always super_admin
+            role = "super_admin"
+
         user = User(
-            org_id=org.id,
+            org_id=org_id,
             keycloak_id=keycloak_id,
             email=user_email,
             full_name=user_name,
@@ -144,7 +154,6 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 # Role constants
 # ---------------------------------------------------------------------------
 SUPER_ADMIN = "super_admin"
-ADMIN = "admin"
 COMPLIANCE_MANAGER = "compliance_manager"
 CONTROL_OWNER = "control_owner"
 EMPLOYEE = "employee"
@@ -154,7 +163,6 @@ AUDITOR_EXTERNAL = "auditor_external"
 
 ALL_ROLES = (
     SUPER_ADMIN,
-    ADMIN,
     COMPLIANCE_MANAGER,
     CONTROL_OWNER,
     EMPLOYEE,
@@ -166,7 +174,6 @@ ALL_ROLES = (
 # Internal roles (everyone except external auditors)
 INTERNAL_ROLES = (
     SUPER_ADMIN,
-    ADMIN,
     COMPLIANCE_MANAGER,
     CONTROL_OWNER,
     EMPLOYEE,
@@ -182,7 +189,7 @@ class RoleChecker:
     """FastAPI dependency that enforces role-based access control.
 
     Usage as a dependency:
-        @router.get("/admin-only", dependencies=[Depends(RoleChecker(ADMIN, SUPER_ADMIN))])
+        @router.get("/admin-only", dependencies=[Depends(RoleChecker(SUPER_ADMIN))])
 
     Or via Annotated type alias:
         async def endpoint(user: AdminUser): ...
@@ -210,9 +217,9 @@ class RoleChecker:
 # ---------------------------------------------------------------------------
 # Convenience type aliases for common role checks
 # ---------------------------------------------------------------------------
-AdminUser = Annotated[User, Depends(RoleChecker(SUPER_ADMIN, ADMIN))]
+AdminUser = Annotated[User, Depends(RoleChecker(SUPER_ADMIN))]
 ComplianceUser = Annotated[
-    User, Depends(RoleChecker(SUPER_ADMIN, ADMIN, COMPLIANCE_MANAGER))
+    User, Depends(RoleChecker(SUPER_ADMIN, COMPLIANCE_MANAGER))
 ]
 AnyInternalUser = Annotated[User, Depends(RoleChecker(*INTERNAL_ROLES))]
 

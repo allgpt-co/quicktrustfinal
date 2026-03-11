@@ -14,6 +14,7 @@ class AgentRunTriggerGeneric(BaseModel):
     framework_id: UUID | None = None
     audit_id: UUID | None = None
     vendor_id: UUID | None = None
+    questionnaire_id: UUID | None = None
     company_context: dict | None = None
 
 

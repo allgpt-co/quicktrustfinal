@@ -139,6 +139,8 @@ export interface Evidence {
   expires_at: string | null;
   artifact_url: string | null;
   artifact_hash: string | null;
+  file_url: string | null;
+  file_name: string | null;
   data: Record<string, unknown> | null;
   collection_method: string;
   collector: string | null;
@@ -758,7 +760,6 @@ export interface ReportStats {
 // Role constants
 export const ROLES = {
   SUPER_ADMIN: "super_admin",
-  ADMIN: "admin",
   COMPLIANCE_MANAGER: "compliance_manager",
   CONTROL_OWNER: "control_owner",
   EMPLOYEE: "employee",

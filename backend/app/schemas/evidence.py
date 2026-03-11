@@ -7,7 +7,7 @@ from app.schemas.enums import EvidenceStatus
 
 
 class EvidenceCreate(BaseModel):
-    control_id: UUID
+    control_id: UUID | None = None
     template_id: UUID | None = None
     title: str = Field(..., min_length=1, max_length=500)
     status: EvidenceStatus = EvidenceStatus.PENDING
@@ -24,7 +24,7 @@ class EvidenceReject(BaseModel):
 class EvidenceResponse(BaseModel):
     id: UUID
     org_id: UUID
-    control_id: UUID
+    control_id: UUID | None = None
     template_id: UUID | None
     title: str
     status: str

@@ -1066,6 +1066,73 @@ export function useProwlerFindingsSummary(orgId: string) {
   });
 }
 
+// ===== Security Scanners (Phase 2) =====
+
+export function useScannerDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["scanner-dashboard", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/scanners/dashboard`),
+    enabled: !!orgId,
+    refetchInterval: 5000,
+  });
+}
+
+export function useScannerTrigger(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { scanner: string; target: string; config?: Record<string, unknown> }) =>
+      api.post<any>(`/organizations/${orgId}/scanners/trigger`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["scanner-dashboard", orgId] });
+      qc.invalidateQueries({ queryKey: ["scanner-scans", orgId] });
+    },
+  });
+}
+
+export function useScannerScans(orgId: string, params?: { scanner?: string; status?: string; page?: number; page_size?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.scanner) searchParams.set("scanner", params.scanner);
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.page) searchParams.set("page", String(params.page));
+  if (params?.page_size) searchParams.set("page_size", String(params.page_size));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["scanner-scans", orgId, params],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/scanners/scans${qs ? `?${qs}` : ""}`),
+    enabled: !!orgId,
+    refetchInterval: 5000,
+  });
+}
+
+export function useScannerFindings(orgId: string, params?: { scan_id?: string; scanner?: string; severity?: string; status?: string; page?: number; page_size?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.scan_id) searchParams.set("scan_id", params.scan_id);
+  if (params?.scanner) searchParams.set("scanner", params.scanner);
+  if (params?.severity) searchParams.set("severity", params.severity);
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.page) searchParams.set("page", String(params.page));
+  if (params?.page_size) searchParams.set("page_size", String(params.page_size));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["scanner-findings", orgId, params],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/scanners/findings${qs ? `?${qs}` : ""}`),
+    enabled: !!orgId,
+    refetchInterval: 10000,
+  });
+}
+
+export function useScannerUpdateFinding(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ findingId, status }: { findingId: string; status: string }) =>
+      api.patch<any>(`/organizations/${orgId}/scanners/findings/${findingId}`, { status }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["scanner-findings", orgId] });
+      qc.invalidateQueries({ queryKey: ["scanner-dashboard", orgId] });
+    },
+  });
+}
+
 // ===== Monitoring =====
 
 export function useMonitorRules(orgId: string, params?: { check_type?: string; is_active?: string; page?: number }) {

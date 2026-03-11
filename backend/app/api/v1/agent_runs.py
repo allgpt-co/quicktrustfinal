@@ -128,6 +128,12 @@ async def _dispatch_agent(agent_type: str, db, org_id: str, agent_run_id: str, i
         return await run_monitoring_daemon(
             db=db, org_id=org_id, agent_run_id=agent_run_id,
         )
+    elif agent_type == "questionnaire_agent":
+        from app.agents.questionnaire_agent.graph import run_questionnaire_agent
+        return await run_questionnaire_agent(
+            db=db, org_id=org_id, agent_run_id=agent_run_id,
+            questionnaire_id=input_data.get("questionnaire_id"),
+        )
     else:
         raise ValueError(f"Unknown agent type: {agent_type}")
 
@@ -308,6 +314,28 @@ async def trigger_monitoring_daemon(
     await db.commit()
     create_safe_task(
         _execute_agent(str(agent_run.id), str(org_id), "monitoring_daemon", {}),
+        agent_run_id=agent_run.id, org_id=org_id,
+    )
+    return agent_run
+
+
+@router.post("/questionnaire-agent/run", response_model=AgentRunResponse, status_code=201)
+@limiter.limit("10/minute")
+async def trigger_questionnaire_agent(
+    request: Request, org_id: VerifiedOrgId, data: AgentRunTriggerGeneric,
+    db: DB, current_user: ComplianceUser,
+):
+    input_data = {
+        "questionnaire_id": str(data.questionnaire_id) if getattr(data, "questionnaire_id", None) else None,
+    }
+    agent_run = AgentRun(
+        org_id=org_id, agent_type="questionnaire_agent", trigger="manual",
+        status="pending", input_data=input_data,
+    )
+    db.add(agent_run)
+    await db.commit()
+    create_safe_task(
+        _execute_agent(str(agent_run.id), str(org_id), "questionnaire_agent", input_data),
         agent_run_id=agent_run.id, org_id=org_id,
     )
     return agent_run

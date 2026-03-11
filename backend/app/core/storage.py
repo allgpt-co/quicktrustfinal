@@ -141,6 +141,26 @@ def get_presigned_url(
         raise
 
 
+def download_file(bucket: str, object_name: str):
+    """Return a MinIO response object for streaming.
+
+    Returns ``None`` when MinIO is unavailable.
+    """
+    client = _get_client()
+    if client is None:
+        logger.warning(
+            "MinIO unavailable – cannot download %s/%s", bucket, object_name
+        )
+        return None
+
+    try:
+        response = client.get_object(bucket_name=bucket, object_name=object_name)
+        return response
+    except S3Error as exc:
+        logger.error("Download failed for %s/%s: %s", bucket, object_name, exc)
+        raise
+
+
 def delete_file(bucket: str, object_name: str) -> None:
     """Delete an object. No-op when MinIO is unavailable."""
     client = _get_client()

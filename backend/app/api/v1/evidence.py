@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 
 from app.core.audit_middleware import log_audit
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
@@ -126,8 +126,8 @@ async def upload_evidence_file(
 async def download_evidence_file(
     org_id: VerifiedOrgId, evidence_id: UUID, db: DB, current_user: AnyInternalUser
 ):
-    """Download an evidence file via presigned URL redirect."""
-    from app.core.storage import get_presigned_url
+    """Download an evidence file by streaming it from object storage."""
+    from app.core.storage import download_file
 
     evidence = await evidence_service.get_evidence(db, org_id, evidence_id)
 
@@ -140,12 +140,18 @@ async def download_evidence_file(
         raise BadRequestError("Invalid file reference on this evidence item.")
 
     bucket, object_name = parts
-    presigned_url = get_presigned_url(bucket=bucket, object_name=object_name)
+    response = download_file(bucket=bucket, object_name=object_name)
 
-    if not presigned_url:
+    if response is None:
         raise BadRequestError("File storage is currently unavailable.")
 
-    return RedirectResponse(url=presigned_url, status_code=307)
+    filename = evidence.file_name or "download"
+
+    return StreamingResponse(
+        response.stream(32 * 1024),
+        media_type=response.headers.get("content-type", "application/octet-stream"),
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.post("/{evidence_id}/approve", response_model=EvidenceResponse)

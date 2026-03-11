@@ -34,10 +34,10 @@ import {
 } from "lucide-react";
 
 // Role constants matching backend
-const ADMIN_ROLES = ["super_admin", "admin"];
-const COMPLIANCE_ROLES = ["super_admin", "admin", "compliance_manager"];
-const EXECUTIVE_PLUS = ["super_admin", "admin", "compliance_manager", "executive"];
-const INTERNAL_ROLES = ["super_admin", "admin", "compliance_manager", "control_owner", "employee", "executive", "auditor_internal"];
+const ADMIN_ROLES = ["super_admin"];
+const COMPLIANCE_ROLES = ["super_admin", "compliance_manager"];
+const EXECUTIVE_PLUS = ["super_admin", "compliance_manager", "executive"];
+const INTERNAL_ROLES = ["super_admin", "compliance_manager", "control_owner", "employee", "executive", "auditor_internal"];
 
 interface NavItem {
   href: string;
@@ -79,7 +79,7 @@ const navItems: NavItem[] = [
   { href: "/control-templates", label: "Templates", icon: FileStack, section: "Config", allowedRoles: COMPLIANCE_ROLES },
   { href: "/agents", label: "AI Agents", icon: Bot, section: "Config", allowedRoles: COMPLIANCE_ROLES },
   { href: "/audit-log", label: "Audit Log", icon: History, section: "Config", allowedRoles: ADMIN_ROLES },
-  { href: "/settings", label: "Settings", icon: Settings, section: "Config", allowedRoles: ADMIN_ROLES },
+  { href: "/settings", label: "Settings", icon: Settings, section: "Config", allowedRoles: COMPLIANCE_ROLES },
 ];
 
 export function AppSidebar() {

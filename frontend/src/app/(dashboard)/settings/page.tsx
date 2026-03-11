@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization, useUpdateOrganization } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Loader2, Save, Building, AlertTriangle } from "lucide-react";
+import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const orgId = useOrgId();
@@ -249,6 +250,24 @@ export default function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Team Members Card */}
+      <Link href="/settings/members">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">Team Members</h3>
+                <p className="text-xs text-muted-foreground">
+                  Manage team members and send invitations
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
 }

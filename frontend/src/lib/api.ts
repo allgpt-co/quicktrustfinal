@@ -61,6 +61,36 @@ class ApiClient {
     return this.request(path, { method: "DELETE" });
   }
 
+  async downloadRedirect(path: string): Promise<void> {
+    const headers: Record<string, string> = {};
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
+    }
+    const res = await fetch(`${this.baseUrl}${path}`, {
+      headers,
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(error.detail || `Download error: ${res.status}`);
+    }
+    const blob = await res.blob();
+    // Extract filename from Content-Disposition header
+    const disposition = res.headers.get("Content-Disposition");
+    let filename = "download";
+    if (disposition) {
+      const match = disposition.match(/filename="?([^";\n]+)"?/);
+      if (match) filename = match[1];
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   async upload<T>(path: string, file: File, fieldName: string = "file"): Promise<T> {
     const formData = new FormData();
     formData.append(fieldName, file);

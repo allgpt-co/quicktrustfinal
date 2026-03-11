@@ -36,6 +36,8 @@ from app.api.v1 import (
     cross_framework_mappings,
     compliance_snapshots,
     privacy,
+    invitations,
+    scanners,
 )
 
 api_router = APIRouter()
@@ -77,3 +79,5 @@ api_router.include_router(prowler.router)
 api_router.include_router(cross_framework_mappings.router)
 api_router.include_router(compliance_snapshots.router)
 api_router.include_router(privacy.router)
+api_router.include_router(invitations.router)
+api_router.include_router(scanners.router)

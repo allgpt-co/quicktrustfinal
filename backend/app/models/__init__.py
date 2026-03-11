@@ -35,6 +35,8 @@ from app.models.report import Report
 from app.models.cross_framework_mapping import CrossFrameworkMapping
 from app.models.compliance_snapshot import ComplianceSnapshot
 from app.models.data_retention import DataRetentionPolicy, DeletionRequest
+from app.models.invitation import Invitation
+from app.models.scan import ScanResult, ScanFinding
 
 __all__ = [
     "BaseModel",
@@ -82,4 +84,7 @@ __all__ = [
     "ComplianceSnapshot",
     "DataRetentionPolicy",
     "DeletionRequest",
+    "Invitation",
+    "ScanResult",
+    "ScanFinding",
 ]

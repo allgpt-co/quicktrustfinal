@@ -25,6 +25,12 @@ register_rls_hook()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.core.scheduler import start_scheduler, stop_scheduler
+    from app.core.database import Base
+
+    # Ensure all tables exist (creates new ones like invitations without dropping existing data)
+    import app.models  # noqa: F401 — import so all models are registered on Base.metadata
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
     await start_scheduler()
     yield

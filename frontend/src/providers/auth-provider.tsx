@@ -16,6 +16,7 @@ interface AuthContextType {
   userInfo: {
     name: string;
     email: string;
+    role: string;
     roles: string[];
     org_id: string | null;
   } | null;
@@ -65,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             api.setToken(t);
 
             let orgId: string | null = kc.tokenParsed?.org_id || null;
+            let backendRole: string = "employee";
             try {
               const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`,
@@ -73,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (res.ok) {
                 const me = await res.json();
                 orgId = me.org_id || orgId;
+                backendRole = me.role || backendRole;
               }
             } catch {
               // fall back to token org_id
@@ -81,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserInfo({
               name: kc.tokenParsed?.name || kc.tokenParsed?.preferred_username || "",
               email: kc.tokenParsed?.email || "",
+              role: backendRole,
               roles: kc.tokenParsed?.realm_roles || [],
               org_id: orgId,
             });

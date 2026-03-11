@@ -95,7 +95,6 @@ class ReportFormat(StrEnum):
 
 class UserRole(StrEnum):
     SUPER_ADMIN = "super_admin"
-    ADMIN = "admin"
     COMPLIANCE_MANAGER = "compliance_manager"
     CONTROL_OWNER = "control_owner"
     EMPLOYEE = "employee"

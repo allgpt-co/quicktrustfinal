@@ -31,8 +31,8 @@ async def setup_org(client: AsyncClient):
 
 @pytest.fixture
 async def admin_client(setup_org):
-    """Client authenticated as admin role."""
-    app.dependency_overrides[get_current_user] = _override_user_factory("admin")
+    """Client authenticated as super_admin role."""
+    app.dependency_overrides[get_current_user] = _override_user_factory("super_admin")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
@@ -75,7 +75,7 @@ async def auditor_external_client(setup_org):
 
 @pytest.mark.asyncio
 async def test_admin_can_access_settings(admin_client: AsyncClient):
-    """Admin role should be able to read organization details (settings proxy)."""
+    """Super admin role should be able to read organization details (settings proxy)."""
     resp = await admin_client.get(
         f"/api/v1/organizations/{TEST_ORG_ID}/audits/readiness"
     )
