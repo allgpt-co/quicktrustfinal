@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEvidence, useCreateEvidence, useUploadEvidence } from "@/hooks/use-api";
+import { useEvidence, useCreateEvidence, useUploadEvidence, useEvidenceFreshness } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
 import api from "@/lib/api";
 import {
@@ -19,6 +19,7 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: string | undefined }[] = [
@@ -82,6 +83,7 @@ export default function EvidencePage() {
   const { data, isLoading, error } = useEvidence(orgId, { page });
   const createEvidence = useCreateEvidence(orgId);
   const uploadEvidence = useUploadEvidence(orgId);
+  const { data: freshness } = useEvidenceFreshness(orgId, 30);
 
   const allItems = data?.items || [];
 
@@ -190,6 +192,51 @@ export default function EvidencePage() {
           Add Evidence
         </Button>
       </div>
+
+      {/* Evidence Freshness Dashboard */}
+      {freshness && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="h-5 w-5 text-primary" />
+              <h2 className="font-semibold">Evidence Freshness (30-day window)</h2>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold">{freshness.total}</div>
+                <div className="text-xs text-muted-foreground">Total</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{freshness.fresh}</div>
+                <div className="text-xs text-muted-foreground">Fresh</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{freshness.stale}</div>
+                <div className="text-xs text-muted-foreground">Stale</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600">{freshness.expired}</div>
+                <div className="text-xs text-muted-foreground">Expired</div>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-sm mb-1">
+                <span className="text-muted-foreground">Freshness Rate</span>
+                <span className="font-medium">{freshness.freshness_rate}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    freshness.freshness_rate >= 80 ? "bg-green-500" :
+                    freshness.freshness_rate >= 50 ? "bg-yellow-500" : "bg-red-500"
+                  }`}
+                  style={{ width: `${freshness.freshness_rate}%` }}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Create evidence form */}
       {showCreate && (

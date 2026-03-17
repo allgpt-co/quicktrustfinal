@@ -38,6 +38,10 @@ from app.api.v1 import (
     privacy,
     invitations,
     scanners,
+    control_exceptions,
+    playbooks,
+    policy_acknowledgments,
+    dashboards,
 )
 
 api_router = APIRouter()
@@ -81,3 +85,9 @@ api_router.include_router(compliance_snapshots.router)
 api_router.include_router(privacy.router)
 api_router.include_router(invitations.router)
 api_router.include_router(scanners.router)
+# Phase 4 additions
+api_router.include_router(control_exceptions.router)
+api_router.include_router(playbooks.router)
+api_router.include_router(policy_acknowledgments.router)
+# Phase 5 additions
+api_router.include_router(dashboards.router)

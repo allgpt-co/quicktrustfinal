@@ -32,7 +32,17 @@ class ApiClient {
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(error.detail || `API error: ${res.status}`);
+      // FastAPI validation errors return detail as an array of objects
+      const detail = error.detail;
+      let message: string;
+      if (Array.isArray(detail)) {
+        message = detail.map((d: any) => d.msg || JSON.stringify(d)).join("; ");
+      } else if (typeof detail === "string") {
+        message = detail;
+      } else {
+        message = `API error: ${res.status}`;
+      }
+      throw new Error(message);
     }
 
     if (res.status === 204) return undefined as T;

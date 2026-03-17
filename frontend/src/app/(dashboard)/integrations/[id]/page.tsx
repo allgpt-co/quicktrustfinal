@@ -39,6 +39,28 @@ const PROVIDER_COLLECTORS: Record<string, { type: string; label: string }[]> = {
     { type: "prowler_aws_service_scan", label: "Service-Specific Scan" },
     { type: "prowler_aws_compliance_scan", label: "Compliance Framework Scan" },
   ],
+  slack: [
+    { type: "slack_send_notification", label: "Send Test Notification" },
+    { type: "slack_workspace_evidence", label: "Workspace Evidence" },
+  ],
+  jira: [
+    { type: "jira_create_ticket", label: "Create Test Ticket" },
+    { type: "jira_change_management", label: "Change Management Evidence" },
+  ],
+  azure: [
+    { type: "azure_ad_users_mfa", label: "Azure AD Users & MFA" },
+    { type: "azure_keyvault_audit", label: "Key Vault Audit" },
+    { type: "azure_nsg_rules", label: "Network Security Group Rules" },
+  ],
+  gcp: [
+    { type: "gcp_iam_audit", label: "IAM Service Account Audit" },
+    { type: "gcp_storage_encryption", label: "Storage Encryption Check" },
+    { type: "gcp_firewall_rules", label: "Firewall Rules Audit" },
+  ],
+  gitlab: [
+    { type: "gitlab_branch_protection", label: "Branch Protection" },
+    { type: "gitlab_pipeline_evidence", label: "CI/CD Pipeline Evidence" },
+  ],
 };
 
 const statusVariant: Record<string, "success" | "secondary" | "destructive"> = {

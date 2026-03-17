@@ -194,3 +194,57 @@ async def reject_evidence(
     await db.refresh(evidence)
     await log_audit(db, current_user, "reject", "evidence", str(evidence_id), org_id)
     return evidence
+
+
+@router.get("/freshness/report")
+async def evidence_freshness_report(
+    org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser,
+    max_age_days: int = Query(30, ge=1, le=365),
+):
+    """Get evidence freshness report — flags stale evidence older than max_age_days."""
+    from sqlalchemy import select
+    from app.models.evidence import Evidence
+
+    result = await db.execute(
+        select(Evidence).where(
+            Evidence.org_id == org_id,
+            Evidence.status.in_(["collected", "approved"]),
+        )
+    )
+    all_evidence = list(result.scalars().all())
+
+    now = datetime.now(timezone.utc)
+    fresh = []
+    stale = []
+    expired = []
+
+    for e in all_evidence:
+        collected = e.collected_at or e.created_at
+        age_days = (now - collected).days
+
+        item = {
+            "id": str(e.id),
+            "title": e.title,
+            "status": e.status,
+            "collector": e.collector,
+            "collected_at": collected.isoformat(),
+            "age_days": age_days,
+        }
+
+        if e.expires_at and now > e.expires_at:
+            expired.append(item)
+        elif age_days > max_age_days:
+            stale.append(item)
+        else:
+            fresh.append(item)
+
+    return {
+        "total": len(all_evidence),
+        "fresh": len(fresh),
+        "stale": len(stale),
+        "expired": len(expired),
+        "max_age_days": max_age_days,
+        "freshness_rate": round(len(fresh) / max(len(all_evidence), 1) * 100, 1),
+        "stale_evidence": stale[:20],
+        "expired_evidence": expired[:20],
+    }

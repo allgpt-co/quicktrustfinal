@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   token: string | null;
   userInfo: {
+    id: string | null;
     name: string;
     email: string;
     role: string;
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             setUserInfo({
+              id: kc.tokenParsed?.sub || null,
               name: kc.tokenParsed?.name || kc.tokenParsed?.preferred_username || "",
               email: kc.tokenParsed?.email || "",
               role: backendRole,

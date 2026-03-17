@@ -11,9 +11,10 @@ import {
   useCreateTrainingCourse,
   useTrainingAssignments,
   useTrainingStats,
+  useSeedTrainingCourses,
 } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { GraduationCap, BookOpen, Users, Plus, Loader2 } from "lucide-react";
+import { GraduationCap, BookOpen, Users, Plus, Loader2, Zap } from "lucide-react";
 
 type TabValue = "courses" | "assignments";
 
@@ -56,6 +57,7 @@ export default function TrainingPage() {
     is_required: false,
   });
   const createCourse = useCreateTrainingCourse(orgId);
+  const seedCourses = useSeedTrainingCourses(orgId);
 
   const resetForm = () =>
     setForm({
@@ -87,7 +89,27 @@ export default function TrainingPage() {
             Manage security awareness training courses and assignments
           </p>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => seedCourses.mutate()}
+          disabled={seedCourses.isPending}
+        >
+          {seedCourses.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Zap className="mr-2 h-4 w-4" />
+          )}
+          Seed Default Courses
+        </Button>
       </div>
+
+      {seedCourses.isSuccess && (
+        <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+          <CardContent className="p-3 text-sm text-green-800 dark:text-green-200">
+            Default training courses seeded successfully!
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       {stats && (

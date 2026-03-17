@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -45,6 +45,31 @@ const CREDENTIAL_FIELDS: Record<string, { label: string; placeholder: string; ty
     { label: "AWS Secret Access Key", placeholder: "wJalr...", type: "password" },
     { label: "AWS Region", placeholder: "us-east-1" },
   ],
+  slack: [
+    { label: "Slack Bot Token", placeholder: "xoxb-...", type: "password" },
+    { label: "Webhook URL", placeholder: "https://hooks.slack.com/services/..." },
+  ],
+  jira: [
+    { label: "Jira URL", placeholder: "https://your-org.atlassian.net" },
+    { label: "Email", placeholder: "admin@company.com" },
+    { label: "API Token", placeholder: "ATATT3x...", type: "password" },
+    { label: "Project Key", placeholder: "SEC" },
+  ],
+  azure: [
+    { label: "Tenant ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
+    { label: "Client ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
+    { label: "Client Secret", placeholder: "...", type: "password" },
+    { label: "Subscription ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
+  ],
+  gcp: [
+    { label: "Project ID", placeholder: "my-project-123" },
+    { label: "Service Account Key (JSON)", placeholder: '{"type": "service_account", ...}' },
+  ],
+  gitlab: [
+    { label: "GitLab Token", placeholder: "glpat-...", type: "password" },
+    { label: "GitLab URL", placeholder: "https://gitlab.com/api/v4" },
+    { label: "Project ID", placeholder: "12345 or group/project" },
+  ],
 };
 
 export default function IntegrationsPage() {
@@ -56,6 +81,7 @@ export default function IntegrationsPage() {
 
   const integrations = integrationsData?.items || [];
 
+  const connectModalRef = useRef<HTMLDivElement>(null);
   const [connectProvider, setConnectProvider] = useState<string | null>(null);
   const [connectName, setConnectName] = useState("");
   const [credFields, setCredFields] = useState<Record<string, string>>({});
@@ -66,6 +92,9 @@ export default function IntegrationsPage() {
     setConnectName("");
     setCredFields({});
     setConnectSuccess(false);
+    setTimeout(() => {
+      connectModalRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   }
 
   function handleConnect() {
@@ -109,7 +138,7 @@ export default function IntegrationsPage() {
 
       {/* Connect Modal */}
       {connectProvider && selectedProvider && (
-        <Card className="border-primary">
+        <Card ref={connectModalRef} className="border-primary">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">

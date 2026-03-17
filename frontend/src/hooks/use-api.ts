@@ -1774,3 +1774,267 @@ export function useSemanticSearch() {
       }),
   });
 }
+
+// =====================================================================
+// Phase 4: Control Exceptions
+// =====================================================================
+
+export function useControlExceptions(orgId: string, params?: { status?: string; page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["control-exceptions", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/control-exceptions${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useCreateControlException(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) =>
+      api.post(`/organizations/${orgId}/control-exceptions`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-exceptions", orgId] });
+    },
+  });
+}
+
+export function useApproveControlException(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ exceptionId, expires_at }: { exceptionId: string; expires_at?: string }) =>
+      api.post(`/organizations/${orgId}/control-exceptions/${exceptionId}/approve`, { expires_at }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-exceptions", orgId] });
+    },
+  });
+}
+
+export function useDenyControlException(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ exceptionId, denial_reason }: { exceptionId: string; denial_reason: string }) =>
+      api.post(`/organizations/${orgId}/control-exceptions/${exceptionId}/deny`, { denial_reason }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-exceptions", orgId] });
+    },
+  });
+}
+
+export function useRevokeControlException(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (exceptionId: string) =>
+      api.post(`/organizations/${orgId}/control-exceptions/${exceptionId}/revoke`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-exceptions", orgId] });
+    },
+  });
+}
+
+// =====================================================================
+// Phase 4: Incident Playbooks
+// =====================================================================
+
+export function usePlaybooks(orgId: string, params?: { page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["playbooks", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/playbooks${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useSeedPlaybooks(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.post(`/organizations/${orgId}/playbooks/seed-defaults`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["playbooks", orgId] });
+    },
+  });
+}
+
+export function useCreatePlaybook(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) =>
+      api.post(`/organizations/${orgId}/playbooks`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["playbooks", orgId] });
+    },
+  });
+}
+
+export function useTriggerPlaybook(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ playbookId, incidentId }: { playbookId: string; incidentId: string }) =>
+      api.post(`/organizations/${orgId}/playbooks/${playbookId}/trigger/${incidentId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["playbooks", orgId] });
+      qc.invalidateQueries({ queryKey: ["playbook-executions", orgId] });
+    },
+  });
+}
+
+// =====================================================================
+// Phase 4: Policy Acknowledgments
+// =====================================================================
+
+export function usePolicyAcknowledgments(orgId: string, params?: { status?: string; policy_id?: string; page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.policy_id) searchParams.set("policy_id", params.policy_id);
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["policy-acknowledgments", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/policy-acknowledgments${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useCreatePolicyAcknowledgment(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) =>
+      api.post(`/organizations/${orgId}/policy-acknowledgments`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policy-acknowledgments", orgId] });
+    },
+  });
+}
+
+export function useAcknowledgePolicy(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ acknowledgmentId, notes }: { acknowledgmentId: string; notes?: string }) =>
+      api.post(`/organizations/${orgId}/policy-acknowledgments/${acknowledgmentId}/acknowledge`, { notes }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policy-acknowledgments", orgId] });
+    },
+  });
+}
+
+export function usePolicyAcknowledgmentStats(orgId: string, policyId?: string) {
+  return useQuery({
+    queryKey: ["policy-acknowledgment-stats", orgId, policyId],
+    queryFn: () =>
+      api.get(`/organizations/${orgId}/policy-acknowledgments/stats${policyId ? `?policy_id=${policyId}` : ""}`),
+    enabled: !!orgId,
+  });
+}
+
+export function useMyPendingAcknowledgments(orgId: string) {
+  return useQuery({
+    queryKey: ["my-pending-acknowledgments", orgId],
+    queryFn: () =>
+      api.get<any[]>(`/organizations/${orgId}/policy-acknowledgments/my-pending`),
+    enabled: !!orgId,
+  });
+}
+
+// =====================================================================
+// Phase 4: Training Assignment Creation
+// =====================================================================
+
+export function useCreateTrainingAssignment(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { course_id: string; user_id: string; due_date?: string }) =>
+      api.post(`/organizations/${orgId}/training/assignments`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["training-assignments", orgId] });
+      qc.invalidateQueries({ queryKey: ["training-stats", orgId] });
+    },
+  });
+}
+
+// =====================================================================
+// Phase 4: Evidence Freshness
+// =====================================================================
+
+export function useEvidenceFreshness(orgId: string, maxAgeDays: number = 30) {
+  return useQuery({
+    queryKey: ["evidence-freshness", orgId, maxAgeDays],
+    queryFn: () =>
+      api.get<any>(`/organizations/${orgId}/evidence/freshness/report?max_age_days=${maxAgeDays}`),
+    enabled: !!orgId,
+  });
+}
+
+// =====================================================================
+// Phase 4: Training Seed
+// =====================================================================
+
+export function useSeedTrainingCourses(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.post(`/organizations/${orgId}/training/seed-defaults`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["training-courses", orgId] });
+      qc.invalidateQueries({ queryKey: ["training-stats", orgId] });
+    },
+  });
+}
+
+// =====================================================================
+// Phase 5: Dashboard Aggregation
+// =====================================================================
+
+export function useExecutiveDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["dashboard-executive", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/dashboards/executive`),
+    enabled: !!orgId,
+  });
+}
+
+export function useComplianceDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["dashboard-compliance", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/dashboards/compliance`),
+    enabled: !!orgId,
+  });
+}
+
+export function useSecurityDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["dashboard-security", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/dashboards/security`),
+    enabled: !!orgId,
+  });
+}
+
+export function useAuditReadinessDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["dashboard-audit-readiness", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/dashboards/audit-readiness`),
+    enabled: !!orgId,
+  });
+}
+
+export function useControlOwnerDashboard(orgId: string) {
+  return useQuery({
+    queryKey: ["dashboard-control-owner", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/dashboards/control-owner`),
+    enabled: !!orgId,
+  });
+}

@@ -65,3 +65,10 @@ frontend/node_modules/
 .playwright-mcp/
 samplesql.sql
 test.md
+
+# Project documentation (local only)
+CONNECTORS_EXPLAINED.md
+DEVELOPMENT_REPORT.md
+PROJECT_PROGRESS_REPORT.md
+REMAINING_FEATURES.md
+TECH_STACK_AND_ARCHITECTURE.md

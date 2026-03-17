@@ -31,6 +31,10 @@ import {
   GitBranch,
   Search,
   ShieldCheck,
+  ShieldOff,
+  BookOpen,
+  ClipboardSignature,
+  PieChart,
 } from "lucide-react";
 
 // Role constants matching backend
@@ -51,6 +55,7 @@ const navItems: NavItem[] = [
   // Overview
   { href: "/onboarding", label: "Quick Start", icon: Rocket, section: "Overview", allowedRoles: COMPLIANCE_ROLES },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, section: "Overview" },
+  { href: "/dashboards", label: "Dashboards", icon: PieChart, section: "Overview" },
   { href: "/notifications", label: "Notifications", icon: Bell, section: "Overview" },
   // Compliance
   { href: "/frameworks", label: "Frameworks", icon: Shield, section: "Compliance", allowedRoles: EXECUTIVE_PLUS },
@@ -58,14 +63,17 @@ const navItems: NavItem[] = [
   { href: "/evidence", label: "Evidence", icon: FileCheck, section: "Compliance", allowedRoles: COMPLIANCE_ROLES },
   { href: "/policies", label: "Policies", icon: FileText, section: "Compliance", allowedRoles: EXECUTIVE_PLUS },
   { href: "/gap-analysis", label: "Gap Analysis", icon: GitBranch, section: "Compliance", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/control-exceptions", label: "Exceptions", icon: ShieldOff, section: "Compliance", allowedRoles: COMPLIANCE_ROLES },
   // Operations
   { href: "/risks", label: "Risk Register", icon: AlertTriangle, section: "Operations", allowedRoles: EXECUTIVE_PLUS },
   { href: "/incidents", label: "Incidents", icon: AlertCircle, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/playbooks", label: "Playbooks", icon: BookOpen, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/vendors", label: "Vendor Risk", icon: Building2, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/monitoring", label: "Monitoring", icon: Activity, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/prowler", label: "Security Scanner", icon: ShieldCheck, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   // People
   { href: "/training", label: "Training", icon: GraduationCap, section: "People" },
+  { href: "/policies/acknowledgments", label: "Policy Sign-offs", icon: ClipboardSignature, section: "People", allowedRoles: COMPLIANCE_ROLES },
   { href: "/access-reviews", label: "Access Reviews", icon: UserCheck, section: "People", allowedRoles: COMPLIANCE_ROLES },
   // Trust
   { href: "/questionnaires", label: "Questionnaires", icon: MessageSquare, section: "Trust", allowedRoles: COMPLIANCE_ROLES },

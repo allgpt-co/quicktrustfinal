@@ -115,3 +115,30 @@ async def update_assignment(
     item = await training_service.update_assignment(db, org_id, assignment_id, data)
     await log_audit(db, current_user, "update", "training_assignment", str(assignment_id), org_id)
     return item
+
+
+@router.post("/seed-defaults", status_code=200)
+async def seed_default_courses(
+    org_id: VerifiedOrgId, db: DB, current_user: ComplianceUser,
+):
+    """Seed 5 default training courses (Security Awareness, Phishing, Data Handling, Incident Reporting, Password Security)."""
+    from app.services.training_seed_service import seed_default_courses
+    count = await seed_default_courses(db, org_id)
+    return {"seeded": count, "message": f"{count} default courses created" if count else "Default courses already exist"}
+
+
+@router.post("/auto-assign/{user_id}", status_code=200)
+async def auto_assign_to_user(
+    org_id: VerifiedOrgId, user_id: UUID, db: DB, current_user: ComplianceUser,
+):
+    """Auto-assign required courses to a user based on their roles."""
+    from app.services.training_seed_service import auto_assign_courses
+    from app.models.user import User
+    from sqlalchemy import select
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if not user:
+        from app.core.exceptions import NotFoundError
+        raise NotFoundError(f"User {user_id} not found")
+    roles = user.realm_roles if hasattr(user, "realm_roles") and user.realm_roles else ["employee"]
+    count = await auto_assign_courses(db, org_id, user_id, roles)
+    return {"assigned": count, "message": f"{count} courses assigned"}

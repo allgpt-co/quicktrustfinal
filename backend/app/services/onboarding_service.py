@@ -64,7 +64,9 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         if org:
             if input_data.get("company_name"):
                 org.name = input_data["company_name"]
-                org.slug = input_data["company_name"].lower().replace(" ", "-")[:100]
+                # Make slug unique by appending org_id prefix to avoid collisions
+                base_slug = input_data["company_name"].lower().replace(" ", "-")[:80]
+                org.slug = f"{base_slug}-{str(org_id)[:8]}"
             org.industry = input_data.get("industry")
             org.company_size = input_data.get("company_size")
             org.cloud_providers = input_data.get("cloud_providers")
@@ -196,9 +198,18 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
 
     except Exception as e:
         logger.error("Onboarding pipeline failed: %s", e, exc_info=True)
-        session.status = "failed"
-        session.progress["current_step"] = "failed"
-        session.progress["error"] = str(e)
+        # Rollback the failed transaction before updating session status
+        await db.rollback()
+        # Re-fetch session after rollback to get a clean state
+        session = await db.get(OnboardingSession, session_id)
+        if session:
+            session.status = "failed"
+            session.progress = session.progress or {}
+            session.progress["current_step"] = "failed"
+            session.progress["error"] = str(e)[:500]
+            flag_modified(session, "progress")
+            await db.commit()
+        return
 
     flag_modified(session, "progress")
     flag_modified(session, "results")

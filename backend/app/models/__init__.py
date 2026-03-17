@@ -37,6 +37,9 @@ from app.models.compliance_snapshot import ComplianceSnapshot
 from app.models.data_retention import DataRetentionPolicy, DeletionRequest
 from app.models.invitation import Invitation
 from app.models.scan import ScanResult, ScanFinding
+from app.models.control_exception import ControlException
+from app.models.playbook import IncidentPlaybook, PlaybookExecution
+from app.models.policy_acknowledgment import PolicyAcknowledgment
 
 __all__ = [
     "BaseModel",
@@ -87,4 +90,8 @@ __all__ = [
     "Invitation",
     "ScanResult",
     "ScanFinding",
+    "ControlException",
+    "IncidentPlaybook",
+    "PlaybookExecution",
+    "PolicyAcknowledgment",
 ]

@@ -45,6 +45,36 @@ PROVIDERS = [
         description="Run comprehensive security assessments against AWS, Azure, and GCP. Maps findings to CIS, SOC 2, HIPAA, PCI DSS, and more.",
         collector_types=["prowler_aws_full_scan", "prowler_aws_service_scan", "prowler_aws_compliance_scan"],
     ),
+    ProviderInfo(
+        provider="slack",
+        name="Slack",
+        description="Send compliance notifications, collect workspace evidence, and enable interactive approvals via Slack.",
+        collector_types=["slack_send_notification", "slack_workspace_evidence"],
+    ),
+    ProviderInfo(
+        provider="jira",
+        name="Jira",
+        description="Create remediation tickets from findings, track change management, and collect approval workflow evidence.",
+        collector_types=["jira_create_ticket", "jira_change_management"],
+    ),
+    ProviderInfo(
+        provider="azure",
+        name="Microsoft Azure",
+        description="Audit Azure AD users/MFA, Key Vault configuration, and Network Security Group rules.",
+        collector_types=["azure_ad_users_mfa", "azure_keyvault_audit", "azure_nsg_rules"],
+    ),
+    ProviderInfo(
+        provider="gcp",
+        name="Google Cloud Platform",
+        description="Audit GCP IAM service accounts, storage encryption, and VPC firewall rules.",
+        collector_types=["gcp_iam_audit", "gcp_storage_encryption", "gcp_firewall_rules"],
+    ),
+    ProviderInfo(
+        provider="gitlab",
+        name="GitLab",
+        description="Collect branch protection rules, merge request approvals, and CI/CD pipeline security evidence.",
+        collector_types=["gitlab_branch_protection", "gitlab_pipeline_evidence"],
+    ),
 ]
 
 
@@ -104,7 +134,25 @@ async def delete_integration(
 async def test_integration(
     org_id: VerifiedOrgId, integration_id: UUID, db: DB, current_user: ComplianceUser
 ):
+    from app.collectors.base import COLLECTOR_REGISTRY
     integration = await integration_service.get_integration(db, org_id, integration_id)
+
+    # Find a collector for this provider and call authenticate()
+    provider_info = next((p for p in PROVIDERS if p.provider == integration.provider), None)
+    if provider_info and provider_info.collector_types:
+        collector_type = provider_info.collector_types[0]
+        collector = COLLECTOR_REGISTRY.get(collector_type)
+        if collector and hasattr(collector, "authenticate"):
+            try:
+                result = await collector.authenticate(integration.config or {})
+                integration.status = "connected"
+                await db.commit()
+                return {"status": "ok", "provider": integration.provider, **result}
+            except Exception as e:
+                integration.status = "error"
+                await db.commit()
+                return {"status": "error", "provider": integration.provider, "message": str(e)}
+
     return {"status": "ok", "provider": integration.provider, "message": "Connection test successful"}
 
 

@@ -12,6 +12,7 @@ import {
   useUpdateTrainingCourse,
   useDeleteTrainingCourse,
   useTrainingAssignments,
+  useCreateTrainingAssignment,
 } from "@/hooks/use-api";
 import {
   ArrowLeft,
@@ -22,8 +23,12 @@ import {
   X,
   GraduationCap,
   Users,
+  UserPlus,
+  AlertCircle,
+  UserCircle,
 } from "lucide-react";
 import { useOrgId } from "@/hooks/use-org-id";
+import { useAuth } from "@/providers/auth-provider";
 
 const assignmentStatusColor: Record<string, string> = {
   assigned: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
@@ -36,6 +41,7 @@ const assignmentStatusColor: Record<string, string> = {
 
 export default function TrainingCourseDetailPage() {
   const orgId = useOrgId();
+  const { userInfo } = useAuth();
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
@@ -48,6 +54,36 @@ export default function TrainingCourseDetailPage() {
     useTrainingAssignments(orgId, { course_id: courseId });
   const updateCourse = useUpdateTrainingCourse(orgId);
   const deleteCourse = useDeleteTrainingCourse(orgId);
+  const createAssignment = useCreateTrainingAssignment(orgId);
+
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignForm, setAssignForm] = useState({ user_id: "", due_date: "" });
+  const [assignError, setAssignError] = useState<string | null>(null);
+
+  function handleAssign() {
+    if (!assignForm.user_id.trim()) {
+      setAssignError("Please enter a User ID.");
+      return;
+    }
+    setAssignError(null);
+    createAssignment.mutate(
+      {
+        course_id: courseId,
+        user_id: assignForm.user_id,
+        due_date: assignForm.due_date ? new Date(assignForm.due_date).toISOString() : undefined,
+      },
+      {
+        onSuccess: () => {
+          setShowAssign(false);
+          setAssignForm({ user_id: "", due_date: "" });
+          setAssignError(null);
+        },
+        onError: (err: any) => {
+          setAssignError(err?.message || "Failed to create assignment. Check that the User ID is a valid UUID.");
+        },
+      }
+    );
+  }
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
@@ -290,13 +326,87 @@ export default function TrainingCourseDetailPage() {
 
       {/* Assignments for this course */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>
             Assignments{" "}
             {assignments.length > 0 && `(${assignments.length})`}
           </CardTitle>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowAssign((v) => !v)}
+          >
+            <UserPlus className="mr-1 h-4 w-4" />
+            Assign User
+          </Button>
         </CardHeader>
         <CardContent>
+          {showAssign && (
+            <div className="mb-4 rounded-lg border p-4 space-y-3">
+              <h3 className="text-sm font-semibold">Assign Course to User</h3>
+              {assignError && (
+                <div className="flex items-center gap-2 rounded-md border border-destructive bg-destructive/10 p-2 text-sm text-destructive">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  {assignError}
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">User ID</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className="flex-1 rounded-md border bg-background p-2 text-sm font-mono"
+                      placeholder="Keycloak user UUID"
+                      value={assignForm.user_id}
+                      onChange={(e) => { setAssignForm({ ...assignForm, user_id: e.target.value }); setAssignError(null); }}
+                    />
+                    {userInfo?.id && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="shrink-0"
+                        onClick={() => { setAssignForm({ ...assignForm, user_id: userInfo.id! }); setAssignError(null); }}
+                      >
+                        <UserCircle className="mr-1 h-4 w-4" />
+                        Me
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Click &quot;Me&quot; to assign to yourself, or paste a UUID from Keycloak Admin
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">Due Date (optional)</label>
+                  <input
+                    type="date"
+                    className="w-full rounded-md border bg-background p-2 text-sm"
+                    value={assignForm.due_date}
+                    onChange={(e) => setAssignForm({ ...assignForm, due_date: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleAssign}
+                  disabled={!assignForm.user_id.trim() || createAssignment.isPending}
+                >
+                  {createAssignment.isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+                  Assign
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => { setShowAssign(false); setAssignError(null); }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
           {assignmentsLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
