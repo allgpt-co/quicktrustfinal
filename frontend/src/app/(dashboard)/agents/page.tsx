@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useAgentRuns } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Bot,
@@ -18,6 +21,12 @@ import {
   Building2,
   Shield,
   Activity,
+  HelpCircle,
+  Coins,
+  Zap,
+  Clock,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 
 const agents = [
@@ -78,6 +87,13 @@ const agents = [
     category: "Security",
   },
   {
+    slug: "questionnaire",
+    name: "Questionnaire Auto-Fill",
+    description: "Match security questionnaire questions to existing controls and policies, auto-generate answers with confidence scores.",
+    icon: HelpCircle,
+    category: "Compliance",
+  },
+  {
     slug: "monitoring-daemon",
     name: "Monitoring Daemon",
     description: "Run batch compliance monitoring checks and detect drift across all rules.",
@@ -98,13 +114,24 @@ const categoryColors: Record<string, string> = {
 export default function AgentsHubPage() {
   const orgId = useOrgId();
   const { data: runsData, isLoading } = useAgentRuns(orgId);
+  const { data: budget } = useQuery({
+    queryKey: ["ai-budget", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/agents/budget`),
+    enabled: !!orgId,
+  });
 
-  // Count runs per agent type
+  // Count runs per agent type + review stats
   const runCounts: Record<string, number> = {};
+  let pendingReview = 0;
+  let approved = 0;
+  let rejected = 0;
   if (runsData?.items) {
-    for (const run of runsData.items) {
+    for (const run of runsData.items as any[]) {
       const type = run.agent_type;
       runCounts[type] = (runCounts[type] || 0) + 1;
+      if (run.approval_status === "pending_review") pendingReview++;
+      else if (run.approval_status === "approved") approved++;
+      else if (run.approval_status === "rejected") rejected++;
     }
   }
 
@@ -115,6 +142,80 @@ export default function AgentsHubPage() {
         <p className="text-muted-foreground">
           Launch AI-powered agents to automate GRC workflows
         </p>
+      </div>
+
+      {/* AI Budget + Review Stats */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Budget Card */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Coins className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Monthly AI Budget</span>
+            </div>
+            {budget ? (
+              <>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold">
+                    {((budget.tokens_used || 0) / 1000).toFixed(0)}K
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    / {((budget.tokens_limit || 1000000) / 1000).toFixed(0)}K tokens
+                  </span>
+                </div>
+                <Progress
+                  value={budget.usage_percent || 0}
+                  className={`mt-2 h-2 ${budget.usage_percent > 80 ? "[&>div]:bg-red-500" : ""}`}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  ${(budget.cost_usd || 0).toFixed(2)} / ${(budget.cost_limit_usd || 50).toFixed(2)}
+                </p>
+              </>
+            ) : (
+              <Skeleton className="h-10 w-full" />
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Pending Review */}
+        <Link href="/agents/review-queue">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm font-medium">Pending Review</span>
+              </div>
+              <span className="text-2xl font-bold">{pendingReview}</span>
+              <p className="text-xs text-muted-foreground mt-1">Click to review AI outputs</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Approved */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium">Approved</span>
+            </div>
+            <span className="text-2xl font-bold">{approved}</span>
+            <p className="text-xs text-muted-foreground mt-1">Human-verified AI outputs</p>
+          </CardContent>
+        </Card>
+
+        {/* Total Runs */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">Total Runs</span>
+            </div>
+            <span className="text-2xl font-bold">{runsData?.total || 0}</span>
+            <p className="text-xs text-muted-foreground mt-1">
+              {rejected > 0 && <span className="text-red-500">{rejected} rejected</span>}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {isLoading ? (

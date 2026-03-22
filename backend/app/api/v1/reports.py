@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import BadRequestError
@@ -39,7 +39,14 @@ async def list_reports(
 
 @router.post("", response_model=ReportResponse, status_code=201)
 async def create_report(org_id: VerifiedOrgId, data: ReportCreate, db: DB, current_user: ComplianceUser):
-    return await report_service.create_report(db, org_id, data, requested_by_id=current_user.id)
+    report = await report_service.create_report(db, org_id, data, requested_by_id=current_user.id)
+    # Immediately generate the report data and render the file
+    try:
+        await report_service.generate_report_data(db, org_id, report.id)
+        await db.refresh(report)
+    except Exception:
+        pass  # Report stays as pending if generation fails — can be retried
+    return report
 
 
 @router.get("/stats", response_model=ReportStatsResponse)
@@ -59,8 +66,8 @@ async def delete_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, current_
 
 @router.get("/{report_id}/download")
 async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, current_user: AnyInternalUser):
-    """Download a rendered report file (PDF/CSV) via presigned URL redirect."""
-    from app.core.storage import get_presigned_url
+    """Download a rendered report file (PDF/CSV) directly."""
+    from app.core.storage import _get_client
 
     report = await report_service.get_report(db, org_id, report_id)
 
@@ -76,12 +83,31 @@ async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, curren
         raise BadRequestError("Invalid file reference on this report.")
 
     bucket, object_name = parts
-    presigned_url = get_presigned_url(bucket=bucket, object_name=object_name)
 
-    if not presigned_url:
+    client = _get_client()
+    if not client:
         raise BadRequestError("File storage is currently unavailable.")
 
-    return RedirectResponse(url=presigned_url, status_code=307)
+    try:
+        response = client.get_object(bucket, object_name)
+        file_bytes = response.read()
+        response.close()
+        response.release_conn()
+
+        content_type = "application/pdf" if report.format == "pdf" else "text/csv"
+        import re
+        safe_title = re.sub(r'[^\w\s\-.]', '', report.title or 'report').replace(' ', '_')
+        filename = f"{safe_title}.{report.format or 'pdf'}"
+
+        return Response(
+            content=file_bytes,
+            media_type=content_type,
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+            },
+        )
+    except Exception as e:
+        raise BadRequestError(f"Failed to download report: {str(e)[:200]}")
 
 
 @router.get("/{report_id}/data")

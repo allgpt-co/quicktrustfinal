@@ -34,6 +34,7 @@ class Policy(BaseModel):
     agent_run_id: Mapped[uuid.UUID | None] = mapped_column(
         GUID(), ForeignKey("agent_runs.id")
     )
+    classification: Mapped[str] = mapped_column(String(20), default="CONFIDENTIAL")  # PUBLIC, INTERNAL, CONFIDENTIAL, RESTRICTED
 
     organization = relationship("Organization", back_populates="policies", lazy="selectin")
     owner = relationship("User", foreign_keys=[owner_id], lazy="selectin")

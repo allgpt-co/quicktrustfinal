@@ -10,6 +10,7 @@ from app.core.database import engine
 from app.core.rate_limit import limiter, rate_limit_exceeded_handler
 from app.core.security_headers import SecurityHeadersMiddleware
 from app.core.correlation import CorrelationIdMiddleware
+from app.core.csrf import CSRFProtectionMiddleware
 from app.core.logging_config import setup_logging
 from app.core.rls import register_rls_hook
 
@@ -52,6 +53,9 @@ app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 # Correlation ID middleware (adds X-Request-ID to every request/response)
 app.add_middleware(CorrelationIdMiddleware)
 
+# CSRF protection (validate Origin header on state-changing requests)
+app.add_middleware(CSRFProtectionMiddleware)
+
 # Security headers
 app.add_middleware(SecurityHeadersMiddleware)
 
@@ -74,12 +78,47 @@ async def health():
 
 @app.get("/health/ready")
 async def health_ready():
+    """Deep health check: probes database, Redis, and MinIO."""
+    import time
     from sqlalchemy import text
     from app.core.database import async_session
 
+    checks = {}
+
+    # Database probe
+    t0 = time.monotonic()
     try:
         async with async_session() as session:
             await session.execute(text("SELECT 1"))
-        return {"status": "ready", "database": "ok"}
-    except Exception:
-        return {"status": "not_ready", "database": "unavailable"}
+        checks["database"] = {"status": "ok", "latency_ms": round((time.monotonic() - t0) * 1000)}
+    except Exception as exc:
+        checks["database"] = {"status": "unavailable", "error": str(exc)[:100]}
+
+    # Redis probe
+    t0 = time.monotonic()
+    try:
+        from app.core.token_blacklist import get_redis
+        r = await get_redis()
+        await r.ping()
+        checks["redis"] = {"status": "ok", "latency_ms": round((time.monotonic() - t0) * 1000)}
+    except Exception as exc:
+        checks["redis"] = {"status": "unavailable", "error": str(exc)[:100]}
+
+    # MinIO probe
+    t0 = time.monotonic()
+    try:
+        from app.core.storage import _get_client
+        client = _get_client()
+        if client:
+            client.list_buckets()
+            checks["minio"] = {"status": "ok", "latency_ms": round((time.monotonic() - t0) * 1000)}
+        else:
+            checks["minio"] = {"status": "unavailable", "error": "client not initialized"}
+    except Exception as exc:
+        checks["minio"] = {"status": "unavailable", "error": str(exc)[:100]}
+
+    all_ok = all(c.get("status") == "ok" for c in checks.values())
+    return {
+        "status": "ready" if all_ok else "degraded",
+        "checks": checks,
+    }

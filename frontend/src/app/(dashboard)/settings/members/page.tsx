@@ -26,7 +26,11 @@ import {
   Trash2,
   AlertTriangle,
   ArrowLeft,
+  Ban,
+  UserCheck,
 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -144,11 +148,32 @@ export default function MembersPage() {
   const orgId = useOrgId();
   const { userInfo } = useAuth();
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: members, isLoading: membersLoading } = useOrgMembers(orgId);
   const { data: invitations, isLoading: invitationsLoading } = useOrgInvitations(orgId);
   const revokeInvite = useRevokeInvitation(orgId);
   const resendInvite = useResendInvitation(orgId);
+
+  const suspendUser = useMutation({
+    mutationFn: (userId: string) =>
+      api.post(`/profile/organizations/${orgId}/users/${userId}/suspend`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["org-members"] });
+      toast.success("User suspended");
+    },
+    onError: (err: any) => toast.error(err.message || "Failed to suspend user"),
+  });
+
+  const reactivateUser = useMutation({
+    mutationFn: (userId: string) =>
+      api.post(`/profile/organizations/${orgId}/users/${userId}/reactivate`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["org-members"] });
+      toast.success("User reactivated");
+    },
+    onError: (err: any) => toast.error(err.message || "Failed to reactivate user"),
+  });
 
   const isAdmin = userInfo?.role && ["super_admin", "compliance_manager"].includes(userInfo.role);
 
@@ -240,6 +265,29 @@ export default function MembersPage() {
                     </span>
                     {!member.is_active && (
                       <Badge variant="destructive">Inactive</Badge>
+                    )}
+                    {isAdmin && member.id !== userInfo?.id && (
+                      member.is_active ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => suspendUser.mutate(member.id)}
+                          disabled={suspendUser.isPending}
+                          title="Suspend user"
+                        >
+                          <Ban className="h-4 w-4 text-destructive" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => reactivateUser.mutate(member.id)}
+                          disabled={reactivateUser.isPending}
+                          title="Reactivate user"
+                        >
+                          <UserCheck className="h-4 w-4 text-green-600" />
+                        </Button>
+                      )
                     )}
                   </div>
                 </div>

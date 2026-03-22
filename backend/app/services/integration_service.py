@@ -4,8 +4,30 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
+from app.core.field_encryption import encrypt_field, decrypt_field
 from app.models.integration import Integration
 from app.schemas.integration import IntegrationCreate, IntegrationUpdate
+
+# Fields that contain sensitive data and should be encrypted at rest
+_SENSITIVE_FIELDS = ["credentials_ref"]
+
+
+def _encrypt_on_write(data: dict) -> dict:
+    """Encrypt sensitive fields before database write."""
+    for field in _SENSITIVE_FIELDS:
+        if field in data and data[field] and isinstance(data[field], str):
+            data[field] = encrypt_field(data[field])
+    return data
+
+
+def _decrypt_credentials(integration: Integration) -> Integration:
+    """Decrypt credentials_ref after database read (in-place, no DB write)."""
+    if integration.credentials_ref:
+        try:
+            integration.credentials_ref = decrypt_field(integration.credentials_ref)
+        except Exception:
+            pass  # Legacy plaintext or missing key — leave as-is
+    return integration
 
 
 async def list_integrations(
@@ -20,11 +42,12 @@ async def list_integrations(
 
 
 async def create_integration(db: AsyncSession, org_id: UUID, data: IntegrationCreate) -> Integration:
-    integration = Integration(org_id=org_id, **data.model_dump())
+    fields = _encrypt_on_write(data.model_dump())
+    integration = Integration(org_id=org_id, **fields)
     db.add(integration)
     await db.commit()
     await db.refresh(integration)
-    return integration
+    return _decrypt_credentials(integration)
 
 
 async def get_integration(db: AsyncSession, org_id: UUID, integration_id: UUID) -> Integration:
@@ -43,11 +66,12 @@ async def update_integration(
     db: AsyncSession, org_id: UUID, integration_id: UUID, data: IntegrationUpdate
 ) -> Integration:
     integration = await get_integration(db, org_id, integration_id)
-    for key, value in data.model_dump(exclude_unset=True).items():
+    updates = _encrypt_on_write(data.model_dump(exclude_unset=True))
+    for key, value in updates.items():
         setattr(integration, key, value)
     await db.commit()
     await db.refresh(integration)
-    return integration
+    return _decrypt_credentials(integration)
 
 
 async def delete_integration(db: AsyncSession, org_id: UUID, integration_id: UUID) -> None:

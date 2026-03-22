@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel, GUID, JSONType
@@ -22,9 +22,19 @@ class Incident(BaseModel):
         GUID(), ForeignKey("users.id")
     )
     detected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    contained_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     post_mortem_notes: Mapped[str | None] = mapped_column(Text)
+    root_cause: Mapped[str | None] = mapped_column(Text)
+    lessons_learned: Mapped[str | None] = mapped_column(Text)
     related_control_ids: Mapped[dict | None] = mapped_column(JSONType(), default=list)
+    # Phase 5: Breach notification (GDPR 72h clock)
+    breach_notification_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    breach_notification_deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    breach_notified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    affected_users_count: Mapped[int] = mapped_column(Integer, default=0)
+    affected_systems: Mapped[dict | None] = mapped_column(JSONType(), default=list)
 
     organization = relationship("Organization", back_populates="incidents", lazy="selectin")
     assigned_to = relationship("User", foreign_keys=[assigned_to_id], lazy="selectin")

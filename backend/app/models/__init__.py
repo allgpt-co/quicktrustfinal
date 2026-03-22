@@ -40,6 +40,10 @@ from app.models.scan import ScanResult, ScanFinding
 from app.models.control_exception import ControlException
 from app.models.playbook import IncidentPlaybook, PlaybookExecution
 from app.models.policy_acknowledgment import PolicyAcknowledgment
+from app.models.drift import DriftBaseline, DriftEvent
+from app.models.control_test import ControlTestDefinition, ControlTestResult
+from app.models.workflow import WorkflowExecution
+from app.models.sso_config import SSOConfiguration, SCIMToken
 
 __all__ = [
     "BaseModel",
@@ -94,4 +98,11 @@ __all__ = [
     "IncidentPlaybook",
     "PlaybookExecution",
     "PolicyAcknowledgment",
+    "DriftBaseline",
+    "DriftEvent",
+    "ControlTestDefinition",
+    "ControlTestResult",
+    "WorkflowExecution",
+    "SSOConfiguration",
+    "SCIMToken",
 ]

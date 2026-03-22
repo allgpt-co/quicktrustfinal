@@ -15,6 +15,7 @@ class EvidenceCreate(BaseModel):
     data: dict | None = None
     collection_method: str = "manual"
     collector: str | None = None
+    classification: str = "CONFIDENTIAL"  # PUBLIC, INTERNAL, CONFIDENTIAL, RESTRICTED
 
 
 class EvidenceReject(BaseModel):
@@ -38,6 +39,7 @@ class EvidenceResponse(BaseModel):
     collection_method: str
     collector: str | None
     data_source: str | None = None
+    classification: str | None = "CONFIDENTIAL"
     collected_by: UUID | None = None
     reviewed_by: UUID | None = None
     reviewed_at: datetime | None = None

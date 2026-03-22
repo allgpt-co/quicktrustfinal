@@ -29,12 +29,16 @@ import {
   History,
   Users,
   GitBranch,
+  GitCompareArrows,
   Search,
   ShieldCheck,
   ShieldOff,
   BookOpen,
   ClipboardSignature,
   PieChart,
+  FlaskConical,
+  Workflow,
+  UserCog,
 } from "lucide-react";
 
 // Role constants matching backend
@@ -70,6 +74,9 @@ const navItems: NavItem[] = [
   { href: "/playbooks", label: "Playbooks", icon: BookOpen, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/vendors", label: "Vendor Risk", icon: Building2, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/monitoring", label: "Monitoring", icon: Activity, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/control-tests", label: "Control Tests", icon: FlaskConical, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/drift-detection", label: "Drift Detection", icon: GitCompareArrows, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/workflows", label: "Workflows", icon: Workflow, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   { href: "/prowler", label: "Security Scanner", icon: ShieldCheck, section: "Operations", allowedRoles: COMPLIANCE_ROLES },
   // People
   { href: "/training", label: "Training", icon: GraduationCap, section: "People" },
@@ -86,6 +93,8 @@ const navItems: NavItem[] = [
   // Config
   { href: "/control-templates", label: "Templates", icon: FileStack, section: "Config", allowedRoles: COMPLIANCE_ROLES },
   { href: "/agents", label: "AI Agents", icon: Bot, section: "Config", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/profile", label: "My Profile", icon: UserCog, section: "Config" },
+  { href: "/privacy-requests", label: "Privacy Requests", icon: Shield, section: "Config", allowedRoles: ADMIN_ROLES },
   { href: "/audit-log", label: "Audit Log", icon: History, section: "Config", allowedRoles: ADMIN_ROLES },
   { href: "/settings", label: "Settings", icon: Settings, section: "Config", allowedRoles: COMPLIANCE_ROLES },
 ];

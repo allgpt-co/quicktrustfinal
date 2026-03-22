@@ -218,7 +218,33 @@ export default function PolicyDetailPage() {
                 {policy.next_review_date && (
                   <div>
                     <dt className="font-medium text-muted-foreground">Next Review</dt>
-                    <dd>{new Date(policy.next_review_date).toLocaleDateString()}</dd>
+                    <dd className="flex items-center gap-2">
+                      {new Date(policy.next_review_date).toLocaleDateString()}
+                      {new Date(policy.next_review_date) < new Date() ? (
+                        <span className="inline-flex items-center rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-medium text-red-500">
+                          Overdue
+                        </span>
+                      ) : new Date(policy.next_review_date).getTime() - Date.now() < 30 * 24 * 3600000 ? (
+                        <span className="inline-flex items-center rounded-full bg-yellow-500/20 px-2 py-0.5 text-xs font-medium text-yellow-500">
+                          Due Soon
+                        </span>
+                      ) : null}
+                    </dd>
+                  </div>
+                )}
+                {policy.classification && (
+                  <div>
+                    <dt className="font-medium text-muted-foreground">Classification</dt>
+                    <dd>
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        policy.classification === "RESTRICTED" ? "bg-red-500/20 text-red-500" :
+                        policy.classification === "CONFIDENTIAL" ? "bg-orange-500/20 text-orange-500" :
+                        policy.classification === "INTERNAL" ? "bg-blue-500/20 text-blue-500" :
+                        "bg-green-500/20 text-green-500"
+                      }`}>
+                        {policy.classification}
+                      </span>
+                    </dd>
                   </div>
                 )}
                 <div>

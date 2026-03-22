@@ -8,6 +8,7 @@ application can keep running without object storage.
 
 from __future__ import annotations
 
+import hashlib
 import io
 import logging
 from datetime import timedelta
@@ -15,6 +16,7 @@ from urllib.parse import urlparse
 
 from minio import Minio
 from minio.error import S3Error
+from minio.sse import SseS3
 
 from app.config import get_settings
 
@@ -92,14 +94,41 @@ def upload_file(
     length = data.getbuffer().nbytes if isinstance(data, io.BytesIO) else -1
 
     try:
-        client.put_object(
-            bucket_name=bucket,
-            object_name=object_name,
-            data=data,
-            length=length,
-            content_type=content_type,
-        )
-        logger.info("Uploaded %s/%s (%s)", bucket, object_name, content_type)
+        # Compute SHA-256 hash for evidence integrity verification
+        if isinstance(data, io.BytesIO):
+            raw = data.getvalue()
+        else:
+            raw = data.read() if hasattr(data, "read") else data
+            data = io.BytesIO(raw)
+        sha256_hash = hashlib.sha256(raw).hexdigest()
+
+        # Try with server-side encryption first; fall back without if KMS not configured
+        try:
+            client.put_object(
+                bucket_name=bucket,
+                object_name=object_name,
+                data=data,
+                length=length,
+                content_type=content_type,
+                sse=SseS3(),
+                metadata={"x-amz-meta-sha256": sha256_hash},
+            )
+        except Exception as sse_err:
+            if "KMS" in str(sse_err) or "NotImplemented" in str(sse_err):
+                # MinIO KMS not configured — upload without SSE
+                data.seek(0)
+                client.put_object(
+                    bucket_name=bucket,
+                    object_name=object_name,
+                    data=data,
+                    length=length,
+                    content_type=content_type,
+                    metadata={"x-amz-meta-sha256": sha256_hash},
+                )
+                logger.info("Uploaded without SSE (KMS not configured)")
+            else:
+                raise
+        logger.info("Uploaded %s/%s (%s, sha256=%s)", bucket, object_name, content_type, sha256_hash[:16])
         return f"{bucket}/{object_name}"
     except S3Error as exc:
         logger.error("Upload failed for %s/%s: %s", bucket, object_name, exc)

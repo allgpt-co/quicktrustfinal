@@ -1,0 +1,139 @@
+name: Security & Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 1'  # Weekly Monday 3am UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # --- Backend Dependency Audit ---
+  backend-audit:
+    name: Backend Dependency Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pip-audit
+      - name: Audit Python dependencies
+        run: pip-audit -r <(pip install -e ".[dev]" && pip freeze)
+        continue-on-error: true
+
+  # --- Frontend Dependency Audit ---
+  frontend-audit:
+    name: Frontend Dependency Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Audit npm dependencies
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+
+  # --- Static Analysis (SAST) ---
+  sast:
+    name: Static Application Security Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/python
+            p/typescript
+            p/react
+            p/jwt
+            p/sql-injection
+        continue-on-error: true
+
+  # --- Container Image Scanning ---
+  container-scan:
+    name: Container Image Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API Docker Image
+        run: docker build -t quicktrust-api:scan ./backend
+      - name: Run Trivy Container Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'quicktrust-api:scan'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'  # Don't fail build, just report
+
+  # --- License Compliance ---
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Check licenses
+        run: npx license-checker --failOn 'GPL-2.0;GPL-3.0;AGPL-1.0;AGPL-3.0'
+        continue-on-error: true
+
+  # --- SBOM Generation ---
+  sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Generate CycloneDX SBOM
+        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.json
+        continue-on-error: true
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sbom
+          path: frontend/sbom.json

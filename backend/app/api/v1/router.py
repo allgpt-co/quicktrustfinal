@@ -37,11 +37,18 @@ from app.api.v1 import (
     compliance_snapshots,
     privacy,
     invitations,
+    profile,
     scanners,
     control_exceptions,
     playbooks,
     policy_acknowledgments,
     dashboards,
+    drift,
+    control_tests,
+    workflows,
+    sso,
+    scim,
+    backups,
 )
 
 api_router = APIRouter()
@@ -84,6 +91,7 @@ api_router.include_router(cross_framework_mappings.router)
 api_router.include_router(compliance_snapshots.router)
 api_router.include_router(privacy.router)
 api_router.include_router(invitations.router)
+api_router.include_router(profile.router)
 api_router.include_router(scanners.router)
 # Phase 4 additions
 api_router.include_router(control_exceptions.router)
@@ -91,3 +99,12 @@ api_router.include_router(playbooks.router)
 api_router.include_router(policy_acknowledgments.router)
 # Phase 5 additions
 api_router.include_router(dashboards.router)
+# P0 Group 1: Workflow & Automation
+api_router.include_router(drift.router)
+api_router.include_router(control_tests.router)
+api_router.include_router(workflows.router)
+# Phase 4: Enterprise SSO & SCIM
+api_router.include_router(sso.router)
+api_router.include_router(scim.router)
+# Phase 7: Infrastructure & DR
+api_router.include_router(backups.router)

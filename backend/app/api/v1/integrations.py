@@ -13,7 +13,8 @@ from app.schemas.integration import (
     CollectionJobResponse,
     ProviderInfo,
 )
-from app.services import integration_service, collection_service
+from app.schemas.control_test import ScheduleConfigRequest
+from app.services import integration_service, collection_service, scheduled_collection_service
 
 router = APIRouter(
     prefix="/organizations/{org_id}/integrations",
@@ -179,3 +180,31 @@ async def list_collection_jobs(
         total=total, page=page, page_size=page_size,
         total_pages=(total + page_size - 1) // page_size,
     )
+
+
+# --- Scheduled Collection ---
+
+@router.post("/{integration_id}/schedule", response_model=IntegrationResponse)
+async def enable_collection_schedule(
+    org_id: VerifiedOrgId, integration_id: UUID, data: ScheduleConfigRequest,
+    db: DB, current_user: ComplianceUser,
+):
+    """Enable scheduled evidence collection for this integration."""
+    from app.core.audit_middleware import log_audit
+    integration = await scheduled_collection_service.enable_schedule(
+        db, org_id, integration_id, data.schedule, data.collector_type, data.control_id
+    )
+    await log_audit(db, current_user, "enable_schedule", "integration", str(integration_id), org_id)
+    return integration
+
+
+@router.delete("/{integration_id}/schedule", response_model=IntegrationResponse)
+async def disable_collection_schedule(
+    org_id: VerifiedOrgId, integration_id: UUID,
+    db: DB, current_user: ComplianceUser,
+):
+    """Disable scheduled evidence collection for this integration."""
+    from app.core.audit_middleware import log_audit
+    integration = await scheduled_collection_service.disable_schedule(db, org_id, integration_id)
+    await log_audit(db, current_user, "disable_schedule", "integration", str(integration_id), org_id)
+    return integration

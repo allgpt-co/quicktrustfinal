@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
     # Database — defaults to SQLite for local dev, use postgresql+asyncpg://... for production
+    # For TLS: set DATABASE_URL to postgresql+asyncpg://user:pass@host:5432/db?ssl=require
     DATABASE_URL: str = "sqlite+aiosqlite:///./quicktrust.db"
+    DATABASE_SSL_CA: str = ""  # Path to CA cert (e.g. /app/rds-combined-ca-bundle.pem)
 
     # Redis
     REDIS_URL: str = "redis://:quicktrust_redis_dev@localhost:6379/0"
@@ -26,6 +28,8 @@ class Settings(BaseSettings):
     KEYCLOAK_REALM: str = "quicktrust"
     KEYCLOAK_CLIENT_ID: str = "quicktrust-api"
     KEYCLOAK_CLIENT_SECRET: str = "quicktrust-api-secret"
+    KEYCLOAK_ADMIN_USER: str = "admin"
+    KEYCLOAK_ADMIN_PASSWORD: str = "admin"
 
     # MinIO
     MINIO_URL: str = "http://localhost:9000"
@@ -40,6 +44,10 @@ class Settings(BaseSettings):
     # Prowler
     PROWLER_OUTPUT_DIR: str = "/tmp/prowler-output"
     PROWLER_TIMEOUT_SECONDS: int = 3600
+
+    # Field-level encryption (generate: python -c "import os; print(os.urandom(32).hex())")
+    FIELD_ENCRYPTION_KEY: str = ""
+    FIELD_HMAC_KEY: str = ""
 
     # SMTP email
     SMTP_HOST: str = ""

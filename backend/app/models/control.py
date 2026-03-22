@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel, GUID
@@ -31,6 +31,13 @@ class Control(BaseModel):
     agent_run_id: Mapped[uuid.UUID | None] = mapped_column(
         GUID(), ForeignKey("agent_runs.id")
     )
+    # Phase 5: Maturity & Assessment
+    maturity_level: Mapped[int | None] = mapped_column(Integer)  # 1-5 CMMI scale
+    test_frequency: Mapped[str | None] = mapped_column(String(20))  # quarterly, annually
+    next_test_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    findings: Mapped[str | None] = mapped_column(Text)
+    remediation_plan: Mapped[str | None] = mapped_column(Text)
+    remediation_due: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     organization = relationship("Organization", back_populates="controls", lazy="selectin")
     template = relationship("ControlTemplate", lazy="selectin")

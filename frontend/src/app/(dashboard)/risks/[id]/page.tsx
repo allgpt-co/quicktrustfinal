@@ -433,6 +433,70 @@ export default function RiskDetailPage() {
         </Card>
       )}
 
+      {/* Risk Acceptance Workflow */}
+      {(risk.treatment_type === "accept" || risk.acceptance_status) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Risk Acceptance
+              {risk.acceptance_status && (
+                <Badge className={
+                  risk.acceptance_status === "approved" ? "bg-green-500/20 text-green-500 border-green-500/30" :
+                  risk.acceptance_status === "rejected" ? "bg-red-500/20 text-red-500 border-red-500/30" :
+                  risk.acceptance_status === "pending" ? "bg-yellow-500/20 text-yellow-500 border-yellow-500/30" :
+                  risk.acceptance_status === "expired" ? "bg-gray-500/20 text-gray-500 border-gray-500/30" :
+                  "bg-blue-500/20 text-blue-500"
+                }>
+                  {risk.acceptance_status?.charAt(0).toUpperCase() + risk.acceptance_status?.slice(1)}
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid grid-cols-2 gap-4 text-sm">
+              {risk.acceptance_justification && (
+                <div className="col-span-2">
+                  <dt className="font-medium text-muted-foreground">Justification</dt>
+                  <dd className="mt-1 rounded-md border bg-muted/50 p-3 whitespace-pre-wrap">
+                    {risk.acceptance_justification}
+                  </dd>
+                </div>
+              )}
+              {risk.acceptance_requested_at && (
+                <div>
+                  <dt className="font-medium text-muted-foreground">Requested</dt>
+                  <dd className="mt-1">{new Date(risk.acceptance_requested_at).toLocaleDateString()}</dd>
+                </div>
+              )}
+              {risk.acceptance_approved_at && (
+                <div>
+                  <dt className="font-medium text-muted-foreground">
+                    {risk.acceptance_status === "rejected" ? "Rejected" : "Approved"}
+                  </dt>
+                  <dd className="mt-1">{new Date(risk.acceptance_approved_at).toLocaleDateString()}</dd>
+                </div>
+              )}
+              {risk.acceptance_expiry && (
+                <div>
+                  <dt className="font-medium text-muted-foreground">Expires</dt>
+                  <dd className="mt-1">
+                    {new Date(risk.acceptance_expiry).toLocaleDateString()}
+                    {new Date(risk.acceptance_expiry) < new Date() && (
+                      <span className="ml-2 text-xs text-red-500 font-medium">EXPIRED</span>
+                    )}
+                  </dd>
+                </div>
+              )}
+            </dl>
+            {!risk.acceptance_status && risk.treatment_type === "accept" && (
+              <p className="mt-3 text-sm text-muted-foreground">
+                This risk is marked for acceptance but no formal approval has been requested yet.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Residual risk */}
       {hasResidualScoring && (
         <Card>

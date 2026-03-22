@@ -7,11 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReports, useCreateReport, useReportStats } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
+import api from "@/lib/api";
 import {
   FileBarChart,
   Plus,
   Loader2,
   ExternalLink,
+  Shield,
+  AlertTriangle,
+  FileCheck,
+  GraduationCap,
+  Zap,
 } from "lucide-react";
 
 const TYPE_FILTERS: { label: string; value: string | undefined }[] = [
@@ -117,6 +123,76 @@ export default function ReportsPage() {
           ))}
         </div>
       )}
+
+      {/* One-Click Compliance Reports */}
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="text-lg font-semibold mb-1">Quick Generate</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            One-click compliance report generation
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                type: "compliance_summary",
+                title: "Compliance Summary",
+                desc: "Overall compliance posture across all frameworks",
+                icon: Shield,
+                color: "text-purple-500",
+                bg: "bg-purple-500/10",
+              },
+              {
+                type: "risk_report",
+                title: "Risk Report",
+                desc: "Full risk register with scores and treatment plans",
+                icon: AlertTriangle,
+                color: "text-orange-500",
+                bg: "bg-orange-500/10",
+              },
+              {
+                type: "evidence_audit",
+                title: "Evidence Audit",
+                desc: "Evidence coverage, freshness, and gaps analysis",
+                icon: FileCheck,
+                color: "text-blue-500",
+                bg: "bg-blue-500/10",
+              },
+              {
+                type: "training_completion",
+                title: "Training Report",
+                desc: "Employee training completion and overdue tracking",
+                icon: GraduationCap,
+                color: "text-teal-500",
+                bg: "bg-teal-500/10",
+              },
+            ].map((r) => (
+              <button
+                key={r.type}
+                onClick={() => {
+                  const now = new Date().toLocaleDateString();
+                  createReport.mutate({
+                    title: `${r.title} — ${now}`,
+                    report_type: r.type,
+                    format: "pdf",
+                  });
+                }}
+                disabled={createReport.isPending}
+                className="flex items-start gap-3 rounded-lg border p-4 text-left transition-colors hover:bg-muted/50"
+              >
+                <div className={`rounded-lg p-2 ${r.bg}`}>
+                  <r.icon className={`h-5 w-5 ${r.color}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{r.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {r.desc}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {showCreate && (
         <Card>
@@ -266,16 +342,15 @@ export default function ReportsPage() {
                   {report.status}
                 </Badge>
                 {report.status === "completed" && report.file_url && (
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/organizations/${orgId}/reports/${report.id}/download`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={() => api.downloadRedirect(`/organizations/${orgId}/reports/${report.id}/download`)}
                   >
-                    <Button size="sm" variant="outline" className="gap-1">
-                      <ExternalLink className="h-3 w-3" />
-                      Download
-                    </Button>
-                  </a>
+                    <ExternalLink className="h-3 w-3" />
+                    Download
+                  </Button>
                 )}
                 {report.status === "completed" && !report.file_url && (
                   <Button size="sm" variant="outline" className="gap-1" disabled>

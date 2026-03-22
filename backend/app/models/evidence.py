@@ -31,6 +31,7 @@ class Evidence(BaseModel):
     collection_method: Mapped[str] = mapped_column(String(50), default="manual")
     collector: Mapped[str | None] = mapped_column(String(255))
     data_source: Mapped[str] = mapped_column(String(20), default="live")  # live, mock, fallback
+    classification: Mapped[str] = mapped_column(String(20), default="CONFIDENTIAL")  # PUBLIC, INTERNAL, CONFIDENTIAL, RESTRICTED
 
     # Chain of custody
     collected_by: Mapped[uuid.UUID | None] = mapped_column(

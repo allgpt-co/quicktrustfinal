@@ -80,6 +80,13 @@ class RiskResponse(BaseModel):
     reviewer_id: UUID | None
     last_review_date: datetime | None
     next_review_date: datetime | None
+    acceptance_status: str | None = None
+    acceptance_requested_by: UUID | None = None
+    acceptance_requested_at: datetime | None = None
+    acceptance_approved_by: UUID | None = None
+    acceptance_approved_at: datetime | None = None
+    acceptance_justification: str | None = None
+    acceptance_expiry: datetime | None = None
     control_mappings: list[RiskControlMappingResponse] = []
     created_at: datetime
     updated_at: datetime

@@ -26,6 +26,11 @@ class ControlUpdate(BaseModel):
     effectiveness: ControlEffectiveness | None = None
     automation_level: AutomationLevel | None = None
     test_procedure: str | None = Field(None, max_length=5000)
+    maturity_level: int | None = Field(None, ge=1, le=5)
+    test_frequency: str | None = None
+    findings: str | None = None
+    remediation_plan: str | None = None
+    remediation_due: datetime | None = None
 
     @model_validator(mode="after")
     def check_effectiveness_requires_implemented(self):
@@ -77,6 +82,12 @@ class ControlResponse(BaseModel):
     last_test_date: datetime | None
     last_test_result: str | None
     agent_run_id: UUID | None
+    maturity_level: int | None = None
+    test_frequency: str | None = None
+    next_test_date: datetime | None = None
+    findings: str | None = None
+    remediation_plan: str | None = None
+    remediation_due: datetime | None = None
     framework_mappings: list[ControlFrameworkMappingResponse] = []
     created_at: datetime
     updated_at: datetime

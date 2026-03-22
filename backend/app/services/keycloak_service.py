@@ -14,14 +14,17 @@ class KeycloakService:
         self._admin_token: str | None = None
 
     async def _get_admin_token(self) -> str:
-        url = f"{self.base_url}/realms/{self.realm}/protocol/openid-connect/token"
+        """Get admin token from Keycloak master realm for user management."""
+        # Use master realm admin credentials for full admin access
+        url = f"{self.base_url}/realms/master/protocol/openid-connect/token"
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 url,
                 data={
-                    "grant_type": "client_credentials",
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
+                    "grant_type": "password",
+                    "client_id": "admin-cli",
+                    "username": settings.KEYCLOAK_ADMIN_USER,
+                    "password": settings.KEYCLOAK_ADMIN_PASSWORD,
                 },
             )
             resp.raise_for_status()
@@ -95,6 +98,89 @@ class KeycloakService:
             )
             resp.raise_for_status()
             return resp.json()
+
+    # --- Session management ---
+
+    async def get_user_sessions(self, user_id: str) -> list[dict]:
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}/sessions"
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, headers=headers)
+            if resp.status_code == 404:
+                return []
+            resp.raise_for_status()
+            return resp.json()
+
+    async def logout_user_sessions(self, user_id: str):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}/logout"
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, headers=headers)
+            resp.raise_for_status()
+
+    async def logout_session(self, session_id: str):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/sessions/{session_id}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.delete(url, headers=headers)
+            resp.raise_for_status()
+
+    # --- Credential / MFA management ---
+
+    async def get_user_credentials(self, user_id: str) -> list[dict]:
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}/credentials"
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            return resp.json()
+
+    async def add_required_action(self, user_id: str, action: str):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            user_data = resp.json()
+            required_actions = user_data.get("requiredActions", [])
+            if action not in required_actions:
+                required_actions.append(action)
+            resp = await client.put(
+                url, json={"requiredActions": required_actions}, headers=headers
+            )
+            resp.raise_for_status()
+
+    async def remove_required_action(self, user_id: str, action: str):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            user_data = resp.json()
+            required_actions = [
+                a for a in user_data.get("requiredActions", []) if a != action
+            ]
+            resp = await client.put(
+                url, json={"requiredActions": required_actions}, headers=headers
+            )
+            resp.raise_for_status()
+
+    async def delete_credential(self, user_id: str, credential_id: str):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}/credentials/{credential_id}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.delete(url, headers=headers)
+            resp.raise_for_status()
+
+    async def update_user(self, user_id: str, data: dict):
+        headers = await self._get_headers()
+        url = f"{self.base_url}/admin/realms/{self.realm}/users/{user_id}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(url, json=data, headers=headers)
+            resp.raise_for_status()
+
+    async def set_user_enabled(self, user_id: str, enabled: bool):
+        await self.update_user(user_id, {"enabled": enabled})
 
 
 keycloak_service = KeycloakService()

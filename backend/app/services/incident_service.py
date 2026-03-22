@@ -76,6 +76,21 @@ async def update_incident(
     if "status" in update_data and update_data["status"] in ("resolved", "closed") and not incident.resolved_at:
         incident.resolved_at = datetime.now(timezone.utc)
 
+    # Auto-set contained_at when status changes to contained
+    if "status" in update_data and update_data["status"] == "contained" and not incident.contained_at:
+        incident.contained_at = datetime.now(timezone.utc)
+
+    # Auto-set closed_at when status changes to closed
+    if "status" in update_data and update_data["status"] == "closed" and not incident.closed_at:
+        incident.closed_at = datetime.now(timezone.utc)
+
+    # Auto-calculate GDPR 72h breach notification deadline
+    if "breach_notification_required" in update_data and update_data["breach_notification_required"]:
+        if not incident.breach_notification_deadline:
+            from datetime import timedelta
+            base_time = incident.detected_at or datetime.now(timezone.utc)
+            incident.breach_notification_deadline = base_time + timedelta(hours=72)
+
     # Auto-create timeline event on status change
     if "status" in update_data and update_data["status"] != old_status:
         event = IncidentTimelineEvent(

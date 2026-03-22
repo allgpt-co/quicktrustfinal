@@ -65,10 +65,12 @@ services:
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-quicktrust_dev}
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+      KC_SPI_THEME_CACHE_THEMES: "false"
     ports:
       - "8080:8080"
     volumes:
       - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./infra/keycloak/themes/quicktrust:/opt/keycloak/themes/quicktrust
     depends_on:
       postgres:
         condition: service_healthy

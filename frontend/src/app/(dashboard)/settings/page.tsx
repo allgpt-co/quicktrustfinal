@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization, useUpdateOrganization } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight } from "lucide-react";
+import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight, Shield, Database, Clock } from "lucide-react";
 import Link from "next/link";
 
 export default function SettingsPage() {
@@ -261,6 +261,60 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold">Team Members</h3>
                 <p className="text-xs text-muted-foreground">
                   Manage team members and send invitations
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* SSO & SCIM Card */}
+      <Link href="/settings/sso">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">SSO & SCIM</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure Single Sign-On and automated user provisioning
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Data Retention Card */}
+      <Link href="/settings/data-retention">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">Data Retention</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure automatic data cleanup and retention policies
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Backups Card */}
+      <Link href="/settings/backups">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Database className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">Database Backups</h3>
+                <p className="text-xs text-muted-foreground">
+                  Manage automated backups and trigger manual backups
                 </p>
               </div>
             </div>

@@ -113,6 +113,20 @@ async def decode_token(token: str) -> dict:
             except Exception:
                 pass  # Redis unavailable — allow token (fail open for availability)
 
+        # Check user-level token revocation (password change, admin force-logout)
+        sub = payload.get("sub")
+        iat = payload.get("iat")
+        if sub and iat:
+            try:
+                from app.core.token_blacklist import is_user_token_revoked
+
+                if await is_user_token_revoked(sub, int(iat)):
+                    raise UnauthorizedError("Token has been revoked (user-level)")
+            except UnauthorizedError:
+                raise
+            except Exception:
+                pass  # Fail open
+
         return payload
 
     except JWTError as e:

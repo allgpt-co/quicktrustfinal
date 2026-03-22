@@ -2038,3 +2038,204 @@ export function useControlOwnerDashboard(orgId: string) {
     enabled: !!orgId,
   });
 }
+
+// =====================================================================
+// Group 1: Control Test Execution Engine
+// =====================================================================
+
+export function useControlTestDefinitions(orgId: string, params?: { page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["control-test-definitions", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/control-tests/definitions${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useControlTestDefinition(orgId: string, definitionId: string) {
+  return useQuery({
+    queryKey: ["control-test-definition", orgId, definitionId],
+    queryFn: () =>
+      api.get<any>(`/organizations/${orgId}/control-tests/definitions/${definitionId}`),
+    enabled: !!orgId && !!definitionId,
+  });
+}
+
+export function useCreateControlTestDefinition(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) =>
+      api.post(`/organizations/${orgId}/control-tests/definitions`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-test-definitions", orgId] });
+    },
+  });
+}
+
+export function useDeleteControlTestDefinition(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (definitionId: string) =>
+      api.delete(`/organizations/${orgId}/control-tests/definitions/${definitionId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-test-definitions", orgId] });
+    },
+  });
+}
+
+export function useRunControlTest(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (definitionId: string) =>
+      api.post(`/organizations/${orgId}/control-tests/definitions/${definitionId}/run`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-test-results", orgId] });
+      qc.invalidateQueries({ queryKey: ["control-test-definitions", orgId] });
+    },
+  });
+}
+
+export function useRunAllControlTests(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.post(`/organizations/${orgId}/control-tests/run-all`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["control-test-results", orgId] });
+      qc.invalidateQueries({ queryKey: ["control-test-definitions", orgId] });
+    },
+  });
+}
+
+export function useControlTestResults(orgId: string, params?: { page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["control-test-results", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/control-tests/results${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useControlTestSummary(orgId: string, controlId: string) {
+  return useQuery({
+    queryKey: ["control-test-summary", orgId, controlId],
+    queryFn: () =>
+      api.get<any>(`/organizations/${orgId}/control-tests/controls/${controlId}/summary`),
+    enabled: !!orgId && !!controlId,
+  });
+}
+
+// =====================================================================
+// Group 1: Drift Detection
+// =====================================================================
+
+export function useDriftEvents(orgId: string, params?: { severity?: string; acknowledged?: string; page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.severity) searchParams.set("severity", params.severity);
+  if (params?.acknowledged) searchParams.set("acknowledged", params.acknowledged);
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["drift-events", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/drift/events${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useDriftSummary(orgId: string) {
+  return useQuery({
+    queryKey: ["drift-summary", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/drift/summary`),
+    enabled: !!orgId,
+  });
+}
+
+export function useAcknowledgeDriftEvent(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (eventId: string) =>
+      api.post(`/organizations/${orgId}/drift/events/${eventId}/acknowledge`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["drift-events", orgId] });
+      qc.invalidateQueries({ queryKey: ["drift-summary", orgId] });
+    },
+  });
+}
+
+export function useResolveDriftEvent(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (eventId: string) =>
+      api.post(`/organizations/${orgId}/drift/events/${eventId}/resolve`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["drift-events", orgId] });
+      qc.invalidateQueries({ queryKey: ["drift-summary", orgId] });
+    },
+  });
+}
+
+// =====================================================================
+// Group 1: Workflow Engine
+// =====================================================================
+
+export function useWorkflows(orgId: string, params?: { page?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["workflows", orgId, params],
+    queryFn: () =>
+      api.get<PaginatedResponse<any>>(
+        `/organizations/${orgId}/workflows${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useWorkflow(orgId: string, workflowId: string) {
+  return useQuery({
+    queryKey: ["workflow", orgId, workflowId],
+    queryFn: () =>
+      api.get<any>(`/organizations/${orgId}/workflows/${workflowId}`),
+    enabled: !!orgId && !!workflowId,
+  });
+}
+
+// =====================================================================
+// Group 1: Scheduled Collection
+// =====================================================================
+
+export function useEnableCollectionSchedule(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ integrationId, data }: { integrationId: string; data: any }) =>
+      api.post(`/organizations/${orgId}/integrations/${integrationId}/schedule`, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["integrations", orgId] });
+    },
+  });
+}
+
+export function useDisableCollectionSchedule(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (integrationId: string) =>
+      api.delete(`/organizations/${orgId}/integrations/${integrationId}/schedule`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["integrations", orgId] });
+    },
+  });
+}

@@ -314,6 +314,102 @@ export default function IncidentDetailPage() {
         </Card>
       )}
 
+      {/* Breach Notification */}
+      {!editing && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className={incident.breach_notification_required ? "text-red-500" : "text-muted-foreground"}>
+                {incident.breach_notification_required ? "⚠" : "🛡"}
+              </span>
+              Breach Notification
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {incident.breach_notification_required ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">GDPR Deadline (72h)</label>
+                      <p className="text-sm font-medium">
+                        {incident.breach_notification_deadline
+                          ? new Date(incident.breach_notification_deadline).toLocaleString()
+                          : "Not set"}
+                      </p>
+                      {incident.breach_notification_deadline && !incident.breach_notified_at && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {new Date(incident.breach_notification_deadline) > new Date()
+                            ? `${Math.ceil((new Date(incident.breach_notification_deadline).getTime() - Date.now()) / 3600000)}h remaining`
+                            : "⚠ OVERDUE"}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">Notification Sent</label>
+                      <p className="text-sm font-medium">
+                        {incident.breach_notified_at
+                          ? new Date(incident.breach_notified_at).toLocaleString()
+                          : "Not yet notified"}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">Affected Users</label>
+                      <p className="text-sm font-medium">{incident.affected_users_count ?? "Unknown"}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">Affected Systems</label>
+                      <p className="text-sm font-medium">
+                        {incident.affected_systems && incident.affected_systems.length > 0
+                          ? incident.affected_systems.join(", ")
+                          : "Not specified"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No breach notification required for this incident.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Response Timeline Markers */}
+      {!editing && (incident.detected_at || incident.contained_at || incident.resolved_at) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Response Timeline</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 flex-wrap">
+              {incident.detected_at && (
+                <div className="rounded-lg border px-3 py-2 text-center">
+                  <p className="text-xs text-muted-foreground">Detected</p>
+                  <p className="text-sm font-medium">{new Date(incident.detected_at).toLocaleString()}</p>
+                </div>
+              )}
+              {incident.detected_at && <span className="text-muted-foreground">→</span>}
+              {incident.contained_at && (
+                <div className="rounded-lg border px-3 py-2 text-center">
+                  <p className="text-xs text-muted-foreground">Contained</p>
+                  <p className="text-sm font-medium">{new Date(incident.contained_at).toLocaleString()}</p>
+                </div>
+              )}
+              {incident.contained_at && <span className="text-muted-foreground">→</span>}
+              {incident.resolved_at && (
+                <div className="rounded-lg border px-3 py-2 text-center">
+                  <p className="text-xs text-muted-foreground">Resolved</p>
+                  <p className="text-sm font-medium">{new Date(incident.resolved_at).toLocaleString()}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Post-mortem */}
       {incident.post_mortem_notes && !editing && (
         <Card>
@@ -324,6 +420,24 @@ export default function IncidentDetailPage() {
             <p className="whitespace-pre-wrap">{incident.post_mortem_notes}</p>
           </CardContent>
         </Card>
+      )}
+
+      {/* Root Cause & Lessons Learned */}
+      {!editing && (incident.root_cause || incident.lessons_learned) && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {incident.root_cause && (
+            <Card>
+              <CardHeader><CardTitle>Root Cause</CardTitle></CardHeader>
+              <CardContent><p className="whitespace-pre-wrap text-sm">{incident.root_cause}</p></CardContent>
+            </Card>
+          )}
+          {incident.lessons_learned && (
+            <Card>
+              <CardHeader><CardTitle>Lessons Learned</CardTitle></CardHeader>
+              <CardContent><p className="whitespace-pre-wrap text-sm">{incident.lessons_learned}</p></CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Timeline */}

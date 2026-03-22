@@ -1,0 +1,109 @@
+/* QuickTrust Keycloak Theme — Center the login/register form */
+
+/* Override PatternFly split layout: center everything */
+.pf-v5-c-login {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  grid-template-columns: none !important;
+}
+
+/* Add QUICKTRUST branding above the card */
+.pf-v5-c-login::before {
+  content: "QUICKTRUST";
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Container: stop split layout, center the card */
+.pf-v5-c-login__container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  max-width: 480px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 16px !important;
+  grid-template-columns: none !important;
+  grid-template-areas: none !important;
+}
+
+/* Hide the right-side branding header (QUICKTRUST text) */
+#kc-header,
+.pf-v5-c-login__header {
+  display: none !important;
+}
+
+/* Main form card */
+.pf-v5-c-login__main {
+  width: 100% !important;
+  max-width: 460px !important;
+  margin: 0 auto !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Page title */
+#kc-page-title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+}
+
+.pf-v5-c-login__main-header {
+  padding-bottom: 8px !important;
+}
+
+/* Fix the ugly white footer band (New user? Register / Back to Login) */
+.pf-v5-c-login__main-footer-band,
+.pf-v5-c-login__main-footer-band--item {
+  background-color: transparent !important;
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.pf-v5-c-login__main-footer-band a {
+  color: #3b82f6 !important;
+}
+
+.pf-v5-c-login__main-footer-band-item {
+  color: #94a3b8 !important;
+  background: transparent !important;
+}
+
+/* Sign In / Register button */
+.pf-v5-c-button.pf-m-primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  padding: 10px 16px !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+/* Forgot password link */
+.pf-v5-c-login__main-body a {
+  color: #3b82f6 !important;
+}
+
+/* Input fields */
+.pf-v5-c-form-control {
+  border-radius: 4px !important;
+}
+
+/* Fix the footer area on login page */
+.pf-v5-c-login__main-footer {
+  background: transparent !important;
+}

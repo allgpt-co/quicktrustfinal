@@ -25,9 +25,17 @@ class IncidentUpdate(BaseModel):
     category: str | None = None
     assigned_to_id: UUID | None = None
     detected_at: datetime | None = None
+    contained_at: datetime | None = None
     resolved_at: datetime | None = None
+    closed_at: datetime | None = None
     post_mortem_notes: str | None = None
+    root_cause: str | None = None
+    lessons_learned: str | None = None
     related_control_ids: list[str] | None = None
+    breach_notification_required: bool | None = None
+    breach_notified_at: datetime | None = None
+    affected_users_count: int | None = None
+    affected_systems: list[str] | None = None
 
 
 class TimelineEventCreate(BaseModel):
@@ -58,9 +66,18 @@ class IncidentResponse(BaseModel):
     category: str | None
     assigned_to_id: UUID | None
     detected_at: datetime | None
+    contained_at: datetime | None = None
     resolved_at: datetime | None
+    closed_at: datetime | None = None
     post_mortem_notes: str | None
+    root_cause: str | None = None
+    lessons_learned: str | None = None
     related_control_ids: list | None
+    breach_notification_required: bool = False
+    breach_notification_deadline: datetime | None = None
+    breach_notified_at: datetime | None = None
+    affected_users_count: int = 0
+    affected_systems: list | None = None
     timeline_events: list[TimelineEventResponse] = []
     created_at: datetime
     updated_at: datetime

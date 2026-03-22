@@ -32,3 +32,4 @@ class Organization(BaseModel):
     questionnaires = relationship("Questionnaire", back_populates="organization", lazy="noload")
     trust_center_config = relationship("TrustCenterConfig", back_populates="organization", uselist=False, lazy="noload")
     reports = relationship("Report", back_populates="organization", lazy="noload")
+    sso_config = relationship("SSOConfiguration", back_populates="organization", uselist=False, lazy="noload")

@@ -15,6 +15,7 @@ class PolicyCreate(BaseModel):
     owner_id: UUID | None = None
     framework_ids: list[str] | None = None
     control_ids: list[str] | None = None
+    classification: str = "CONFIDENTIAL"
 
 
 class PolicyUpdate(BaseModel):
@@ -47,6 +48,7 @@ class PolicyResponse(BaseModel):
     framework_ids: list | None
     control_ids: list | None
     agent_run_id: UUID | None
+    classification: str | None = "CONFIDENTIAL"
     created_at: datetime
     updated_at: datetime
 

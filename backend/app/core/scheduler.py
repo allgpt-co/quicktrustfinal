@@ -30,6 +30,13 @@ async def start_scheduler() -> None:
     try:
         from app.core.database import async_session
 
+        # Recover workflows that were interrupted by a server crash
+        async with async_session() as db:
+            from app.services import workflow_service
+            recovered = await workflow_service.recover_stale_workflows(db)
+            if recovered:
+                logger.info("Recovered %d stale workflows on startup.", recovered)
+
         async with async_session() as db:
             await sync_monitoring_rules(db)
 
@@ -43,8 +50,37 @@ async def start_scheduler() -> None:
             replace_existing=True,
         )
 
+        # Nightly database backup at 1 AM
+        scheduler.add_job(
+            _run_database_backup,
+            trigger="cron",
+            hour=1,
+            minute=0,
+            id="database_backup",
+            replace_existing=True,
+        )
+
+        # Scheduled evidence collection — check every 5 minutes for due integrations
+        scheduler.add_job(
+            _run_scheduled_collections,
+            trigger="interval",
+            minutes=5,
+            id="scheduled_evidence_collection",
+            replace_existing=True,
+        )
+
+        # Control test execution — run daily at 3 AM
+        scheduler.add_job(
+            _run_control_tests,
+            trigger="cron",
+            hour=3,
+            minute=0,
+            id="control_test_execution",
+            replace_existing=True,
+        )
+
         scheduler.start()
-        logger.info("APScheduler started with monitoring jobs.")
+        logger.info("APScheduler started with monitoring, collection, and control test jobs.")
     except Exception as exc:
         logger.warning("Failed to start scheduler: %s. Monitoring jobs will be disabled.", exc)
 
@@ -118,6 +154,49 @@ async def _run_monitoring_check(org_id: str, rule_id: str) -> None:
                 logger.debug("Monitoring rule %s passed.", rule_id)
     except Exception as exc:
         logger.error("Error running monitoring check for rule %s: %s", rule_id, exc)
+
+
+async def _run_scheduled_collections() -> None:
+    """Periodic job: run all due scheduled evidence collections."""
+    from app.core.database import async_session
+    from app.services import scheduled_collection_service
+
+    try:
+        async with async_session() as db:
+            triggered = await scheduled_collection_service.run_scheduled_collections(db)
+            if triggered:
+                logger.info("Scheduled collections: triggered %d jobs.", triggered)
+            else:
+                logger.debug("Scheduled collections: no integrations due.")
+    except Exception as exc:
+        logger.error("Error running scheduled collections: %s", exc)
+
+
+async def _run_control_tests() -> None:
+    """Daily job: execute all active control test definitions."""
+    from app.core.database import async_session
+    from app.services import control_test_service
+
+    try:
+        async with async_session() as db:
+            executed = await control_test_service.run_all_due_tests(db)
+            if executed:
+                logger.info("Control tests: executed %d tests.", executed)
+            else:
+                logger.debug("Control tests: no active definitions found.")
+    except Exception as exc:
+        logger.error("Error running control tests: %s", exc)
+
+
+async def _run_database_backup() -> None:
+    """Nightly job: create a database backup."""
+    from app.services import backup_service
+
+    try:
+        result = await backup_service.create_backup()
+        logger.info("Nightly backup completed: %s (%s)", result["filename"], result["size_human"])
+    except Exception as exc:
+        logger.error("Nightly backup failed: %s", exc)
 
 
 async def _run_retention_enforcement() -> None:

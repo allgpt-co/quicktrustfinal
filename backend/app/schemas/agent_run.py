@@ -22,6 +22,13 @@ class AgentRunApproval(BaseModel):
     reason: str | None = None
 
 
+class AgentRunReview(BaseModel):
+    """Human review of AI output."""
+    action: str  # approve, reject, modify
+    review_notes: str | None = None
+    modified_output: dict | None = None  # only for action=modify
+
+
 class AgentRunResponse(BaseModel):
     id: UUID
     org_id: UUID
@@ -37,7 +44,25 @@ class AgentRunResponse(BaseModel):
     approval_status: str | None = None
     approved_by: UUID | None = None
     approved_at: datetime | None = None
+    review_notes: str | None = None
+    original_output: dict | None = None
+    model_version: str | None = None
+    prompt_version: str | None = None
+    response_time_ms: int | None = None
+    confidence_score: float | None = None
+    cost_usd: float | None = None
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class AIBudgetResponse(BaseModel):
+    org_id: str
+    month: str
+    tokens_used: int
+    tokens_limit: int
+    cost_usd: float
+    cost_limit_usd: float
+    usage_percent: float
+    budget_exceeded: bool

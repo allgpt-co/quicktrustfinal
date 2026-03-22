@@ -10,7 +10,7 @@ from app.core.exceptions import NotFoundError
 from app.core.rate_limit import limiter
 from app.core.task_runner import create_safe_task
 from app.models.agent_run import AgentRun
-from app.schemas.agent_run import AgentRunApproval, AgentRunResponse, AgentRunTrigger, AgentRunTriggerGeneric
+from app.schemas.agent_run import AgentRunApproval, AgentRunResponse, AgentRunReview, AgentRunTrigger, AgentRunTriggerGeneric
 from app.schemas.common import PaginatedResponse
 
 logger = logging.getLogger(__name__)
@@ -40,15 +40,39 @@ async def _execute_agent(agent_run_id: str, org_id: str, agent_type: str, input_
             await db.commit()
 
             try:
+                # Budget check before running
+                from app.services import ai_budget_service
+                allowed, reason = await ai_budget_service.check_budget(org_id)
+                if not allowed:
+                    run.status = "failed"
+                    run.error_message = f"Budget exceeded: {reason}"
+                    run.completed_at = datetime.now(timezone.utc)
+                    await db.commit()
+                    return
+
+                import time as _time
+                t0 = _time.monotonic()
+
                 logger.info("Dispatching agent %s for run %s", agent_type, agent_run_id)
                 result = await _dispatch_agent(
                     agent_type, db, org_id, agent_run_id, input_data,
                 )
+                elapsed_ms = int((_time.monotonic() - t0) * 1000)
+
                 run.status = "completed"
                 run.approval_status = "pending_review"
                 run.output_data = result
                 run.completed_at = datetime.now(timezone.utc)
-                logger.info("Agent %s completed for run %s", agent_type, agent_run_id)
+                run.response_time_ms = elapsed_ms
+                run.model_version = "gpt-4o-mini"
+
+                # Record token usage in budget tracker
+                tokens = run.tokens_used or 0
+                cost = ai_budget_service.estimate_cost(tokens)
+                run.cost_usd = cost
+                await ai_budget_service.record_usage(org_id, tokens, cost)
+
+                logger.info("Agent %s completed for run %s (%dms, %d tokens)", agent_type, agent_run_id, elapsed_ms, tokens)
             except Exception as e:
                 logger.error("Agent %s failed: %s", agent_type, e, exc_info=True)
                 run.status = "failed"
@@ -423,3 +447,61 @@ async def get_run(org_id: VerifiedOrgId, run_id: UUID, db: DB, current_user: Any
     if not run:
         raise NotFoundError(f"Agent run {run_id} not found")
     return run
+
+
+# ---------------------------------------------------------------------------
+# AI Governance — Human-in-the-Loop Review
+# ---------------------------------------------------------------------------
+
+@router.post("/runs/{run_id}/review", response_model=AgentRunResponse)
+async def review_agent_run(
+    org_id: VerifiedOrgId, run_id: UUID,
+    body: AgentRunReview,
+    db: DB, current_user: ComplianceUser,
+):
+    """Review an AI agent output — approve, reject, or modify."""
+    from app.schemas.agent_run import AgentRunReview as _  # noqa — already imported
+
+    result = await db.execute(
+        select(AgentRun).where(AgentRun.id == run_id, AgentRun.org_id == org_id)
+    )
+    run = result.scalar_one_or_none()
+    if not run:
+        raise NotFoundError(f"Agent run {run_id} not found")
+
+    # Separation of duties: reviewer cannot be the person who triggered the run
+    if run.created_by and str(run.created_by) == str(current_user.id):
+        raise HTTPException(
+            403, "Separation of duties: you cannot review an agent run you triggered"
+        )
+
+    if body.action == "approve":
+        run.approval_status = "approved"
+    elif body.action == "reject":
+        run.approval_status = "rejected"
+    elif body.action == "modify":
+        if not body.modified_output:
+            raise HTTPException(400, "modified_output required for action=modify")
+        run.original_output = run.output_data  # preserve original
+        run.output_data = body.modified_output
+        run.approval_status = "modified"
+    else:
+        raise HTTPException(400, f"Invalid action: {body.action}. Use approve/reject/modify")
+
+    run.approved_by = current_user.id
+    run.approved_at = datetime.now(timezone.utc)
+    run.review_notes = body.review_notes
+    await db.commit()
+    await db.refresh(run)
+    return run
+
+
+# ---------------------------------------------------------------------------
+# AI Budget
+# ---------------------------------------------------------------------------
+
+@router.get("/budget")
+async def get_ai_budget(org_id: VerifiedOrgId, current_user: AnyInternalUser):
+    """Get current month's AI token usage and budget for the org."""
+    from app.services import ai_budget_service
+    return await ai_budget_service.get_usage(str(org_id))

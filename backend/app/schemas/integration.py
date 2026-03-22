@@ -27,6 +27,12 @@ class IntegrationResponse(BaseModel):
     config: dict | None
     credentials_ref: str | None
     last_sync_at: datetime | None
+    collection_schedule: str | None = None
+    schedule_collector_type: str | None = None
+    schedule_control_id: UUID | None = None
+    schedule_enabled: bool = False
+    next_run_at: datetime | None = None
+    last_schedule_error: str | None = None
     created_at: datetime
     updated_at: datetime
 

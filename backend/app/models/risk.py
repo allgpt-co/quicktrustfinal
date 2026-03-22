@@ -41,6 +41,14 @@ class Risk(BaseModel):
     )
     last_review_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     next_review_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Phase 5: Risk acceptance workflow
+    acceptance_status: Mapped[str | None] = mapped_column(String(20))  # pending, approved, rejected
+    acceptance_requested_by: Mapped[uuid.UUID | None] = mapped_column(GUID())
+    acceptance_requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    acceptance_approved_by: Mapped[uuid.UUID | None] = mapped_column(GUID())
+    acceptance_approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    acceptance_justification: Mapped[str | None] = mapped_column(Text)
+    acceptance_expiry: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     organization = relationship("Organization", back_populates="risks", lazy="selectin")
     owner = relationship("User", foreign_keys=[owner_id], lazy="selectin")
