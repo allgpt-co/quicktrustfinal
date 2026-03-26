@@ -1,7 +1,9 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
 from fastapi.responses import RedirectResponse, Response
+from pydantic import BaseModel as PydanticBaseModel
 
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import BadRequestError
@@ -94,7 +96,12 @@ async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, curren
         response.close()
         response.release_conn()
 
-        content_type = "application/pdf" if report.format == "pdf" else "text/csv"
+        format_content_types = {
+            "pdf": "application/pdf",
+            "csv": "text/csv",
+            "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        }
+        content_type = format_content_types.get(report.format, "application/octet-stream")
         import re
         safe_title = re.sub(r'[^\w\s\-.]', '', report.title or 'report').replace(' ', '_')
         filename = f"{safe_title}.{report.format or 'pdf'}"
@@ -113,3 +120,98 @@ async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, curren
 @router.get("/{report_id}/data")
 async def get_report_data(org_id: VerifiedOrgId, report_id: UUID, db: DB, current_user: AnyInternalUser):
     return await report_service.generate_report_data(db, org_id, report_id)
+
+
+# ---------------------------------------------------------------------------
+# Report Schedule endpoints
+# ---------------------------------------------------------------------------
+
+
+class ReportScheduleCreate(PydanticBaseModel):
+    report_type: str
+    frequency: str  # daily, weekly, monthly
+    day_of_week: int = 0  # 0=Monday, only used for weekly
+    recipients: list[str] | None = None
+
+
+class ReportScheduleResponse(PydanticBaseModel):
+    id: UUID
+    org_id: UUID
+    report_type: str
+    frequency: str
+    day_of_week: int
+    recipients: list[str] | None = None
+    is_active: bool
+    last_sent_at: datetime | None = None
+    created_at: datetime | None = None
+
+    model_config = {"from_attributes": True}
+
+
+@router.get("/schedules", response_model=list[ReportScheduleResponse])
+async def list_schedules(
+    org_id: VerifiedOrgId,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """List all report schedules for this organization."""
+    from sqlalchemy import select
+    from app.models.report_schedule import ReportSchedule
+
+    result = await db.execute(
+        select(ReportSchedule).where(ReportSchedule.org_id == org_id).order_by(
+            ReportSchedule.created_at.desc()
+        )
+    )
+    return list(result.scalars().all())
+
+
+@router.post("/schedules", response_model=ReportScheduleResponse, status_code=201)
+async def create_schedule(
+    org_id: VerifiedOrgId,
+    data: ReportScheduleCreate,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Create a new report delivery schedule."""
+    from app.models.report_schedule import ReportSchedule
+
+    valid_frequencies = {"daily", "weekly", "monthly"}
+    if data.frequency not in valid_frequencies:
+        raise BadRequestError(f"Frequency must be one of: {', '.join(valid_frequencies)}")
+
+    schedule = ReportSchedule(
+        org_id=org_id,
+        report_type=data.report_type,
+        frequency=data.frequency,
+        day_of_week=data.day_of_week,
+        recipients=data.recipients or [],
+        is_active=True,
+    )
+    db.add(schedule)
+    await db.commit()
+    await db.refresh(schedule)
+    return schedule
+
+
+@router.delete("/schedules/{schedule_id}", status_code=204)
+async def delete_schedule(
+    org_id: VerifiedOrgId,
+    schedule_id: UUID,
+    db: DB,
+    current_user: ComplianceUser,
+):
+    """Delete a report delivery schedule."""
+    from sqlalchemy import select
+    from app.models.report_schedule import ReportSchedule
+
+    result = await db.execute(
+        select(ReportSchedule).where(
+            ReportSchedule.id == schedule_id, ReportSchedule.org_id == org_id
+        )
+    )
+    schedule = result.scalar_one_or_none()
+    if not schedule:
+        raise BadRequestError(f"Schedule {schedule_id} not found")
+    await db.delete(schedule)
+    await db.commit()

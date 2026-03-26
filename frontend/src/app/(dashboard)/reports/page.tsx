@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   FileCheck,
   GraduationCap,
-  Zap,
+  Building2,
 } from "lucide-react";
 
 const TYPE_FILTERS: { label: string; value: string | undefined }[] = [
@@ -26,6 +26,7 @@ const TYPE_FILTERS: { label: string; value: string | undefined }[] = [
   { label: "Risk Report", value: "risk_report" },
   { label: "Evidence Audit", value: "evidence_audit" },
   { label: "Training Completion", value: "training_completion" },
+  { label: "Vendor Risk", value: "vendor_risk" },
 ];
 
 const STATUS_FILTERS: { label: string; value: string | undefined }[] = [
@@ -165,6 +166,14 @@ export default function ReportsPage() {
                 color: "text-teal-500",
                 bg: "bg-teal-500/10",
               },
+              {
+                type: "vendor_risk",
+                title: "Vendor Risk",
+                desc: "Vendor risk tiers, assessments, and SLA compliance",
+                icon: Building2,
+                color: "text-pink-500",
+                bg: "bg-pink-500/10",
+              },
             ].map((r) => (
               <button
                 key={r.type}
@@ -229,6 +238,7 @@ export default function ReportsPage() {
                   <option value="training_completion">
                     Training Completion
                   </option>
+                  <option value="vendor_risk">Vendor Risk</option>
                 </select>
               </div>
 
@@ -244,6 +254,7 @@ export default function ReportsPage() {
                   <option value="json">JSON</option>
                   <option value="csv">CSV</option>
                   <option value="pdf">PDF</option>
+                  <option value="pptx">PPTX (PowerPoint)</option>
                 </select>
               </div>
             </div>
@@ -381,6 +392,132 @@ export default function ReportsPage() {
           </p>
         </div>
       )}
+
+      {/* Report Schedules */}
+      <ReportSchedulesSection orgId={orgId} />
     </div>
+  );
+}
+
+function ReportSchedulesSection({ orgId }: { orgId: string }) {
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [schedForm, setSchedForm] = useState({
+    report_type: "compliance_summary",
+    frequency: "weekly",
+    day_of_week: 0,
+    recipients: "",
+  });
+
+  async function loadSchedules() {
+    try {
+      const data = await api.get<any[]>(`/organizations/${orgId}/reports/schedules`);
+      setSchedules(Array.isArray(data) ? data : []);
+    } catch { setSchedules([]); }
+    setLoading(false);
+  }
+
+  useState(() => { loadSchedules(); });
+
+  async function handleCreate() {
+    try {
+      await api.post(`/organizations/${orgId}/reports/schedules`, {
+        ...schedForm,
+        recipients: schedForm.recipients.split(",").map((s: string) => s.trim()).filter(Boolean),
+      });
+      setShowAdd(false);
+      setSchedForm({ report_type: "compliance_summary", frequency: "weekly", day_of_week: 0, recipients: "" });
+      loadSchedules();
+    } catch {}
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      await api.delete(`/organizations/${orgId}/reports/schedules/${id}`);
+      loadSchedules();
+    } catch {}
+  }
+
+  const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold">Scheduled Reports</h2>
+            <p className="text-sm text-muted-foreground">Auto-generate and deliver reports on a schedule</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShowAdd(!showAdd)}>
+            <Plus className="mr-1 h-4 w-4" /> Add Schedule
+          </Button>
+        </div>
+
+        {showAdd && (
+          <div className="rounded-md border p-4 mb-4 space-y-3">
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <label className="text-xs font-medium">Report Type</label>
+                <select className="mt-1 w-full rounded-md border bg-background p-2 text-sm" value={schedForm.report_type} onChange={(e) => setSchedForm({ ...schedForm, report_type: e.target.value })}>
+                  <option value="compliance_summary">Compliance Summary</option>
+                  <option value="risk_report">Risk Report</option>
+                  <option value="evidence_audit">Evidence Audit</option>
+                  <option value="training_completion">Training Completion</option>
+                  <option value="vendor_risk">Vendor Risk</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium">Frequency</label>
+                <select className="mt-1 w-full rounded-md border bg-background p-2 text-sm" value={schedForm.frequency} onChange={(e) => setSchedForm({ ...schedForm, frequency: e.target.value })}>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium">Day of Week</label>
+                <select className="mt-1 w-full rounded-md border bg-background p-2 text-sm" value={schedForm.day_of_week} onChange={(e) => setSchedForm({ ...schedForm, day_of_week: parseInt(e.target.value) })}>
+                  {dayNames.map((d, i) => <option key={i} value={i}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium">Recipients (comma-separated)</label>
+                <input type="text" className="mt-1 w-full rounded-md border bg-background p-2 text-sm" placeholder="admin@quicktrust.dev" value={schedForm.recipients} onChange={(e) => setSchedForm({ ...schedForm, recipients: e.target.value })} />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleCreate}>Create Schedule</Button>
+              <Button size="sm" variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <Skeleton className="h-16 w-full" />
+        ) : schedules.length > 0 ? (
+          <div className="space-y-2">
+            {schedules.map((s: any) => (
+              <div key={s.id} className="flex items-center justify-between rounded-md border p-3">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline">{s.report_type?.replace(/_/g, " ")}</Badge>
+                  <span className="text-sm">{s.frequency} {s.frequency === "weekly" ? `(${dayNames[s.day_of_week || 0]})` : ""}</span>
+                  {s.recipients && s.recipients.length > 0 && (
+                    <span className="text-xs text-muted-foreground">→ {s.recipients.join(", ")}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={s.is_active ? "success" : "secondary"}>{s.is_active ? "Active" : "Inactive"}</Badge>
+                  {s.last_sent_at && <span className="text-xs text-muted-foreground">Last: {new Date(s.last_sent_at).toLocaleDateString()}</span>}
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleDelete(s.id)}>Delete</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-4">No report schedules configured yet.</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

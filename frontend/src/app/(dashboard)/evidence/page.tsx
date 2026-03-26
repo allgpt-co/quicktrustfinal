@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -323,7 +324,7 @@ export default function EvidencePage() {
               <CardContent className="flex items-center gap-4 p-4">
                 <Shield className="h-8 w-8 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium">{evidence.title}</div>
+                  <Link href={`/evidence/${evidence.id}`} className="font-medium hover:underline">{evidence.title}</Link>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                     {evidence.collected_at && (
                       <span>

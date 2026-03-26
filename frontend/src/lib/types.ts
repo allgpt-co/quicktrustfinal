@@ -144,8 +144,28 @@ export interface Evidence {
   data: Record<string, unknown> | null;
   collection_method: string;
   collector: string | null;
+  // Chain of custody fields
+  collected_by: string | null;
+  reviewed_by: string | null;
+  approved_by: string | null;
+  rejected_by: string | null;
+  reviewed_at: string | null;
+  approved_at: string | null;
+  rejected_at: string | null;
+  rejection_reason: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface EvidenceVersion {
+  id: string;
+  evidence_id: string;
+  version_number: number;
+  changes_summary: string | null;
+  changed_by: string | null;
+  changed_by_name: string | null;
+  snapshot: Record<string, unknown> | null;
+  created_at: string;
 }
 
 export interface EvidenceTemplate {
@@ -464,12 +484,30 @@ export interface Incident {
   category: string | null;
   assigned_to_id: string | null;
   detected_at: string | null;
+  contained_at: string | null;
   resolved_at: string | null;
   post_mortem_notes: string | null;
+  root_cause: string | null;
+  lessons_learned: string | null;
   related_control_ids: string[] | null;
   timeline_events?: IncidentTimelineEvent[];
+  // Breach notification fields
+  breach_notification_required: boolean;
+  breach_notification_deadline: string | null;
+  breach_notified_at: string | null;
+  affected_users_count: number | null;
+  affected_systems: string[] | null;
+  breach_notification_checklist: BreachNotificationChecklist | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface BreachNotificationChecklist {
+  notify_dpa: boolean;
+  notify_affected_users: boolean;
+  notify_business_partners: boolean;
+  document_notification_details: boolean;
+  prepare_public_statement: boolean;
 }
 
 export interface IncidentTimelineEvent {

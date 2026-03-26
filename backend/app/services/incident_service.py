@@ -148,6 +148,7 @@ async def get_incident_stats(db: AsyncSession, org_id: UUID) -> dict:
     by_severity: dict[str, int] = {}
     open_p1 = 0
     resolution_hours: list[float] = []
+    detect_hours: list[float] = []
 
     for inc in incidents:
         by_status[inc.status] = by_status.get(inc.status, 0) + 1
@@ -161,10 +162,16 @@ async def get_incident_stats(db: AsyncSession, org_id: UUID) -> dict:
             delta = (inc.resolved_at - inc.created_at).total_seconds() / 3600
             resolution_hours.append(delta)
 
+        # MTTD: time between created_at and detected_at
+        if inc.detected_at and inc.created_at and inc.detected_at != inc.created_at:
+            detect_delta = (inc.detected_at - inc.created_at).total_seconds() / 3600
+            detect_hours.append(abs(detect_delta))
+
     return {
         "total": len(incidents),
         "by_status": by_status,
         "by_severity": by_severity,
         "open_p1_count": open_p1,
         "avg_resolution_hours": round(sum(resolution_hours) / len(resolution_hours), 1) if resolution_hours else 0.0,
+        "avg_detect_hours": round(sum(detect_hours) / len(detect_hours), 1) if detect_hours else 0.0,
     }

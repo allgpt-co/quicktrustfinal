@@ -58,9 +58,9 @@ async def send_system_notification(
     entity_id: str | None = None,
     user_id: UUID | None = None,
 ) -> Notification:
-    """Helper for internal code to create notifications without building schemas."""
+    """Helper for internal code to create notifications and dispatch to all channels."""
     data = NotificationCreate(
-        channel="in_app",
+        channel="all",  # Dispatch to in-app + Slack + email
         category=category,
         title=title,
         message=message,

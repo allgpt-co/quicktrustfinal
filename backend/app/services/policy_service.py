@@ -54,12 +54,92 @@ async def update_policy(
     db: AsyncSession, org_id: UUID, policy_id: UUID, data: PolicyUpdate
 ) -> Policy:
     policy = await get_policy(db, org_id, policy_id)
+    old_status = policy.status
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(policy, field, value)
+
+    # Track published_at timestamp
+    new_status = update_data.get("status")
+    if new_status == "published" and old_status != "published":
+        policy.published_at = datetime.now(timezone.utc)
+
     await db.commit()
     await db.refresh(policy)
+
+    # Policy distribution — notify when published
+    if new_status == "published" and old_status != "published":
+        try:
+            await _distribute_policy(db, org_id, policy)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning("Policy distribution failed: %s", exc)
+
+    # Create policy version snapshot on content/status changes
+    if "content" in update_data or "status" in update_data:
+        try:
+            await _create_policy_version(db, org_id, policy)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning("Failed to create policy version: %s", exc)
+
     return policy
+
+
+async def _distribute_policy(db: AsyncSession, org_id: UUID, policy: Policy) -> None:
+    """Notify all org users when a policy is published."""
+    from app.models.user import User
+    from app.services import alert_engine
+
+    # Get all active users in the org
+    result = await db.execute(
+        select(User).where(User.org_id == org_id, User.is_active.is_(True))
+    )
+    users = list(result.scalars().all())
+
+    # Create in-app notification for each user
+    for user in users:
+        await alert_engine.send_notification(
+            db, org_id,
+            title=f"New Policy Published: {policy.title}",
+            message=f"The policy '{policy.title}' (v{policy.version}) has been published. Please review and acknowledge.",
+            severity="info",
+            category="policy_published",
+            user_id=user.id,
+            entity_type="policy",
+            entity_id=str(policy.id),
+        )
+
+    # Also send a Slack notification if configured
+    await alert_engine.send_slack_if_configured(
+        db, org_id,
+        title=f"📋 Policy Published: {policy.title}",
+        message=f"Version {policy.version} is now live. {len(users)} team members notified.",
+        severity="info",
+    )
+
+
+async def _create_policy_version(db: AsyncSession, org_id: UUID, policy: Policy) -> None:
+    """Create a version snapshot of the current policy state."""
+    from app.models.policy_version import PolicyVersion
+
+    # Get the latest version number
+    result = await db.execute(
+        select(func.max(PolicyVersion.version_number))
+        .where(PolicyVersion.policy_id == policy.id, PolicyVersion.org_id == org_id)
+    )
+    max_ver = result.scalar() or 0
+
+    version = PolicyVersion(
+        policy_id=policy.id,
+        org_id=org_id,
+        version_number=max_ver + 1,
+        content=policy.content or "",
+        status_at_version=policy.status,
+        change_summary=f"Status changed to {policy.status}",
+    )
+    db.add(version)
+    await db.commit()
 
 
 async def delete_policy(db: AsyncSession, org_id: UUID, policy_id: UUID) -> None:

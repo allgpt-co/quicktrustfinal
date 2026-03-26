@@ -44,6 +44,11 @@ from app.models.drift import DriftBaseline, DriftEvent
 from app.models.control_test import ControlTestDefinition, ControlTestResult
 from app.models.workflow import WorkflowExecution
 from app.models.sso_config import SSOConfiguration, SCIMToken
+from app.models.control_version import ControlVersion
+from app.models.control_dependency import ControlDependency
+from app.models.policy_version import PolicyVersion
+from app.models.evidence_version import EvidenceVersion
+from app.models.report_schedule import ReportSchedule
 
 __all__ = [
     "BaseModel",
@@ -105,4 +110,9 @@ __all__ = [
     "WorkflowExecution",
     "SSOConfiguration",
     "SCIMToken",
+    "ControlVersion",
+    "ControlDependency",
+    "PolicyVersion",
+    "EvidenceVersion",
+    "ReportSchedule",
 ]

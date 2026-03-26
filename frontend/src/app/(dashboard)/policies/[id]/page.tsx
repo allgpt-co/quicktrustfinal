@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePolicy, useUpdatePolicy } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "outline"> = {
   draft: "secondary",
@@ -35,6 +37,22 @@ export default function PolicyDetailPage() {
   const policyId = params.id as string;
   const { data: policy, isLoading } = usePolicy(orgId, policyId);
   const updatePolicy = useUpdatePolicy(orgId);
+  const [diffV1, setDiffV1] = useState(1);
+  const [diffV2, setDiffV2] = useState(2);
+
+  // Version history
+  const { data: policyVersions } = useQuery({
+    queryKey: ["policy-versions", orgId, policyId],
+    queryFn: () => api.get<any[]>(`/organizations/${orgId}/policies/${policyId}/versions`),
+    enabled: !!orgId && !!policyId,
+  });
+
+  // Diff between two versions
+  const { data: diffData } = useQuery({
+    queryKey: ["policy-diff", orgId, policyId, diffV1, diffV2],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/policies/${policyId}/diff?v1=${diffV1}&v2=${diffV2}`),
+    enabled: !!orgId && !!policyId && !!policyVersions && policyVersions.length >= 2,
+  });
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
 
@@ -106,6 +124,9 @@ export default function PolicyDetailPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="controls">Linked Controls</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="versions">
+            Versions {policyVersions && policyVersions.length > 0 && `(${policyVersions.length})`}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -232,17 +253,17 @@ export default function PolicyDetailPage() {
                     </dd>
                   </div>
                 )}
-                {policy.classification && (
+                {(policy as any).classification && (
                   <div>
                     <dt className="font-medium text-muted-foreground">Classification</dt>
                     <dd>
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        policy.classification === "RESTRICTED" ? "bg-red-500/20 text-red-500" :
-                        policy.classification === "CONFIDENTIAL" ? "bg-orange-500/20 text-orange-500" :
-                        policy.classification === "INTERNAL" ? "bg-blue-500/20 text-blue-500" :
+                        (policy as any).classification === "RESTRICTED" ? "bg-red-500/20 text-red-500" :
+                        (policy as any).classification === "CONFIDENTIAL" ? "bg-orange-500/20 text-orange-500" :
+                        (policy as any).classification === "INTERNAL" ? "bg-blue-500/20 text-blue-500" :
                         "bg-green-500/20 text-green-500"
                       }`}>
-                        {policy.classification}
+                        {(policy as any).classification}
                       </span>
                     </dd>
                   </div>
@@ -258,6 +279,111 @@ export default function PolicyDetailPage() {
               </dl>
             </CardContent>
           </Card>
+        </TabsContent>
+        {/* Versions Tab */}
+        <TabsContent value="versions">
+          <div className="space-y-6">
+            {/* Version list */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Version History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {policyVersions && policyVersions.length > 0 ? (
+                  <div className="divide-y">
+                    {policyVersions.map((v: any) => (
+                      <div key={v.id} className="flex items-center justify-between py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                            v{v.version_number}
+                          </span>
+                          <div>
+                            <p className="text-sm font-medium">{v.change_summary || "No summary"}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {v.status_at_version} &middot; {v.content_length} chars
+                              {v.created_at && <> &middot; {new Date(v.created_at).toLocaleString()}</>}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant="outline">{v.status_at_version}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="py-6 text-center text-sm text-muted-foreground">
+                    No version history yet. Versions are created when the policy content is updated.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Diff viewer */}
+            {policyVersions && policyVersions.length >= 2 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Compare Versions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">From</label>
+                      <select
+                        className="ml-2 rounded-md border bg-background px-2 py-1 text-sm"
+                        value={diffV1}
+                        onChange={(e) => setDiffV1(Number(e.target.value))}
+                      >
+                        {policyVersions.map((v: any) => (
+                          <option key={v.id} value={v.version_number}>v{v.version_number}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <span className="text-muted-foreground">→</span>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">To</label>
+                      <select
+                        className="ml-2 rounded-md border bg-background px-2 py-1 text-sm"
+                        value={diffV2}
+                        onChange={(e) => setDiffV2(Number(e.target.value))}
+                      >
+                        {policyVersions.map((v: any) => (
+                          <option key={v.id} value={v.version_number}>v{v.version_number}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {diffData && (
+                      <div className="flex gap-2 text-xs">
+                        <span className="text-green-500">+{diffData.additions} additions</span>
+                        <span className="text-red-500">-{diffData.deletions} deletions</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {diffData?.diff_text ? (
+                    <pre className="max-h-96 overflow-auto rounded-lg border bg-muted/30 p-4 text-xs font-mono whitespace-pre-wrap">
+                      {diffData.diff_text.split("\n").map((line: string, i: number) => (
+                        <div
+                          key={i}
+                          className={
+                            line.startsWith("+") && !line.startsWith("+++")
+                              ? "bg-green-500/10 text-green-400"
+                              : line.startsWith("-") && !line.startsWith("---")
+                              ? "bg-red-500/10 text-red-400"
+                              : line.startsWith("@@")
+                              ? "text-blue-400"
+                              : ""
+                          }
+                        >
+                          {line}
+                        </div>
+                      ))}
+                    </pre>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Select two different versions to see the diff.</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

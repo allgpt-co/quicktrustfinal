@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization, useUpdateOrganization } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight, Shield, Database, Clock } from "lucide-react";
+import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight, Shield, Database, Clock, Bell } from "lucide-react";
 import Link from "next/link";
 
 export default function SettingsPage() {
@@ -279,6 +279,24 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold">SSO & SCIM</h3>
                 <p className="text-xs text-muted-foreground">
                   Configure Single Sign-On and automated user provisioning
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Alert Channels Card */}
+      <Link href="/settings/alerts">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Bell className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">Alert Channels</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure Slack, email, and notification delivery for compliance alerts
                 </p>
               </div>
             </div>

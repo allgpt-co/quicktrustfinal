@@ -83,3 +83,49 @@ async def configure_slack(
 @router.get("/slack", response_model=SlackWebhookResponse | None)
 async def get_slack_config(org_id: VerifiedOrgId, db: DB, current_user: AdminUser):
     return await notification_service.get_slack_config(db, org_id)
+
+
+@router.delete("/slack")
+async def delete_slack_config(org_id: VerifiedOrgId, db: DB, current_user: AdminUser):
+    config = await notification_service.get_slack_config(db, org_id)
+    if config:
+        config.is_active = False
+        await db.commit()
+    return {"message": "Slack webhook disabled"}
+
+
+@router.post("/test-slack")
+async def test_slack(org_id: VerifiedOrgId, db: DB, current_user: AdminUser):
+    """Send a test message to the configured Slack webhook."""
+    config = await notification_service.get_slack_config(db, org_id)
+    if not config:
+        from app.core.exceptions import BadRequestError
+        raise BadRequestError("No Slack webhook configured")
+
+    import httpx
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(config.webhook_url, json={
+                "text": ":white_check_mark: *QuickTrust Test Alert*\nSlack integration is working! Alerts will appear here."
+            })
+            if resp.status_code == 200:
+                return {"message": "Test message sent to Slack successfully"}
+            return {"message": f"Slack returned status {resp.status_code}"}
+    except Exception as e:
+        from app.core.exceptions import BadRequestError
+        raise BadRequestError(f"Failed to send test message: {str(e)[:200]}")
+
+
+@router.post("/run-alerts")
+async def trigger_alert_engine(org_id: VerifiedOrgId, db: DB, current_user: AdminUser):
+    """Manually trigger the alert engine (evidence freshness + compliance regression)."""
+    from app.services import alert_engine
+
+    freshness = await alert_engine.check_evidence_freshness(db)
+    regression = await alert_engine.check_compliance_regression(db)
+
+    return {
+        "message": "Alert engine completed",
+        "freshness_alerts": freshness,
+        "regression_alerts": regression,
+    }

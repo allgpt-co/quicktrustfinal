@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useControls, useBulkApprove } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
+import { useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
 import type { ControlStatus } from "@/lib/types";
 import { CheckCircle, ListChecks, AlertTriangle } from "lucide-react";
 
@@ -25,6 +27,7 @@ export default function ControlsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { data, isLoading, error } = useControls(orgId, { status: statusFilter });
   const bulkApprove = useBulkApprove(orgId);
+  const qc = useQueryClient();
 
   const controls = data?.items || [];
 
@@ -86,10 +89,35 @@ export default function ControlsPage() {
           </p>
         </div>
         {selectedIds.size > 0 && (
-          <Button onClick={handleBulkApprove} disabled={bulkApprove.isPending}>
-            <CheckCircle className="mr-2 h-4 w-4" />
-            Approve {selectedIds.size} Selected
-          </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+            <Button size="sm" onClick={handleBulkApprove} disabled={bulkApprove.isPending}>
+              <CheckCircle className="mr-1 h-4 w-4" />
+              Approve
+            </Button>
+            <Button size="sm" variant="outline" onClick={async () => {
+              const ids = Array.from(selectedIds);
+              await api.post(`/organizations/${orgId}/controls/bulk/status`, { control_ids: ids, status: "draft" });
+              setSelectedIds(new Set());
+              qc.invalidateQueries({ queryKey: ["controls", orgId] });
+              qc.invalidateQueries({ queryKey: ["control-stats", orgId] });
+            }}>
+              Set Draft
+            </Button>
+            <Button size="sm" variant="destructive" onClick={async () => {
+              if (!confirm(`Delete ${selectedIds.size} controls?`)) return;
+              const ids = Array.from(selectedIds);
+              await api.post(`/organizations/${orgId}/controls/bulk/delete`, { control_ids: ids });
+              setSelectedIds(new Set());
+              qc.invalidateQueries({ queryKey: ["controls", orgId] });
+              qc.invalidateQueries({ queryKey: ["control-stats", orgId] });
+            }}>
+              Delete
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
+              Clear
+            </Button>
+          </div>
         )}
       </div>
 

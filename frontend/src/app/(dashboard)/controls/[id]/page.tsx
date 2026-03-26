@@ -8,7 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useControl, useEvidence } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Shield, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, FileCheck, ChevronDown, ChevronUp, History, Link2, Clock, Trash2, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 const testResultVariant: Record<string, "success" | "destructive" | "secondary"> = {
   pass: "success",
@@ -26,6 +30,36 @@ export default function ControlDetailPage() {
     { control_id: controlId }
   );
   const [showProcedure, setShowProcedure] = useState(false);
+  const [showAddDep, setShowAddDep] = useState(false);
+  const [depControlId, setDepControlId] = useState("");
+  const qc = useQueryClient();
+
+  // Version history
+  const { data: versions } = useQuery({
+    queryKey: ["control-versions", orgId, controlId],
+    queryFn: () => api.get<any[]>(`/organizations/${orgId}/controls/${controlId}/versions`),
+    enabled: !!orgId && !!controlId,
+  });
+
+  // Dependencies
+  const { data: dependencies } = useQuery({
+    queryKey: ["control-deps", orgId, controlId],
+    queryFn: () => api.get<any[]>(`/organizations/${orgId}/controls/${controlId}/dependencies`),
+    enabled: !!orgId && !!controlId,
+  });
+
+  const addDep = useMutation({
+    mutationFn: (depId: string) =>
+      api.post(`/organizations/${orgId}/controls/${controlId}/dependencies`, { depends_on_id: depId }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["control-deps"] }); setShowAddDep(false); setDepControlId(""); toast.success("Dependency added"); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const removeDep = useMutation({
+    mutationFn: (depId: string) =>
+      api.delete(`/organizations/${orgId}/controls/${controlId}/dependencies/${depId}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["control-deps"] }); toast.success("Dependency removed"); },
+  });
 
   if (isLoading) {
     return (
@@ -74,6 +108,18 @@ export default function ControlDetailPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="testing">Test History</TabsTrigger>
+          <TabsTrigger value="versions">
+            Versions
+            {versions && versions.length > 0 && (
+              <span className="ml-1 text-xs text-muted-foreground">({versions.length})</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="dependencies">
+            Dependencies
+            {dependencies && dependencies.length > 0 && (
+              <span className="ml-1 text-xs text-muted-foreground">({dependencies.length})</span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -254,6 +300,113 @@ export default function ControlDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+        {/* Version History Tab */}
+        <TabsContent value="versions">
+          {versions && versions.length > 0 ? (
+            <div className="space-y-3">
+              {versions.map((v: any) => (
+                <Card key={v.id}>
+                  <CardContent className="flex items-center gap-4 p-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      v{v.version_number}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium">{v.title}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Status: {v.status}
+                        {v.change_reason && <> &middot; Reason: {v.change_reason}</>}
+                        {v.created_at && <> &middot; {new Date(v.created_at).toLocaleString()}</>}
+                      </div>
+                      {v.changes && Object.keys(v.changes).length > 0 && (
+                        <div className="mt-2 text-xs">
+                          {Object.entries(v.changes).map(([field, change]: [string, any]) => (
+                            <div key={field} className="flex gap-2">
+                              <span className="font-medium">{field}:</span>
+                              <span className="text-red-400 line-through">{change.old || "—"}</span>
+                              <span>→</span>
+                              <span className="text-green-400">{change.new || "—"}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <Badge variant="outline">{v.status}</Badge>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                <History className="h-10 w-10 text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground">No version history yet. Changes will appear here when the control is modified.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Dependencies Tab */}
+        <TabsContent value="dependencies">
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <Button size="sm" variant="outline" onClick={() => setShowAddDep(!showAddDep)}>
+                <Plus className="mr-1 h-4 w-4" />
+                Add Dependency
+              </Button>
+            </div>
+
+            {showAddDep && (
+              <Card>
+                <CardContent className="p-4 space-y-3">
+                  <label className="text-sm font-medium">Control ID this depends on:</label>
+                  <input
+                    type="text"
+                    className="w-full rounded-md border bg-background p-2 text-sm"
+                    placeholder="Paste control UUID..."
+                    value={depControlId}
+                    onChange={(e) => setDepControlId(e.target.value)}
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => addDep.mutate(depControlId)} disabled={!depControlId || addDep.isPending}>
+                      Add
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setShowAddDep(false)}>Cancel</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {dependencies && dependencies.length > 0 ? (
+              <div className="space-y-3">
+                {dependencies.map((dep: any) => (
+                  <Card key={dep.id}>
+                    <CardContent className="flex items-center gap-4 p-4">
+                      <Link2 className="h-6 w-6 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{dep.depends_on_title || "Unknown Control"}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Type: {dep.dependency_type}
+                          {dep.notes && <> &middot; {dep.notes}</>}
+                        </div>
+                      </div>
+                      <Badge variant="outline">{dep.dependency_type}</Badge>
+                      <Button size="sm" variant="ghost" onClick={() => removeDep.mutate(dep.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                  <Link2 className="h-10 w-10 text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground">No dependencies defined. Add dependencies to track which controls this one relies on.</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

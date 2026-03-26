@@ -49,6 +49,9 @@ from app.api.v1 import (
     sso,
     scim,
     backups,
+    control_versions,
+    policy_versions,
+    scan_orchestration,
 )
 
 api_router = APIRouter()
@@ -108,3 +111,7 @@ api_router.include_router(sso.router)
 api_router.include_router(scim.router)
 # Phase 7: Infrastructure & DR
 api_router.include_router(backups.router)
+# Priority 2: Versioning, Dependencies, Bulk Ops, Scanner Orchestration
+api_router.include_router(control_versions.router)
+api_router.include_router(policy_versions.router)
+api_router.include_router(scan_orchestration.router)

@@ -104,7 +104,7 @@ export default function IncidentsPage() {
 
       {/* Stats bar */}
       {stats && (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           {[
             { label: "Open", value: stats.by_status?.open ?? 0 },
             { label: "Investigating", value: stats.by_status?.investigating ?? 0 },
@@ -118,6 +118,18 @@ export default function IncidentsPage() {
               </CardContent>
             </Card>
           ))}
+          <Card className="border-blue-500/30 bg-blue-500/5">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-500">{stats.avg_detect_hours ?? 0}h</div>
+              <div className="text-xs text-muted-foreground">MTTD</div>
+            </CardContent>
+          </Card>
+          <Card className="border-orange-500/30 bg-orange-500/5">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-orange-500">{stats.avg_resolution_hours ?? 0}h</div>
+              <div className="text-xs text-muted-foreground">MTTR</div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
@@ -270,6 +282,11 @@ export default function IncidentsPage() {
                       )}
                     </div>
                   </div>
+                  {incident.breach_notification_required && (
+                    <Badge className="bg-red-600 text-white dark:bg-red-700 dark:text-white">
+                      Breach
+                    </Badge>
+                  )}
                   <Badge className={severityColor[incident.severity] || ""}>
                     {incident.severity}
                   </Badge>

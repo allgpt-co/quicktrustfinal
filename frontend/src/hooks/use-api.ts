@@ -12,6 +12,7 @@ import type {
   ControlTemplate,
   EvidenceTemplate,
   Evidence,
+  EvidenceVersion,
   AgentRun,
   AgentRunTrigger,
   AgentRunTriggerGeneric,
@@ -35,6 +36,7 @@ import type {
   Incident,
   IncidentStats,
   IncidentTimelineEvent,
+  BreachNotificationChecklist,
   Vendor,
   VendorStats,
   VendorAssessment,
@@ -1967,6 +1969,50 @@ export function useCreateTrainingAssignment(orgId: string) {
 }
 
 // =====================================================================
+// Phase 4: Evidence Detail, Versions, Approve/Reject
+// =====================================================================
+
+export function useEvidenceDetail(orgId: string, evidenceId: string) {
+  return useQuery({
+    queryKey: ["evidence", orgId, evidenceId],
+    queryFn: () =>
+      api.get<Evidence>(`/organizations/${orgId}/evidence/${evidenceId}`),
+    enabled: !!orgId && !!evidenceId,
+  });
+}
+
+export function useEvidenceVersions(orgId: string, evidenceId: string) {
+  return useQuery({
+    queryKey: ["evidence-versions", orgId, evidenceId],
+    queryFn: () =>
+      api.get<EvidenceVersion[]>(`/organizations/${orgId}/evidence/${evidenceId}/versions`),
+    enabled: !!orgId && !!evidenceId,
+  });
+}
+
+export function useApproveEvidence(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (evidenceId: string) =>
+      api.post<Evidence>(`/organizations/${orgId}/evidence/${evidenceId}/approve`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["evidence", orgId] });
+    },
+  });
+}
+
+export function useRejectEvidence(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ evidenceId, reason }: { evidenceId: string; reason: string }) =>
+      api.post<Evidence>(`/organizations/${orgId}/evidence/${evidenceId}/reject`, { rejection_reason: reason }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["evidence", orgId] });
+    },
+  });
+}
+
+// =====================================================================
 // Phase 4: Evidence Freshness
 // =====================================================================
 
@@ -2236,6 +2282,48 @@ export function useDisableCollectionSchedule(orgId: string) {
       api.delete(`/organizations/${orgId}/integrations/${integrationId}/schedule`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["integrations", orgId] });
+    },
+  });
+}
+
+export function useEvidencePackage(orgId: string) {
+  return async (evidenceId: string) => {
+    await api.downloadRedirect(
+      `/organizations/${orgId}/evidence/${evidenceId}/package`
+    );
+  };
+}
+
+// =====================================================================
+// Breach Notification
+// =====================================================================
+
+export function useBreachNotification(orgId: string, incidentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data?: { notified_at?: string }) =>
+      api.post<Incident>(
+        `/organizations/${orgId}/incidents/${incidentId}/breach-notify`,
+        data
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["incidents", orgId] });
+      qc.invalidateQueries({ queryKey: ["incidents", orgId, incidentId] });
+      qc.invalidateQueries({ queryKey: ["incident-stats", orgId] });
+    },
+  });
+}
+
+export function useUpdateBreachChecklist(orgId: string, incidentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (checklist: BreachNotificationChecklist) =>
+      api.patch<Incident>(
+        `/organizations/${orgId}/incidents/${incidentId}`,
+        { breach_notification_checklist: checklist }
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["incidents", orgId, incidentId] });
     },
   });
 }

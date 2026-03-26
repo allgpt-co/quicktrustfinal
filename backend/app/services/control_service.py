@@ -77,6 +77,8 @@ async def delete_control(db: AsyncSession, org_id: UUID, control_id: UUID) -> No
 async def bulk_approve_controls(
     db: AsyncSession, org_id: UUID, control_ids: list[UUID], status: str = "implemented"
 ) -> int:
+    from app.core.cache import cache_delete
+
     count = 0
     for cid in control_ids:
         result = await db.execute(
@@ -87,6 +89,7 @@ async def bulk_approve_controls(
             control.status = status
             count += 1
     await db.commit()
+    await cache_delete(f"org:{org_id}:control_stats")
     return count
 
 

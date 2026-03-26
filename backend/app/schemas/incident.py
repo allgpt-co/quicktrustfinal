@@ -91,3 +91,4 @@ class IncidentStatsResponse(BaseModel):
     by_severity: dict[str, int] = {}
     open_p1_count: int = 0
     avg_resolution_hours: float = 0.0
+    avg_detect_hours: float = 0.0

@@ -91,6 +91,7 @@ class ReportFormat(StrEnum):
     PDF = "pdf"
     CSV = "csv"
     JSON = "json"
+    PPTX = "pptx"
 
 
 class UserRole(StrEnum):

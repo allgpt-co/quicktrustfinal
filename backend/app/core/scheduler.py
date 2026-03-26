@@ -69,6 +69,15 @@ async def start_scheduler() -> None:
             replace_existing=True,
         )
 
+        # Evidence freshness + compliance regression checks — every 6 hours
+        scheduler.add_job(
+            _run_alert_engine,
+            trigger="interval",
+            hours=6,
+            id="alert_engine",
+            replace_existing=True,
+        )
+
         # Control test execution — run daily at 3 AM
         scheduler.add_job(
             _run_control_tests,
@@ -76,6 +85,15 @@ async def start_scheduler() -> None:
             hour=3,
             minute=0,
             id="control_test_execution",
+            replace_existing=True,
+        )
+
+        # Scheduled report delivery — check every hour for due reports
+        scheduler.add_job(
+            _run_scheduled_reports,
+            trigger="interval",
+            hours=1,
+            id="scheduled_report_delivery",
             replace_existing=True,
         )
 
@@ -150,6 +168,17 @@ async def _run_monitoring_check(org_id: str, rule_id: str) -> None:
                 logger.info(
                     "Monitoring rule %s generated %d alert(s)", rule_id, len(alerts)
                 )
+                # Auto-create incident from monitoring failure
+                from app.services import alert_engine
+                from app.models.monitoring import MonitorRule
+                rule_obj = (await db.execute(
+                    select(MonitorRule).where(MonitorRule.id == UUID(rule_id))
+                )).scalar_one_or_none()
+                if rule_obj:
+                    await alert_engine.create_auto_incident_from_monitor(
+                        db, UUID(org_id), rule_obj.name or rule_obj.check_type,
+                        rule_id, len(alerts),
+                    )
             else:
                 logger.debug("Monitoring rule %s passed.", rule_id)
     except Exception as exc:
@@ -188,6 +217,24 @@ async def _run_control_tests() -> None:
         logger.error("Error running control tests: %s", exc)
 
 
+async def _run_alert_engine() -> None:
+    """Periodic job: check evidence freshness + compliance regression."""
+    from app.core.database import async_session
+    from app.services import alert_engine
+
+    try:
+        async with async_session() as db:
+            freshness_alerts = await alert_engine.check_evidence_freshness(db)
+            regression_alerts = await alert_engine.check_compliance_regression(db)
+            if freshness_alerts or regression_alerts:
+                logger.info(
+                    "Alert engine: %d freshness alerts, %d regression alerts",
+                    freshness_alerts, regression_alerts,
+                )
+    except Exception as exc:
+        logger.error("Error running alert engine: %s", exc)
+
+
 async def _run_database_backup() -> None:
     """Nightly job: create a database backup."""
     from app.services import backup_service
@@ -213,3 +260,107 @@ async def _run_retention_enforcement() -> None:
                 logger.debug("Data retention: no records to purge.")
     except Exception as exc:
         logger.error("Error enforcing data retention: %s", exc)
+
+
+async def _run_scheduled_reports() -> None:
+    """Hourly job: check for due report schedules, generate, and deliver via email."""
+    from datetime import datetime, timezone, timedelta
+
+    from app.core.database import async_session
+    from app.models.report_schedule import ReportSchedule
+
+    try:
+        async with async_session() as db:
+            result = await db.execute(
+                select(ReportSchedule).where(ReportSchedule.is_active.is_(True))
+            )
+            schedules = list(result.scalars().all())
+
+            now = datetime.now(timezone.utc)
+            delivered = 0
+
+            for schedule in schedules:
+                if not _is_report_due(schedule, now):
+                    continue
+
+                try:
+                    # Generate the report data
+                    from app.services import report_service
+                    from app.services.report_renderer import render_pdf
+                    from app.services.notification_service import send_system_notification
+                    from app.schemas.report import ReportCreate
+
+                    # Create a report record
+                    report_data_obj = ReportCreate(
+                        title=f"Scheduled {schedule.report_type} report",
+                        report_type=schedule.report_type,
+                        format="pdf",
+                    )
+                    report = await report_service.create_report(
+                        db, schedule.org_id, report_data_obj
+                    )
+
+                    # Generate and render
+                    report_data = await report_service.generate_report_data(
+                        db, schedule.org_id, report.id
+                    )
+
+                    # Notify via notification service
+                    await send_system_notification(
+                        db,
+                        org_id=schedule.org_id,
+                        category="report_delivery",
+                        title=f"Scheduled Report: {schedule.report_type}",
+                        message=(
+                            f"Your scheduled {schedule.report_type} report has been generated "
+                            f"and is ready for download."
+                        ),
+                        severity="info",
+                        entity_type="report",
+                        entity_id=str(report.id),
+                    )
+
+                    # Update last_sent_at
+                    schedule.last_sent_at = now
+                    await db.commit()
+                    delivered += 1
+
+                except Exception as inner_exc:
+                    logger.error(
+                        "Failed to deliver scheduled report %s: %s",
+                        schedule.id,
+                        inner_exc,
+                    )
+
+            if delivered:
+                logger.info("Scheduled reports: delivered %d reports.", delivered)
+            else:
+                logger.debug("Scheduled reports: no reports due.")
+    except Exception as exc:
+        logger.error("Error running scheduled reports: %s", exc)
+
+
+def _is_report_due(schedule, now) -> bool:
+    """Determine whether a report schedule is due for execution."""
+    from datetime import timedelta
+
+    last_sent = schedule.last_sent_at
+    frequency = schedule.frequency
+
+    # Never sent before — it's due
+    if last_sent is None:
+        return True
+
+    if frequency == "daily":
+        return (now - last_sent) >= timedelta(hours=23)
+    elif frequency == "weekly":
+        # Check if at least 6.5 days have passed and today is the right day of week
+        if (now - last_sent) >= timedelta(days=6, hours=12):
+            return now.weekday() == (schedule.day_of_week or 0)
+        return False
+    elif frequency == "monthly":
+        # Check if at least 27 days have passed
+        return (now - last_sent) >= timedelta(days=27)
+    else:
+        # Unknown frequency — default to weekly logic
+        return (now - last_sent) >= timedelta(days=6, hours=12)

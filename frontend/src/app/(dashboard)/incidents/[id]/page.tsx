@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useIncident,
   useUpdateIncident,
@@ -23,8 +24,14 @@ import {
   X,
   Clock,
   Plus,
+  AlertTriangle,
+  Bell,
+  CheckSquare,
+  Square,
+  ShieldAlert,
 } from "lucide-react";
 import { useOrgId } from "@/hooks/use-org-id";
+import { toast } from "sonner";
 import type { IncidentSeverity, IncidentStatus } from "@/lib/types";
 
 const severityColor: Record<string, string> = {
@@ -76,6 +83,9 @@ export default function IncidentDetailPage() {
     status: "open",
     category: "",
     post_mortem_notes: "",
+    breach_notification_required: false,
+    affected_users_count: 0,
+    affected_systems: [] as string[],
   });
 
   const [noteText, setNoteText] = useState("");
@@ -90,6 +100,9 @@ export default function IncidentDetailPage() {
       status: incident.status || "open",
       category: incident.category || "",
       post_mortem_notes: incident.post_mortem_notes || "",
+      breach_notification_required: incident.breach_notification_required || false,
+      affected_users_count: incident.affected_users_count || 0,
+      affected_systems: incident.affected_systems || [],
     });
     setEditing(true);
   }
@@ -275,6 +288,45 @@ export default function IncidentDetailPage() {
               />
             </div>
 
+            {/* Breach Notification Settings */}
+            <div className="rounded-md border p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="breach_required"
+                  className="h-4 w-4 rounded"
+                  checked={form.breach_notification_required}
+                  onChange={(e) => setForm({ ...form, breach_notification_required: e.target.checked })}
+                />
+                <label htmlFor="breach_required" className="text-sm font-medium">
+                  Breach Notification Required (GDPR 72h)
+                </label>
+              </div>
+              {form.breach_notification_required && (
+                <div className="grid grid-cols-2 gap-3 pl-6">
+                  <div>
+                    <label className="text-sm font-medium">Affected Users Count</label>
+                    <input
+                      type="number"
+                      className="mt-1 w-full rounded-md border bg-background p-2 text-sm"
+                      value={form.affected_users_count}
+                      onChange={(e) => setForm({ ...form, affected_users_count: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Affected Systems (comma-separated)</label>
+                    <input
+                      type="text"
+                      className="mt-1 w-full rounded-md border bg-background p-2 text-sm"
+                      placeholder="Database, S3, Auth Service"
+                      value={(form.affected_systems || []).join(", ")}
+                      onChange={(e) => setForm({ ...form, affected_systems: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
@@ -302,238 +354,468 @@ export default function IncidentDetailPage() {
         </Card>
       )}
 
-      {/* Description */}
-      {incident.description && !editing && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{incident.description}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Breach Notification */}
+      {/* Tabs */}
       {!editing && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className={incident.breach_notification_required ? "text-red-500" : "text-muted-foreground"}>
-                {incident.breach_notification_required ? "⚠" : "🛡"}
-              </span>
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="breach">
               Breach Notification
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {incident.breach_notification_required ? (
-              <div className="space-y-4">
-                <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">GDPR Deadline (72h)</label>
-                      <p className="text-sm font-medium">
-                        {incident.breach_notification_deadline
-                          ? new Date(incident.breach_notification_deadline).toLocaleString()
-                          : "Not set"}
-                      </p>
-                      {incident.breach_notification_deadline && !incident.breach_notified_at && (
-                        <p className="text-xs text-red-500 mt-1">
-                          {new Date(incident.breach_notification_deadline) > new Date()
-                            ? `${Math.ceil((new Date(incident.breach_notification_deadline).getTime() - Date.now()) / 3600000)}h remaining`
-                            : "⚠ OVERDUE"}
-                        </p>
+              {incident.breach_notification_required && (
+                <AlertTriangle className="ml-1 h-3.5 w-3.5 text-red-500" />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="space-y-4">
+              {/* Description */}
+              {incident.description && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Description</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="whitespace-pre-wrap">{incident.description}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Response Timeline Markers */}
+              {(incident.detected_at || incident.contained_at || incident.resolved_at) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Response Timeline</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {incident.detected_at && (
+                        <div className="rounded-lg border px-3 py-2 text-center">
+                          <p className="text-xs text-muted-foreground">Detected</p>
+                          <p className="text-sm font-medium">{new Date(incident.detected_at).toLocaleString()}</p>
+                        </div>
+                      )}
+                      {incident.detected_at && <span className="text-muted-foreground">&rarr;</span>}
+                      {incident.contained_at && (
+                        <div className="rounded-lg border px-3 py-2 text-center">
+                          <p className="text-xs text-muted-foreground">Contained</p>
+                          <p className="text-sm font-medium">{new Date(incident.contained_at).toLocaleString()}</p>
+                        </div>
+                      )}
+                      {incident.contained_at && <span className="text-muted-foreground">&rarr;</span>}
+                      {incident.resolved_at && (
+                        <div className="rounded-lg border px-3 py-2 text-center">
+                          <p className="text-xs text-muted-foreground">Resolved</p>
+                          <p className="text-sm font-medium">{new Date(incident.resolved_at).toLocaleString()}</p>
+                        </div>
                       )}
                     </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">Notification Sent</label>
-                      <p className="text-sm font-medium">
-                        {incident.breach_notified_at
-                          ? new Date(incident.breach_notified_at).toLocaleString()
-                          : "Not yet notified"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">Affected Users</label>
-                      <p className="text-sm font-medium">{incident.affected_users_count ?? "Unknown"}</p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">Affected Systems</label>
-                      <p className="text-sm font-medium">
-                        {incident.affected_systems && incident.affected_systems.length > 0
-                          ? incident.affected_systems.join(", ")
-                          : "Not specified"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No breach notification required for this incident.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                  </CardContent>
+                </Card>
+              )}
 
-      {/* Response Timeline Markers */}
-      {!editing && (incident.detected_at || incident.contained_at || incident.resolved_at) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Response Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 flex-wrap">
-              {incident.detected_at && (
-                <div className="rounded-lg border px-3 py-2 text-center">
-                  <p className="text-xs text-muted-foreground">Detected</p>
-                  <p className="text-sm font-medium">{new Date(incident.detected_at).toLocaleString()}</p>
-                </div>
+              {/* Post-mortem */}
+              {incident.post_mortem_notes && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Post-Mortem Notes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="whitespace-pre-wrap">{incident.post_mortem_notes}</p>
+                  </CardContent>
+                </Card>
               )}
-              {incident.detected_at && <span className="text-muted-foreground">→</span>}
-              {incident.contained_at && (
-                <div className="rounded-lg border px-3 py-2 text-center">
-                  <p className="text-xs text-muted-foreground">Contained</p>
-                  <p className="text-sm font-medium">{new Date(incident.contained_at).toLocaleString()}</p>
-                </div>
-              )}
-              {incident.contained_at && <span className="text-muted-foreground">→</span>}
-              {incident.resolved_at && (
-                <div className="rounded-lg border px-3 py-2 text-center">
-                  <p className="text-xs text-muted-foreground">Resolved</p>
-                  <p className="text-sm font-medium">{new Date(incident.resolved_at).toLocaleString()}</p>
+
+              {/* Root Cause & Lessons Learned */}
+              {(incident.root_cause || incident.lessons_learned) && (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {incident.root_cause && (
+                    <Card>
+                      <CardHeader><CardTitle>Root Cause</CardTitle></CardHeader>
+                      <CardContent><p className="whitespace-pre-wrap text-sm">{incident.root_cause}</p></CardContent>
+                    </Card>
+                  )}
+                  {incident.lessons_learned && (
+                    <Card>
+                      <CardHeader><CardTitle>Lessons Learned</CardTitle></CardHeader>
+                      <CardContent><p className="whitespace-pre-wrap text-sm">{incident.lessons_learned}</p></CardContent>
+                    </Card>
+                  )}
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </TabsContent>
 
-      {/* Post-mortem */}
-      {incident.post_mortem_notes && !editing && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Post-Mortem Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{incident.post_mortem_notes}</p>
-          </CardContent>
-        </Card>
-      )}
+          {/* Breach Notification Tab */}
+          <TabsContent value="breach">
+            <BreachNotificationTab
+              incident={incident}
+              orgId={orgId}
+              updateIncident={updateIncident}
+            />
+          </TabsContent>
 
-      {/* Root Cause & Lessons Learned */}
-      {!editing && (incident.root_cause || incident.lessons_learned) && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {incident.root_cause && (
+          {/* Timeline Tab */}
+          <TabsContent value="timeline">
             <Card>
-              <CardHeader><CardTitle>Root Cause</CardTitle></CardHeader>
-              <CardContent><p className="whitespace-pre-wrap text-sm">{incident.root_cause}</p></CardContent>
-            </Card>
-          )}
-          {incident.lessons_learned && (
-            <Card>
-              <CardHeader><CardTitle>Lessons Learned</CardTitle></CardHeader>
-              <CardContent><p className="whitespace-pre-wrap text-sm">{incident.lessons_learned}</p></CardContent>
-            </Card>
-          )}
-        </div>
-      )}
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Timeline</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowAddNote((v) => !v)}
+                  >
+                    <Plus className="mr-1 h-4 w-4" />
+                    Add Note
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {showAddNote && (
+                  <div className="space-y-3 rounded-lg border p-4">
+                    <textarea
+                      className="w-full rounded-md border bg-background p-2 text-sm"
+                      rows={3}
+                      placeholder="Add a timeline note..."
+                      value={noteText}
+                      onChange={(e) => setNoteText(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={handleAddNote}
+                        disabled={!noteText.trim() || addTimelineEvent.isPending}
+                      >
+                        {addTimelineEvent.isPending && (
+                          <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                        )}
+                        Add Note
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setShowAddNote(false);
+                          setNoteText("");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
-      {/* Timeline */}
+                {timelineLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : timeline && timeline.length > 0 ? (
+                  <div className="space-y-3">
+                    {timeline.map((event: any) => (
+                      <div
+                        key={event.id}
+                        className="flex items-start gap-3 rounded-lg border p-3"
+                      >
+                        <Clock className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              className={
+                                eventTypeColor[event.event_type] ||
+                                "bg-gray-100 text-gray-800"
+                              }
+                            >
+                              {event.event_type?.replace(/_/g, " ")}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {event.created_at &&
+                                new Date(event.created_at).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm">{event.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <Clock className="h-10 w-10 text-muted-foreground mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      No timeline events yet.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
+    </div>
+  );
+}
+
+// =====================================================================
+// Breach Notification Tab Component
+// =====================================================================
+
+function BreachNotificationTab({
+  incident,
+  orgId,
+  updateIncident,
+}: {
+  incident: any;
+  orgId: string;
+  updateIncident: any;
+}) {
+  const [countdown, setCountdown] = useState("");
+  const [countdownColor, setCountdownColor] = useState("text-green-600");
+
+  // Checklist state (static for demo)
+  const [checklist, setChecklist] = useState({
+    notify_dpa: incident.breach_notification_checklist?.notify_dpa || false,
+    notify_affected_users:
+      incident.breach_notification_checklist?.notify_affected_users || false,
+    notify_business_partners:
+      incident.breach_notification_checklist?.notify_business_partners || false,
+    document_notification_details:
+      incident.breach_notification_checklist?.document_notification_details ||
+      false,
+  });
+
+  // Live countdown timer
+  useEffect(() => {
+    if (
+      !incident.breach_notification_required ||
+      !incident.breach_notification_deadline ||
+      incident.breach_notified_at
+    ) {
+      return;
+    }
+
+    function updateCountdown() {
+      const deadline = new Date(incident.breach_notification_deadline).getTime();
+      const now = Date.now();
+      const diff = deadline - now;
+
+      if (diff <= 0) {
+        setCountdown("OVERDUE");
+        setCountdownColor("text-red-600");
+        return;
+      }
+
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+
+      setCountdown(
+        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+      );
+
+      // Color based on remaining time
+      if (hours < 24) {
+        setCountdownColor("text-yellow-600");
+      } else {
+        setCountdownColor("text-green-600");
+      }
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [
+    incident.breach_notification_required,
+    incident.breach_notification_deadline,
+    incident.breach_notified_at,
+  ]);
+
+  function handleMarkNotified() {
+    updateIncident.mutate(
+      {
+        incidentId: incident.id,
+        breach_notified_at: new Date().toISOString(),
+      },
+      {
+        onSuccess: () => toast.success("Incident marked as notified"),
+        onError: (e: any) => toast.error(e.message),
+      }
+    );
+  }
+
+  if (!incident.breach_notification_required) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+          <ShieldAlert className="h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium">No breach notification required</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            No breach notification required for this incident.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isNotified = !!incident.breach_notified_at;
+
+  return (
+    <div className="space-y-4">
+      {/* Countdown Timer */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Timeline</CardTitle>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowAddNote((v) => !v)}
-            >
-              <Plus className="mr-1 h-4 w-4" />
-              Add Note
-            </Button>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
+            Breach Notification Deadline
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {showAddNote && (
-            <div className="space-y-3 rounded-lg border p-4">
-              <textarea
-                className="w-full rounded-md border bg-background p-2 text-sm"
-                rows={3}
-                placeholder="Add a timeline note..."
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={handleAddNote}
-                  disabled={!noteText.trim() || addTimelineEvent.isPending}
-                >
-                  {addTimelineEvent.isPending && (
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                  )}
-                  Add Note
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setShowAddNote(false);
-                    setNoteText("");
-                  }}
-                >
-                  Cancel
-                </Button>
+        <CardContent>
+          {isNotified ? (
+            <div className="flex items-center gap-3 rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+              <Bell className="h-8 w-8 text-green-500" />
+              <div>
+                <p className="text-sm font-medium text-green-700 dark:text-green-400">
+                  Notification Sent
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Notified at: {new Date(incident.breach_notified_at).toLocaleString()}
+                </p>
               </div>
             </div>
-          )}
-
-          {timelineLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : timeline && timeline.length > 0 ? (
-            <div className="space-y-3">
-              {timeline.map((event: any) => (
-                <div
-                  key={event.id}
-                  className="flex items-start gap-3 rounded-lg border p-3"
-                >
-                  <Clock className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        className={
-                          eventTypeColor[event.event_type] ||
-                          "bg-gray-100 text-gray-800"
-                        }
-                      >
-                        {event.event_type?.replace(/_/g, " ")}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {event.created_at &&
-                          new Date(event.created_at).toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm">{event.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-6 text-center">
-              <Clock className="h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground">
-                No timeline events yet.
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 rounded-lg border border-red-500/30 bg-red-500/5 p-6">
+                <Clock className="h-10 w-10 text-red-500 shrink-0" />
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Time Remaining (GDPR 72h)
+                  </p>
+                  <p className={`text-4xl font-mono font-bold ${countdownColor}`}>
+                    {countdown || "Calculating..."}
+                  </p>
+                  {incident.breach_notification_deadline && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Deadline: {new Date(incident.breach_notification_deadline).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Impact Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Impact Assessment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border p-4">
+              <label className="text-xs font-medium text-muted-foreground">
+                Affected Users
+              </label>
+              <p className="text-2xl font-bold mt-1">
+                {incident.affected_users_count != null
+                  ? incident.affected_users_count.toLocaleString()
+                  : "Unknown"}
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <label className="text-xs font-medium text-muted-foreground">
+                Affected Systems
+              </label>
+              <div className="mt-1">
+                {incident.affected_systems &&
+                incident.affected_systems.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {incident.affected_systems.map((system: string) => (
+                      <Badge key={system} variant="outline">
+                        {system}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Not specified</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notification Checklist */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Checklist</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {[
+            { key: "notify_dpa", label: "Notify Data Protection Authority" },
+            {
+              key: "notify_affected_users",
+              label: "Notify Affected Users",
+            },
+            {
+              key: "notify_business_partners",
+              label: "Notify Business Partners",
+            },
+            {
+              key: "document_notification_details",
+              label: "Document Notification Details",
+            },
+          ].map((item) => (
+            <button
+              key={item.key}
+              className="flex w-full items-center gap-3 rounded-lg border p-3 text-left hover:bg-muted/50 transition-colors"
+              onClick={() =>
+                setChecklist((prev) => ({
+                  ...prev,
+                  [item.key]: !prev[item.key as keyof typeof prev],
+                }))
+              }
+            >
+              {checklist[item.key as keyof typeof checklist] ? (
+                <CheckSquare className="h-5 w-5 text-green-500 shrink-0" />
+              ) : (
+                <Square className="h-5 w-5 text-muted-foreground shrink-0" />
+              )}
+              <span className="text-sm font-medium">{item.label}</span>
+            </button>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Mark as Notified */}
+      {!isNotified && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Mark Breach as Notified</p>
+                <p className="text-sm text-muted-foreground">
+                  Record that all required breach notifications have been sent.
+                </p>
+              </div>
+              <Button
+                onClick={handleMarkNotified}
+                disabled={updateIncident.isPending}
+              >
+                {updateIncident.isPending ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <Bell className="mr-1 h-4 w-4" />
+                )}
+                Mark as Notified
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

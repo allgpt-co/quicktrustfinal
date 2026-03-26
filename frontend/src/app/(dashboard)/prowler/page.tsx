@@ -121,10 +121,31 @@ export default function SecurityScannerPage() {
             Multi-tool security scanning — Trivy, Semgrep, Gitleaks, Checkov, ZAP, Nuclei
           </p>
         </div>
-        <Button onClick={() => setShowTrigger((v) => !v)} className="gap-1.5">
-          <Play className="h-4 w-4" />
-          New Scan
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="default"
+            className="gap-1.5"
+            onClick={async () => {
+              try {
+                const res = await (await import("@/lib/api")).default.post<any>(
+                  `/organizations/${orgId}/scan-orchestration/run-all`, {}
+                );
+                (await import("sonner")).toast.success(
+                  `${res.scanners_triggered?.length || 0} scanners executed!`
+                );
+              } catch (e: any) {
+                (await import("sonner")).toast.error(e.message || "Scan failed");
+              }
+            }}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Run All Scanners
+          </Button>
+          <Button variant="outline" onClick={() => setShowTrigger((v) => !v)} className="gap-1.5">
+            <Play className="h-4 w-4" />
+            New Scan
+          </Button>
+        </div>
       </div>
 
       {/* Trigger Modal */}
