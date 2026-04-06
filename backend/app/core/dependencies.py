@@ -23,10 +23,56 @@ async def get_db():
             await session.close()
 
 
+async def _authenticate_api_key(db: AsyncSession, raw_key: str) -> User:
+    """Authenticate a user via API key (X-API-Key header).
+
+    Hashes the provided key, looks it up, and returns the associated user
+    if the key is active and not expired.
+    """
+    import hashlib
+    from datetime import datetime, timezone
+
+    from app.models.api_key import ApiKey
+
+    key_hash = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
+    result = await db.execute(select(ApiKey).where(ApiKey.key_hash == key_hash))
+    api_key = result.scalar_one_or_none()
+
+    if api_key is None:
+        raise UnauthorizedError("Invalid API key")
+
+    if not api_key.is_active:
+        raise UnauthorizedError("API key has been revoked")
+
+    if api_key.expires_at and api_key.expires_at < datetime.now(timezone.utc):
+        raise UnauthorizedError("API key has expired")
+
+    # Update last_used_at
+    api_key.last_used_at = datetime.now(timezone.utc)
+    await db.flush()
+
+    # Return the associated user
+    user_result = await db.execute(select(User).where(User.id == api_key.user_id))
+    user = user_result.scalar_one_or_none()
+
+    if user is None:
+        raise UnauthorizedError("API key user not found")
+
+    if not user.is_active:
+        raise ForbiddenError("User account is deactivated")
+
+    return user
+
+
 async def get_current_user(
     authorization: Annotated[str | None, Header()] = None,
+    x_api_key: Annotated[str | None, Header(alias="X-API-Key")] = None,
     db: AsyncSession = Depends(get_db),
 ) -> User:
+    # API key authentication takes precedence if present
+    if x_api_key:
+        return await _authenticate_api_key(db, x_api_key)
+
     if not authorization or not authorization.startswith("Bearer "):
         raise UnauthorizedError("Missing or invalid authorization header")
 

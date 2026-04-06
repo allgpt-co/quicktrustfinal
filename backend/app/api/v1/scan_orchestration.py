@@ -103,6 +103,17 @@ async def run_all_scanners(
     except Exception:
         pass
 
+    # Publish agent bus event for inter-agent communication
+    try:
+        from app.services.agent_bus import publish_agent_event
+        await publish_agent_event("scan_complete", {
+            "org_id": str(org_id),
+            "scan_id": scan_id,
+            "scanners_triggered": triggered,
+        })
+    except Exception:
+        pass
+
     return OrchestratedScanResponse(
         scan_id=scan_id,
         status="running",

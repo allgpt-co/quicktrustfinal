@@ -50,6 +50,8 @@ from app.models.policy_version import PolicyVersion
 from app.models.evidence_version import EvidenceVersion
 from app.models.report_schedule import ReportSchedule
 from app.models.approval_chain import ApprovalChain
+from app.models.webhook import WebhookEndpoint, WebhookDelivery
+from app.models.api_key import ApiKey
 
 __all__ = [
     "BaseModel",
@@ -117,4 +119,7 @@ __all__ = [
     "EvidenceVersion",
     "ReportSchedule",
     "ApprovalChain",
+    "WebhookEndpoint",
+    "WebhookDelivery",
+    "ApiKey",
 ]

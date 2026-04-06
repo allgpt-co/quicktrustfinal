@@ -17,6 +17,8 @@ import {
   useIntegrations,
   useCreateIntegration,
 } from "@/hooks/use-api";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 import { useOrgId } from "@/hooks/use-org-id";
 import { Plug, Unplug, Cable, Loader2, X, CheckCircle2 } from "lucide-react";
 
@@ -25,6 +27,27 @@ const statusVariant: Record<string, "success" | "secondary" | "destructive"> = {
   disconnected: "secondary",
   error: "destructive",
 };
+
+interface RotationStatusEntry {
+  integration_id: string;
+  days_since_rotation: number;
+}
+
+function getRotationBadge(days: number) {
+  if (days > 90) {
+    return (
+      <Badge className="bg-red-500/20 text-red-500">Rotation Needed</Badge>
+    );
+  }
+  if (days >= 60) {
+    return (
+      <Badge className="bg-yellow-500/20 text-yellow-500">Rotation Recommended</Badge>
+    );
+  }
+  return (
+    <Badge className="bg-green-500/20 text-green-500">Credentials Fresh</Badge>
+  );
+}
 
 const CREDENTIAL_FIELDS: Record<string, { label: string; placeholder: string; type?: string }[]> = {
   aws: [
@@ -78,6 +101,21 @@ export default function IntegrationsPage() {
   const { data: integrationsData, isLoading: integrationsLoading } =
     useIntegrations(orgId);
   const createIntegration = useCreateIntegration(orgId);
+
+  const { data: rotationStatus } = useQuery({
+    queryKey: ["rotation-status", orgId],
+    queryFn: () =>
+      api.get<RotationStatusEntry[]>(
+        `/organizations/${orgId}/integrations/rotation-status`
+      ),
+    enabled: !!orgId,
+  });
+
+  const rotationMap = (rotationStatus ?? []).reduce<
+    Record<string, number>
+  >((acc, entry) => {
+    return { ...acc, [entry.integration_id]: entry.days_since_rotation };
+  }, {});
 
   const integrations = integrationsData?.items || [];
 
@@ -314,11 +352,15 @@ export default function IntegrationsPage() {
                         )}
                       </div>
                     </div>
-                    <Badge
-                      variant={statusVariant[integration.status] || "secondary"}
-                    >
-                      {integration.status}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {rotationMap[integration.id] !== undefined &&
+                        getRotationBadge(rotationMap[integration.id])}
+                      <Badge
+                        variant={statusVariant[integration.status] || "secondary"}
+                      >
+                        {integration.status}
+                      </Badge>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>

@@ -107,6 +107,16 @@ async def start_scheduler() -> None:
             replace_existing=True,
         )
 
+        # Daily credential rotation check at 6 AM
+        scheduler.add_job(
+            _run_credential_rotation_check,
+            trigger="cron",
+            hour=6,
+            minute=0,
+            id="credential_rotation_check",
+            replace_existing=True,
+        )
+
         scheduler.start()
         logger.info("APScheduler started with monitoring, collection, and control test jobs.")
     except Exception as exc:
@@ -425,3 +435,19 @@ def _is_report_due(schedule, now) -> bool:
     else:
         # Unknown frequency — default to weekly logic
         return (now - last_sent) >= timedelta(days=6, hours=12)
+
+
+async def _run_credential_rotation_check() -> None:
+    """Daily job: check for integrations with credentials needing rotation."""
+    from app.services.credential_rotation import run_rotation_check_all_orgs
+
+    try:
+        flagged = await run_rotation_check_all_orgs()
+        if flagged:
+            logger.info(
+                "Credential rotation check: %d integration(s) flagged.", flagged
+            )
+        else:
+            logger.debug("Credential rotation check: no integrations need rotation.")
+    except Exception as exc:
+        logger.error("Error running credential rotation check: %s", exc)

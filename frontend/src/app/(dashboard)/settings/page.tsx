@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization, useUpdateOrganization } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight, Shield, Database, Clock, Bell } from "lucide-react";
+import { Loader2, Save, Building, AlertTriangle, Users, ChevronRight, Shield, Database, Clock, Bell, Key, Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function SettingsPage() {
@@ -297,6 +297,42 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold">Alert Channels</h3>
                 <p className="text-xs text-muted-foreground">
                   Configure Slack, email, and notification delivery for compliance alerts
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Webhooks Card */}
+      <Link href="/settings/webhooks">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Globe className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">Webhooks</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure outbound event webhooks for real-time notifications
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* API Keys Card */}
+      <Link href="/settings/api-keys">
+        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <Key className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <h3 className="text-sm font-semibold">API Keys</h3>
+                <p className="text-xs text-muted-foreground">
+                  Manage API keys for service accounts and CI/CD pipelines
                 </p>
               </div>
             </div>

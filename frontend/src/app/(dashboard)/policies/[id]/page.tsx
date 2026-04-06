@@ -87,8 +87,7 @@ export default function PolicyDetailPage() {
   const transitions = statusTransitions[policy.status] || [];
 
   function handleExport(format: "pdf" | "docx") {
-    const url = `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/organizations/${orgId}/policies/${policyId}/export/${format}`;
-    window.open(url, "_blank");
+    api.downloadRedirect(`/organizations/${orgId}/policies/${policyId}/export/${format}`);
   }
 
   return (

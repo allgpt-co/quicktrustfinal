@@ -52,6 +52,12 @@ from app.api.v1 import (
     control_versions,
     policy_versions,
     scan_orchestration,
+    webhooks,
+    api_keys,
+    sse,
+    agent_memory,
+    findings,
+    credential_rotation,
 )
 
 api_router = APIRouter()
@@ -115,3 +121,10 @@ api_router.include_router(backups.router)
 api_router.include_router(control_versions.router)
 api_router.include_router(policy_versions.router)
 api_router.include_router(scan_orchestration.router)
+# Webhooks, API Keys, SSE, Agent Memory, Findings, Credential Rotation
+api_router.include_router(webhooks.router)
+api_router.include_router(api_keys.router)
+api_router.include_router(sse.router)
+api_router.include_router(agent_memory.router)
+api_router.include_router(findings.router)
+api_router.include_router(credential_rotation.router)

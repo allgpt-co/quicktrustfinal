@@ -116,6 +116,17 @@ async def run_onboarding_pipeline(db: AsyncSession, session_id: str, org_id: str
         results["controls_count"] = total_controls
         await db.commit()
 
+        # Publish agent bus event for inter-agent communication
+        try:
+            from app.services.agent_bus import publish_agent_event
+            await publish_agent_event("controls_generated", {
+                "org_id": str(org_id),
+                "session_id": str(session.id),
+                "controls_count": total_controls,
+            })
+        except Exception:
+            pass
+
         # Step 3: Generate policies (once for all controls)
         _update_progress(session, "generating_policies")
         policy_run = AgentRun(
