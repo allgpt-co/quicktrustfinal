@@ -29,6 +29,7 @@ export default function AlertChannelsPage() {
   const qc = useQueryClient();
   const [webhookUrl, setWebhookUrl] = useState("");
   const [channelName, setChannelName] = useState("");
+  const [pdRoutingKey, setPdRoutingKey] = useState("");
 
   // Fetch existing Slack config
   const { data: slackConfig, isLoading: slackLoading } = useQuery({
@@ -70,6 +71,27 @@ export default function AlertChannelsPage() {
       toast.success("Slack webhook disabled");
     },
     onError: (err: any) => toast.error(err.message || "Failed to delete"),
+  });
+
+  // Fetch existing PagerDuty config
+  const { data: pdConfig, isLoading: pdLoading } = useQuery({
+    queryKey: ["pagerduty-config", orgId],
+    queryFn: () => api.get<any>(`/organizations/${orgId}/notifications/pagerduty`),
+    enabled: !!orgId,
+  });
+
+  // Save PagerDuty routing key
+  const savePagerDuty = useMutation({
+    mutationFn: () =>
+      api.post(`/organizations/${orgId}/notifications/pagerduty`, {
+        routing_key: pdRoutingKey,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pagerduty-config"] });
+      toast.success("PagerDuty routing key saved!");
+      setPdRoutingKey("");
+    },
+    onError: (err: any) => toast.error(err.message || "Failed to save"),
   });
 
   // Run alert engine manually
@@ -268,6 +290,98 @@ export default function AlertChannelsPage() {
                   <MessageSquare className="mr-2 h-4 w-4" />
                 )}
                 Connect Slack
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* PagerDuty Channel */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-muted-foreground" />
+              <CardTitle>PagerDuty</CardTitle>
+            </div>
+            {pdConfig && pdConfig.is_active ? (
+              <Badge className="bg-green-500/20 text-green-500">Connected</Badge>
+            ) : (
+              <Badge className="bg-gray-500/20 text-gray-500">Not configured</Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {pdLoading ? (
+            <Skeleton className="h-20 w-full" />
+          ) : pdConfig && pdConfig.is_active ? (
+            <div className="space-y-3">
+              <div className="rounded-lg border bg-green-500/5 border-green-500/20 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm font-medium text-green-500">
+                    PagerDuty connected
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Routing Key: {pdConfig.routing_key}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Critical and high severity alerts are automatically sent to PagerDuty.
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Update routing key:
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    className="flex-1 rounded-md border bg-background p-2 text-sm"
+                    placeholder="New routing key..."
+                    value={pdRoutingKey}
+                    onChange={(e) => setPdRoutingKey(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    onClick={() => savePagerDuty.mutate()}
+                    disabled={!pdRoutingKey.trim() || savePagerDuty.isPending}
+                  >
+                    {savePagerDuty.isPending ? (
+                      <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Update
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Connect PagerDuty to receive critical and high severity alerts via
+                PagerDuty Events API v2. Get a routing key from your PagerDuty
+                service integration settings.
+              </p>
+              <div>
+                <label className="text-sm font-medium">Routing Key</label>
+                <input
+                  type="password"
+                  className="mt-1 w-full rounded-md border bg-background p-2 text-sm"
+                  placeholder="Enter PagerDuty routing key..."
+                  value={pdRoutingKey}
+                  onChange={(e) => setPdRoutingKey(e.target.value)}
+                />
+              </div>
+              <Button
+                onClick={() => savePagerDuty.mutate()}
+                disabled={!pdRoutingKey.trim() || savePagerDuty.isPending}
+              >
+                {savePagerDuty.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                )}
+                Connect PagerDuty
               </Button>
             </div>
           )}

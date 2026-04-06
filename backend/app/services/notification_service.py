@@ -1,9 +1,10 @@
-"""Notification service — in-app, email, and Slack notifications.
+"""Notification service — in-app, email, Slack, and PagerDuty notifications.
 
 Sends notifications through configured channels with graceful degradation.
 """
 
 import logging
+import os
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -43,6 +44,9 @@ async def create_notification(
         await _send_slack(db, org_id, notification)
     if data.channel in ("email", "all"):
         await _send_email(notification)
+    # PagerDuty for critical and high severity alerts
+    if data.severity in ("critical", "high"):
+        await _send_pagerduty(db, org_id, notification)
 
     return notification
 
@@ -220,6 +224,120 @@ async def _send_slack(db: AsyncSession, org_id: UUID, notification: Notification
                 logger.warning("Slack webhook returned %d: %s", resp.status_code, resp.text)
     except Exception as exc:
         logger.warning("Failed to send Slack notification: %s", exc)
+
+
+async def _send_pagerduty(db: AsyncSession, org_id: UUID, notification: Notification) -> None:
+    """Send critical alerts to PagerDuty via Events API v2."""
+    # Try org-specific config first, then fallback to env var
+    pd_config = await get_pagerduty_config(db, org_id)
+    routing_key = pd_config.get("routing_key", "") if pd_config else ""
+    if not routing_key:
+        routing_key = os.environ.get("PAGERDUTY_ROUTING_KEY", "")
+    if not routing_key:
+        return
+
+    severity_map = {
+        "critical": "critical",
+        "high": "error",
+        "medium": "warning",
+        "low": "info",
+        "info": "info",
+    }
+
+    payload = {
+        "routing_key": routing_key,
+        "event_action": "trigger",
+        "payload": {
+            "summary": f"[QuickTrust] {notification.title}: {notification.message}"[:1024],
+            "severity": severity_map.get(notification.severity, "warning"),
+            "source": "quicktrust",
+            "component": notification.entity_type or "system",
+            "custom_details": {
+                "org_id": str(org_id),
+                "category": notification.category,
+                "entity_type": notification.entity_type,
+                "entity_id": notification.entity_id,
+            },
+        },
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(
+                "https://events.pagerduty.com/v2/enqueue", json=payload
+            )
+            if resp.status_code not in (200, 202):
+                logger.warning(
+                    "PagerDuty returned %d: %s", resp.status_code, resp.text[:200]
+                )
+            else:
+                logger.info("PagerDuty alert triggered for notification %s", notification.id)
+    except Exception as exc:
+        logger.warning("Failed to send PagerDuty alert: %s", exc)
+
+
+# --- PagerDuty configuration helpers ---
+
+async def save_pagerduty_config(
+    db: AsyncSession, org_id: UUID, routing_key: str
+) -> dict:
+    """Save PagerDuty routing key for an org (stored in notification extra_data)."""
+    # Store as a special notification preference/config row
+    # We use SlackWebhookConfig pattern — store in a simple key-value approach
+    # Using the existing Notification model with a special category as config storage
+    from app.models.notification import Notification as NotifModel
+
+    # Check for existing config
+    result = await db.execute(
+        select(NotifModel).where(
+            NotifModel.org_id == org_id,
+            NotifModel.category == "_pagerduty_config",
+        )
+    )
+    existing = result.scalar_one_or_none()
+
+    if existing:
+        existing.extra_data = {"routing_key": routing_key, "is_active": True}
+        await db.commit()
+        await db.refresh(existing)
+        return {"routing_key": _mask_key(routing_key), "is_active": True}
+    else:
+        config_row = NotifModel(
+            org_id=org_id,
+            channel="system",
+            category="_pagerduty_config",
+            title="PagerDuty Configuration",
+            message="PagerDuty routing key configuration",
+            severity="info",
+            is_read=True,
+            extra_data={"routing_key": routing_key, "is_active": True},
+        )
+        db.add(config_row)
+        await db.commit()
+        return {"routing_key": _mask_key(routing_key), "is_active": True}
+
+
+async def get_pagerduty_config(db: AsyncSession, org_id: UUID) -> dict | None:
+    """Retrieve PagerDuty config for an org."""
+    from app.models.notification import Notification as NotifModel
+
+    result = await db.execute(
+        select(NotifModel).where(
+            NotifModel.org_id == org_id,
+            NotifModel.category == "_pagerduty_config",
+        )
+    )
+    config_row = result.scalar_one_or_none()
+    if config_row and config_row.extra_data:
+        return config_row.extra_data
+    return None
+
+
+def _mask_key(key: str) -> str:
+    """Mask a routing key for display, showing only last 6 chars."""
+    if len(key) <= 6:
+        return "***"
+    return "***" + key[-6:]
 
 
 async def _send_email(notification: Notification) -> None:

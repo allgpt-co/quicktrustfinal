@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePolicy, useUpdatePolicy } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
 import { useQuery } from "@tanstack/react-query";
+import { Download, FileText } from "lucide-react";
 import api from "@/lib/api";
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "outline"> = {
@@ -85,6 +86,11 @@ export default function PolicyDetailPage() {
 
   const transitions = statusTransitions[policy.status] || [];
 
+  function handleExport(format: "pdf" | "docx") {
+    const url = `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/organizations/${orgId}/policies/${policyId}/export/${format}`;
+    window.open(url, "_blank");
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -102,21 +108,27 @@ export default function PolicyDetailPage() {
           {policy.next_review_date &&
             ` · Next review ${new Date(policy.next_review_date).toLocaleDateString()}`}
         </p>
-        {transitions.length > 0 && (
-          <div className="mt-3 flex gap-2">
-            {transitions.map((t) => (
-              <Button
-                key={t.nextStatus}
-                size="sm"
-                variant={t.nextStatus === "draft" ? "outline" : "default"}
-                onClick={() => handleStatusChange(t.nextStatus)}
-                disabled={updatePolicy.isPending}
-              >
-                {t.label}
-              </Button>
-            ))}
-          </div>
-        )}
+        <div className="mt-3 flex gap-2 flex-wrap">
+          {transitions.map((t) => (
+            <Button
+              key={t.nextStatus}
+              size="sm"
+              variant={t.nextStatus === "draft" ? "outline" : "default"}
+              onClick={() => handleStatusChange(t.nextStatus)}
+              disabled={updatePolicy.isPending}
+            >
+              {t.label}
+            </Button>
+          ))}
+          <Button size="sm" variant="outline" onClick={() => handleExport("pdf")}>
+            <Download className="mr-1 h-4 w-4" />
+            Download PDF
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => handleExport("docx")}>
+            <FileText className="mr-1 h-4 w-4" />
+            Download DOCX
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="overview">

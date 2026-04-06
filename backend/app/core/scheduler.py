@@ -97,6 +97,16 @@ async def start_scheduler() -> None:
             replace_existing=True,
         )
 
+        # Daily policy review check at 8 AM — flag overdue annual reviews
+        scheduler.add_job(
+            _run_policy_review_check,
+            trigger="cron",
+            hour=8,
+            minute=0,
+            id="policy_review_check",
+            replace_existing=True,
+        )
+
         scheduler.start()
         logger.info("APScheduler started with monitoring, collection, and control test jobs.")
     except Exception as exc:
@@ -338,6 +348,57 @@ async def _run_scheduled_reports() -> None:
                 logger.debug("Scheduled reports: no reports due.")
     except Exception as exc:
         logger.error("Error running scheduled reports: %s", exc)
+
+
+async def _run_policy_review_check() -> None:
+    """Daily job: check for policies with overdue annual reviews and notify."""
+    from datetime import datetime, timezone, timedelta
+
+    from app.core.database import async_session
+    from app.models.policy import Policy
+    from app.services.notification_service import send_system_notification
+    from sqlalchemy import or_
+
+    try:
+        async with async_session() as db:
+            now = datetime.now(timezone.utc)
+            one_year_ago = now - timedelta(days=365)
+
+            # Find policies where:
+            # 1. next_review_date is in the past, OR
+            # 2. next_review_date is null AND published_at is older than 365 days
+            result = await db.execute(
+                select(Policy).where(
+                    Policy.status.in_(["published", "approved"]),
+                    or_(
+                        Policy.next_review_date < now,
+                        (Policy.next_review_date.is_(None)) & (Policy.published_at < one_year_ago),
+                    ),
+                )
+            )
+            overdue_policies = list(result.scalars().all())
+
+            for policy in overdue_policies:
+                await send_system_notification(
+                    db,
+                    org_id=policy.org_id,
+                    category="policy_review",
+                    title="Annual Review Due",
+                    message=f"Annual review due for: {policy.title}",
+                    severity="warning",
+                    entity_type="policy",
+                    entity_id=str(policy.id),
+                )
+
+            if overdue_policies:
+                logger.info(
+                    "Policy review check: %d overdue policies flagged.",
+                    len(overdue_policies),
+                )
+            else:
+                logger.debug("Policy review check: no overdue policies found.")
+    except Exception as exc:
+        logger.error("Error running policy review check: %s", exc)
 
 
 def _is_report_due(schedule, now) -> bool:

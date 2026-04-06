@@ -49,6 +49,7 @@ from app.models.control_dependency import ControlDependency
 from app.models.policy_version import PolicyVersion
 from app.models.evidence_version import EvidenceVersion
 from app.models.report_schedule import ReportSchedule
+from app.models.approval_chain import ApprovalChain
 
 __all__ = [
     "BaseModel",
@@ -115,4 +116,5 @@ __all__ = [
     "PolicyVersion",
     "EvidenceVersion",
     "ReportSchedule",
+    "ApprovalChain",
 ]

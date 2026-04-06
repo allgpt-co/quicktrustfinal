@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Query
+from pydantic import BaseModel as PydanticBaseModel
 
 from app.core.dependencies import DB, AnyInternalUser, AdminUser, VerifiedOrgId
 from app.schemas.common import PaginatedResponse, MessageResponse
@@ -129,3 +130,38 @@ async def trigger_alert_engine(org_id: VerifiedOrgId, db: DB, current_user: Admi
         "freshness_alerts": freshness,
         "regression_alerts": regression,
     }
+
+
+# --- PagerDuty configuration ---
+
+
+class PagerDutyConfigCreate(PydanticBaseModel):
+    routing_key: str
+
+
+class PagerDutyConfigResponse(PydanticBaseModel):
+    routing_key: str  # masked
+    is_active: bool
+
+
+@router.post("/pagerduty", response_model=PagerDutyConfigResponse, status_code=201)
+async def configure_pagerduty(
+    org_id: VerifiedOrgId, data: PagerDutyConfigCreate, db: DB, current_user: AdminUser,
+):
+    """Save PagerDuty routing key for this organization."""
+    result = await notification_service.save_pagerduty_config(
+        db, org_id, data.routing_key
+    )
+    return result
+
+
+@router.get("/pagerduty")
+async def get_pagerduty_config(org_id: VerifiedOrgId, db: DB, current_user: AdminUser):
+    """Get PagerDuty configuration status for this organization."""
+    config = await notification_service.get_pagerduty_config(db, org_id)
+    if config:
+        return {
+            "routing_key": notification_service._mask_key(config.get("routing_key", "")),
+            "is_active": config.get("is_active", False),
+        }
+    return {"routing_key": None, "is_active": False}
