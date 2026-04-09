@@ -48,11 +48,11 @@ class ApiKeyListResponse(PydanticBaseModel):
     id: UUID
     name: str
     key_prefix: str
-    scopes: list[str] | None
-    is_active: bool
-    expires_at: str | None = None
-    last_used_at: str | None = None
-    created_at: str | None = None
+    scopes: list | None = None
+    is_active: bool = True
+    expires_at: datetime | None = None
+    last_used_at: datetime | None = None
+    created_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 

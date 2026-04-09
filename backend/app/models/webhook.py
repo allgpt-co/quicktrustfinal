@@ -33,7 +33,7 @@ class WebhookDelivery(BaseModel):
     __tablename__ = "webhook_deliveries"
 
     webhook_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("webhook_endpoints.id"), nullable=False
+        GUID(), ForeignKey("webhook_endpoints.id", ondelete="CASCADE"), nullable=False
     )
     event_type: Mapped[str] = mapped_column(String(100), nullable=False)
     payload: Mapped[dict | None] = mapped_column(JSONType())
