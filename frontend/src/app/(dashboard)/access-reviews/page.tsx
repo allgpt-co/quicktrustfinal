@@ -11,9 +11,19 @@ import {
   useAccessReviewCampaigns,
   useCreateAccessReviewCampaign,
   useAccessReviewStats,
+  useAccessMatrix,
+  useOverProvisionedAlerts,
+  type AccessMatrixEntry,
+  type OverProvisionedAlert,
 } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { ShieldCheck, Plus, Loader2 } from "lucide-react";
+import {
+  ShieldCheck,
+  Plus,
+  Loader2,
+  Users,
+  AlertTriangle,
+} from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: string | undefined }[] = [
   { label: "All", value: undefined },
@@ -40,6 +50,10 @@ export default function AccessReviewsPage() {
     status: statusFilter,
   });
   const { data: stats } = useAccessReviewStats(orgId);
+  const { data: accessMatrix, isLoading: matrixLoading } =
+    useAccessMatrix(orgId);
+  const { data: overProvisioned, isLoading: alertsLoading } =
+    useOverProvisionedAlerts(orgId);
 
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({
@@ -103,6 +117,122 @@ export default function AccessReviewsPage() {
           ))}
         </div>
       )}
+
+      {/* Access Matrix */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <h2 className="text-lg font-semibold">Access Matrix</h2>
+            </div>
+            {accessMatrix && (
+              <span className="text-xs text-muted-foreground">
+                {accessMatrix.total_users} user
+                {accessMatrix.total_users === 1 ? "" : "s"} ×{" "}
+                {accessMatrix.total_integrations} integration
+                {accessMatrix.total_integrations === 1 ? "" : "s"}
+              </span>
+            )}
+          </div>
+          {matrixLoading ? (
+            <Skeleton className="h-32 w-full rounded-lg" />
+          ) : accessMatrix && accessMatrix.matrix.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th className="pb-2 pr-3">User</th>
+                    <th className="pb-2 pr-3">Role</th>
+                    <th className="pb-2 pr-3">Status</th>
+                    <th className="pb-2">Integrations</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accessMatrix.matrix.map((entry: AccessMatrixEntry) => (
+                    <tr key={entry.user_id} className="border-b last:border-0">
+                      <td className="py-2 pr-3">
+                        <div className="font-medium">{entry.full_name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {entry.email}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-3">
+                        <Badge variant="outline">{entry.role}</Badge>
+                      </td>
+                      <td className="py-2 pr-3">
+                        <Badge
+                          variant={entry.is_active ? "success" : "secondary"}
+                        >
+                          {entry.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {entry.access.length} connected
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No users or integrations to display.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Over-Provisioned Alerts */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <h2 className="text-lg font-semibold">Over-Provisioned Alerts</h2>
+            {overProvisioned && (
+              <Badge variant={overProvisioned.total_alerts > 0 ? "warning" : "success"}>
+                {overProvisioned.total_alerts}
+              </Badge>
+            )}
+          </div>
+          {alertsLoading ? (
+            <Skeleton className="h-24 w-full rounded-lg" />
+          ) : overProvisioned && overProvisioned.alerts.length > 0 ? (
+            <div className="space-y-2">
+              {overProvisioned.alerts.map((alert: OverProvisionedAlert) => (
+                <div
+                  key={alert.user_id}
+                  className="rounded-lg border border-amber-300 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-medium">{alert.full_name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {alert.email}
+                      </div>
+                    </div>
+                    <Badge variant="outline">{alert.role}</Badge>
+                  </div>
+                  <ul className="mt-2 list-disc pl-5 text-xs text-muted-foreground">
+                    {alert.reasons.map((reason, idx) => (
+                      <li key={idx}>{reason}</li>
+                    ))}
+                  </ul>
+                  {alert.recommendation && (
+                    <div className="mt-1 text-xs font-medium text-amber-800 dark:text-amber-200">
+                      {alert.recommendation}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No over-provisioned accounts detected.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       {showCreate && (
         <Card>

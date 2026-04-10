@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,8 +12,123 @@ import {
   useCreateVendor,
 } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { Building2, Plus, Loader2 } from "lucide-react";
+import { api } from "@/lib/api";
+import { Building2, Plus, Loader2, ShieldAlert } from "lucide-react";
 import type { VendorRiskTier } from "@/lib/types";
+
+type BreachAlert = {
+  vendor_id: string;
+  vendor_name: string;
+  breach: {
+    vendor: string;
+    date: string;
+    description: string;
+    severity: string;
+  };
+};
+
+type BreachAlertsResponse = {
+  total: number;
+  alerts: BreachAlert[];
+};
+
+const breachSeverityVariant: Record<string, string> = {
+  critical: "destructive",
+  high: "destructive",
+  medium: "warning",
+  low: "secondary",
+};
+
+function BreachAlertsCard({ orgId }: { orgId: string }) {
+  const [data, setData] = useState<BreachAlertsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!orgId) return;
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const resp = await api.get<BreachAlertsResponse>(
+          `/organizations/${orgId}/vendors/breach-alerts`
+        );
+        if (!cancelled) {
+          setData(resp);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [orgId]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ShieldAlert className="h-5 w-5 text-red-600" />
+          Breach Alerts
+          {data && data.total > 0 && (
+            <Badge variant="destructive">{data.total}</Badge>
+          )}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Known public breaches affecting your vendors
+        </p>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Skeleton className="h-16 w-full" />
+        ) : error ? (
+          <p className="text-sm text-red-600">{error}</p>
+        ) : data && data.alerts.length > 0 ? (
+          <div className="space-y-2">
+            {data.alerts.map((alert) => (
+              <div
+                key={alert.vendor_id}
+                className="flex items-start gap-3 rounded-md border p-3"
+              >
+                <ShieldAlert className="mt-0.5 h-4 w-4 text-red-600 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium">
+                    {alert.vendor_name}
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      (matched: {alert.breach.vendor} — {alert.breach.date})
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm text-muted-foreground">
+                    {alert.breach.description}
+                  </div>
+                </div>
+                <Badge
+                  variant={
+                    (breachSeverityVariant[alert.breach.severity] ||
+                      "secondary") as any
+                  }
+                >
+                  {alert.breach.severity}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No known breaches match your current vendors.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 const RISK_TIER_FILTERS: { label: string; value: string | undefined }[] = [
   { label: "All", value: undefined },
@@ -107,6 +222,9 @@ export default function VendorsPage() {
           New Vendor
         </Button>
       </div>
+
+      {/* Breach alerts */}
+      <BreachAlertsCard orgId={orgId} />
 
       {/* Stats */}
       {stats && (

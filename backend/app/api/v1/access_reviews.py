@@ -57,6 +57,123 @@ async def get_stats(org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser
     return await access_review_service.get_access_review_stats(db, org_id)
 
 
+# ---------------------------------------------------------------------------
+# Access matrix & over-provisioned detection — STATIC ROUTES, must be above /{id}
+# ---------------------------------------------------------------------------
+_ROLE_ACCESS_LEVEL: dict[str, str] = {
+    "super_admin": "admin",
+    "compliance_manager": "write",
+    "control_owner": "write",
+    "executive": "read",
+    "employee": "read",
+    "auditor_internal": "read",
+    "auditor_external": "read",
+}
+
+
+@router.get("/access-matrix")
+async def get_access_matrix(
+    org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser
+):
+    """Return a matrix of users × integrations with assumed access level by role."""
+    from sqlalchemy import select as _select
+
+    from app.models.integration import Integration
+    from app.models.user import User
+
+    users_result = await db.execute(_select(User).where(User.org_id == org_id))
+    users = list(users_result.scalars().all())
+
+    ints_result = await db.execute(
+        _select(Integration).where(Integration.org_id == org_id)
+    )
+    integrations = list(ints_result.scalars().all())
+
+    matrix: list[dict] = []
+    for user in users:
+        access_level = _ROLE_ACCESS_LEVEL.get(user.role, "read")
+        access_list = [
+            {
+                "integration_id": str(integration.id),
+                "integration_name": integration.name,
+                "provider": integration.provider,
+                "access_level": access_level,
+            }
+            for integration in integrations
+        ]
+        matrix.append(
+            {
+                "user_id": str(user.id),
+                "email": user.email,
+                "full_name": user.full_name,
+                "role": user.role,
+                "is_active": user.is_active,
+                "access": access_list,
+            }
+        )
+
+    return {
+        "total_users": len(users),
+        "total_integrations": len(integrations),
+        "matrix": matrix,
+    }
+
+
+@router.get("/over-provisioned")
+async def detect_over_provisioned(
+    org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser
+):
+    """Flag accounts whose privileges appear higher than necessary."""
+    from datetime import datetime, timedelta, timezone
+
+    from sqlalchemy import select as _select
+
+    from app.models.user import User
+
+    result = await db.execute(_select(User).where(User.org_id == org_id))
+    users = list(result.scalars().all())
+
+    now = datetime.now(timezone.utc)
+    ninety_days_ago = now - timedelta(days=90)
+
+    alerts: list[dict] = []
+    for user in users:
+        reasons: list[str] = []
+
+        # Check for admin access with inactivity
+        if user.role == "super_admin":
+            last_login = getattr(user, "last_login_at", None)
+            if last_login and last_login < ninety_days_ago:
+                days_inactive = (now - last_login).days
+                reasons.append(f"Super admin inactive for {days_inactive} days")
+            elif last_login is None:
+                # Field may not exist on the model — skip silently rather than flagging
+                pass
+
+        # Deactivated account still holding a privileged role
+        if user.role in ("super_admin", "compliance_manager") and not user.is_active:
+            reasons.append(
+                f"High-privilege role ({user.role}) but account is inactive"
+            )
+
+        if reasons:
+            alerts.append(
+                {
+                    "user_id": str(user.id),
+                    "email": user.email,
+                    "full_name": user.full_name,
+                    "role": user.role,
+                    "reasons": reasons,
+                    "recommendation": "Review and adjust access level",
+                }
+            )
+
+    return {
+        "total_alerts": len(alerts),
+        "alerts": alerts,
+    }
+
+
 @router.get("/{campaign_id}", response_model=AccessReviewCampaignResponse)
 async def get_campaign(org_id: VerifiedOrgId, campaign_id: UUID, db: DB, current_user: AnyInternalUser):
     return await access_review_service.get_campaign_response(db, org_id, campaign_id)

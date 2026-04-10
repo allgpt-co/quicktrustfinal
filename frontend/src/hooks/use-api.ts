@@ -1371,6 +1371,248 @@ export function useCreateTrustCenterDocument(orgId: string) {
   });
 }
 
+// ---- Priority 3: Compliance badges / public preview / NDA signatures ----
+
+export interface ComplianceBadgeItem {
+  name: string;
+  color: string;
+  icon: string;
+  framework_id?: string;
+  framework_name?: string;
+  framework_version?: string;
+}
+
+export interface ComplianceBadgesResponse {
+  total: number;
+  badges: ComplianceBadgeItem[];
+}
+
+export function useComplianceBadges(orgId: string) {
+  return useQuery({
+    queryKey: ["compliance-badges", orgId],
+    queryFn: () =>
+      api.get<ComplianceBadgesResponse>(
+        `/organizations/${orgId}/trust-center/badges`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export interface PublicTrustPageResponse {
+  organization: { name: string; slug: string; industry?: string | null };
+  config: {
+    headline?: string | null;
+    description?: string | null;
+    welcome_message?: string | null;
+    contact_email?: string | null;
+    logo_url?: string | null;
+    primary_color?: string | null;
+    is_published?: boolean;
+    slug?: string;
+  };
+  badges: ComplianceBadgeItem[];
+  documents: Array<{
+    id: string;
+    title: string;
+    description?: string | null;
+    document_type?: string | null;
+    requires_nda?: boolean;
+  }>;
+  generated_at: string;
+}
+
+export function usePublicTrustPage(slug: string | undefined) {
+  return useQuery({
+    queryKey: ["public-trust-page", slug],
+    queryFn: () =>
+      api.get<PublicTrustPageResponse>(`/trust-center/${slug}/public`),
+    enabled: !!slug,
+  });
+}
+
+export interface NdaSignatureItem {
+  id: string;
+  signer_name: string;
+  signer_email: string;
+  signer_company?: string | null;
+  signed_at?: string | null;
+  ip_address?: string | null;
+}
+
+export interface NdaSignaturesResponse {
+  total: number;
+  signatures: NdaSignatureItem[];
+}
+
+export function useNdaSignatures(orgId: string) {
+  return useQuery({
+    queryKey: ["nda-signatures", orgId],
+    queryFn: () =>
+      api.get<NdaSignaturesResponse>(
+        `/organizations/${orgId}/trust-center/nda/signatures`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+// ---- Priority 3: Questionnaire templates ----
+
+export interface QuestionnaireTemplateSeedResponse {
+  seeded: number;
+  templates: Array<{ name: string; question_count: number }>;
+}
+
+export function useSeedQuestionnaireTemplates(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.post<QuestionnaireTemplateSeedResponse>(
+        `/organizations/${orgId}/questionnaires/seed-templates`
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["questionnaires", orgId] });
+      qc.invalidateQueries({ queryKey: ["questionnaire-stats", orgId] });
+    },
+  });
+}
+
+// ---- Priority 3: Approved Response Library ----
+
+export interface ApprovedResponseItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  tags: string[];
+  use_count: number;
+  approved_at?: string | null;
+  created_at?: string | null;
+}
+
+export interface ApprovedResponsesResponse {
+  total: number;
+  items: ApprovedResponseItem[];
+}
+
+export function useApprovedResponses(
+  orgId: string,
+  params?: { search?: string; category?: string }
+) {
+  const searchParams = new URLSearchParams();
+  if (params?.search) searchParams.set("search", params.search);
+  if (params?.category) searchParams.set("category", params.category);
+  const qs = searchParams.toString();
+  return useQuery({
+    queryKey: ["approved-responses", orgId, params],
+    queryFn: () =>
+      api.get<ApprovedResponsesResponse>(
+        `/organizations/${orgId}/response-library${qs ? `?${qs}` : ""}`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export function useCreateApprovedResponse(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: {
+      question: string;
+      answer: string;
+      category: string;
+      tags?: string[];
+    }) =>
+      api.post<{ id: string; message: string }>(
+        `/organizations/${orgId}/response-library`,
+        data
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["approved-responses", orgId] });
+    },
+  });
+}
+
+export function useDeleteApprovedResponse(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (responseId: string) =>
+      api.delete(`/organizations/${orgId}/response-library/${responseId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["approved-responses", orgId] });
+    },
+  });
+}
+
+export function useSeedResponseLibrary(orgId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.post<{ seeded: number; message: string }>(
+        `/organizations/${orgId}/response-library/seed`
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["approved-responses", orgId] });
+    },
+  });
+}
+
+// ---- Priority 3: Access matrix / over-provisioned ----
+
+export interface AccessMatrixEntry {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  is_active: boolean;
+  access: Array<{
+    integration_id: string;
+    integration_name: string;
+    provider: string;
+    access_level: string;
+  }>;
+}
+
+export interface AccessMatrixResponse {
+  total_users: number;
+  total_integrations: number;
+  matrix: AccessMatrixEntry[];
+}
+
+export function useAccessMatrix(orgId: string) {
+  return useQuery({
+    queryKey: ["access-matrix", orgId],
+    queryFn: () =>
+      api.get<AccessMatrixResponse>(
+        `/organizations/${orgId}/access-reviews/access-matrix`
+      ),
+    enabled: !!orgId,
+  });
+}
+
+export interface OverProvisionedAlert {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  reasons: string[];
+  recommendation?: string | null;
+}
+
+export interface OverProvisionedResponse {
+  total_alerts: number;
+  alerts: OverProvisionedAlert[];
+}
+
+export function useOverProvisionedAlerts(orgId: string) {
+  return useQuery({
+    queryKey: ["over-provisioned", orgId],
+    queryFn: () =>
+      api.get<OverProvisionedResponse>(
+        `/organizations/${orgId}/access-reviews/over-provisioned`
+      ),
+    enabled: !!orgId,
+  });
+}
+
 // ===== Reports =====
 
 export function useReports(orgId: string, params?: { report_type?: string; status?: string; page?: number }) {

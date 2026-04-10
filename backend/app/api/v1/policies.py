@@ -414,6 +414,152 @@ async def approve_chain_step(
     return step
 
 
+@router.post("/{policy_id}/generate-quiz")
+async def generate_policy_quiz(
+    org_id: VerifiedOrgId,
+    policy_id: UUID,
+    db: DB,
+    current_user: AnyInternalUser,
+):
+    """Generate a quiz from a policy's content using simple text analysis.
+
+    Extracts "important" sentences (those containing directive words like
+    must/shall/required or numeric values) and converts them into a mix of
+    true/false and fill-in-the-blank style multiple choice questions.
+    """
+    import random
+    import re
+
+    policy = await policy_service.get_policy(db, org_id, policy_id)
+    content = policy.content or ""
+
+    directive_words = [
+        "must",
+        "shall",
+        "required",
+        "mandatory",
+        "prohibited",
+        "forbidden",
+    ]
+
+    # Split by sentence-terminating punctuation followed by whitespace.
+    raw_sentences = re.split(r"(?<=[.!?])\s+", content.replace("\n", " "))
+    sentences = [s.strip() for s in raw_sentences if len(s.strip()) >= 20]
+
+    def is_important(sentence: str) -> bool:
+        lower = sentence.lower()
+        if any(word in lower for word in directive_words):
+            return True
+        if re.search(r"\d+", sentence):
+            return True
+        return False
+
+    important_sentences = [s for s in sentences if is_important(s)]
+
+    # Cap at 10 questions, take first 10
+    selected = important_sentences[:10]
+
+    questions: list[dict] = []
+    rng = random.Random(str(policy_id))
+
+    flip_map = {
+        "must": "may optionally",
+        "shall": "may optionally",
+        "required": "optional",
+        "mandatory": "optional",
+        "prohibited": "allowed",
+        "forbidden": "allowed",
+    }
+
+    for idx, sentence in enumerate(selected, start=1):
+        lower = sentence.lower()
+        directive = next((w for w in flip_map if w in lower), None)
+
+        if directive is not None and idx % 2 == 1:
+            # True/False question — sometimes correct, sometimes flipped
+            flip_it = rng.random() < 0.5
+            if flip_it:
+                pattern = re.compile(re.escape(directive), re.IGNORECASE)
+                question_text = pattern.sub(flip_map[directive], sentence, count=1)
+                correct = "False"
+            else:
+                question_text = sentence
+                correct = "True"
+            questions.append(
+                {
+                    "id": idx,
+                    "type": "true_false",
+                    "question": f"True or False: {question_text}",
+                    "options": ["True", "False"],
+                    "correct_answer": correct,
+                }
+            )
+        else:
+            # Fill-in-the-blank multiple choice
+            words = re.findall(r"\b[A-Za-z]{4,}\b", sentence)
+            key_word: str | None = None
+            for candidate in words:
+                if candidate.lower() not in {
+                    "this",
+                    "that",
+                    "with",
+                    "from",
+                    "will",
+                    "have",
+                    "been",
+                    "they",
+                    "which",
+                    "their",
+                    "these",
+                    "those",
+                    "shall",
+                    "must",
+                }:
+                    key_word = candidate
+                    break
+            if key_word is None:
+                continue
+
+            blanked = re.sub(
+                r"\b" + re.escape(key_word) + r"\b",
+                "______",
+                sentence,
+                count=1,
+            )
+            # Build distractors from other words in the policy
+            distractor_pool = [
+                w
+                for w in set(re.findall(r"\b[A-Za-z]{4,}\b", content))
+                if w.lower() != key_word.lower()
+            ]
+            rng.shuffle(distractor_pool)
+            distractors = distractor_pool[:3]
+            while len(distractors) < 3:
+                distractors.append(f"option{len(distractors) + 1}")
+
+            options = [key_word, *distractors]
+            rng.shuffle(options)
+
+            questions.append(
+                {
+                    "id": idx,
+                    "type": "multiple_choice",
+                    "question": f"Fill in the blank: {blanked}",
+                    "options": options,
+                    "correct_answer": key_word,
+                }
+            )
+
+    # Ensure at least 5 questions if content allowed
+    questions = questions[:10]
+
+    return {
+        "policy_id": str(policy.id),
+        "policy_title": policy.title,
+        "questions": questions,
+    }
+
+
 @router.post("/{policy_id}/approval-chain/{step_id}/reject", response_model=ApprovalStepResponse)
 async def reject_chain_step(
     org_id: VerifiedOrgId,

@@ -52,6 +52,9 @@ from app.models.report_schedule import ReportSchedule
 from app.models.approval_chain import ApprovalChain
 from app.models.webhook import WebhookEndpoint, WebhookDelivery
 from app.models.api_key import ApiKey
+from app.models.approved_response import ApprovedResponse
+from app.models.nda_signature import NdaSignature
+from app.models.evidence_request import EvidenceRequest
 
 __all__ = [
     "BaseModel",
@@ -122,4 +125,7 @@ __all__ = [
     "WebhookEndpoint",
     "WebhookDelivery",
     "ApiKey",
+    "ApprovedResponse",
+    "NdaSignature",
+    "EvidenceRequest",
 ]

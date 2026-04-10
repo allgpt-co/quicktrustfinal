@@ -10,8 +10,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePolicy, useUpdatePolicy } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, HelpCircle, Loader2 } from "lucide-react";
 import api from "@/lib/api";
+
+type QuizQuestion = {
+  id: number;
+  type: "true_false" | "multiple_choice";
+  question: string;
+  options: string[];
+  correct_answer: string;
+};
+
+type QuizResponse = {
+  policy_id: string;
+  policy_title: string;
+  questions: QuizQuestion[];
+};
 
 const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "outline"> = {
   draft: "secondary",
@@ -56,6 +70,26 @@ export default function PolicyDetailPage() {
   });
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [quiz, setQuiz] = useState<QuizResponse | null>(null);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizError, setQuizError] = useState<string | null>(null);
+  const [revealedAnswers, setRevealedAnswers] = useState<Record<number, boolean>>({});
+
+  async function handleGenerateQuiz() {
+    setQuizLoading(true);
+    setQuizError(null);
+    try {
+      const data = await api.post<QuizResponse>(
+        `/organizations/${orgId}/policies/${policyId}/generate-quiz`
+      );
+      setQuiz(data);
+      setRevealedAnswers({});
+    } catch (err) {
+      setQuizError(err instanceof Error ? err.message : "Failed to generate quiz");
+    } finally {
+      setQuizLoading(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -127,8 +161,101 @@ export default function PolicyDetailPage() {
             <FileText className="mr-1 h-4 w-4" />
             Download DOCX
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleGenerateQuiz}
+            disabled={quizLoading}
+          >
+            {quizLoading ? (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            ) : (
+              <HelpCircle className="mr-1 h-4 w-4" />
+            )}
+            Generate Quiz
+          </Button>
         </div>
       </div>
+
+      {(quiz || quizError) && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5" />
+              Policy Quiz
+            </CardTitle>
+            {quiz && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setQuiz(null);
+                  setQuizError(null);
+                  setRevealedAnswers({});
+                }}
+              >
+                Clear
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent>
+            {quizError ? (
+              <p className="text-sm text-red-600">{quizError}</p>
+            ) : quiz && quiz.questions.length > 0 ? (
+              <ol className="space-y-4">
+                {quiz.questions.map((q) => (
+                  <li key={q.id} className="rounded-md border p-3">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <p className="text-sm font-medium">
+                        {q.id}. {q.question}
+                      </p>
+                      <Badge variant="outline" className="shrink-0">
+                        {q.type === "true_false" ? "T/F" : "MC"}
+                      </Badge>
+                    </div>
+                    <ul className="space-y-1">
+                      {q.options.map((opt) => {
+                        const isCorrect = opt === q.correct_answer;
+                        const revealed = revealedAnswers[q.id];
+                        return (
+                          <li
+                            key={opt}
+                            className={`rounded px-2 py-1 text-sm ${
+                              revealed && isCorrect
+                                ? "bg-green-500/20 text-green-700 dark:text-green-400"
+                                : "bg-muted/50"
+                            }`}
+                          >
+                            {opt}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="mt-2 h-auto p-0 text-xs"
+                      onClick={() =>
+                        setRevealedAnswers((prev) => ({
+                          ...prev,
+                          [q.id]: !prev[q.id],
+                        }))
+                      }
+                    >
+                      {revealedAnswers[q.id] ? "Hide answer" : "Show answer"}
+                    </Button>
+                  </li>
+                ))}
+              </ol>
+            ) : quiz ? (
+              <p className="text-sm text-muted-foreground">
+                No quiz questions could be generated from this policy&apos;s content.
+                Try adding more directive language (must, shall, required).
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="overview">
         <TabsList>

@@ -58,6 +58,8 @@ from app.api.v1 import (
     agent_memory,
     findings,
     credential_rotation,
+    evidence_requests,
+    response_library,
 )
 
 api_router = APIRouter()
@@ -76,6 +78,7 @@ api_router.include_router(policy_templates.router)
 api_router.include_router(risks.router)
 api_router.include_router(integrations.router)
 api_router.include_router(audits.router)
+api_router.include_router(audits.utility_router)
 api_router.include_router(auditor_portal.router)
 api_router.include_router(onboarding.router)
 api_router.include_router(incidents.router)
@@ -128,3 +131,7 @@ api_router.include_router(sse.router)
 api_router.include_router(agent_memory.router)
 api_router.include_router(findings.router)
 api_router.include_router(credential_rotation.router)
+# Priority 3: Evidence Request System
+api_router.include_router(evidence_requests.router)
+# Priority 3: Approved Response Library
+api_router.include_router(response_library.router)

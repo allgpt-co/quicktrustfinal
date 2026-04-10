@@ -55,6 +55,17 @@ async def get_vendor_stats(org_id: VerifiedOrgId, db: DB, current_user: AnyInter
     return await vendor_service.get_vendor_stats(db, org_id)
 
 
+@router.get("/breach-alerts")
+async def vendor_breach_alerts(
+    org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser
+):
+    """Return known public breaches that match this org's vendors."""
+    from app.services.vendor_breach_monitor import check_vendor_breaches
+
+    alerts = await check_vendor_breaches(db, org_id)
+    return {"total": len(alerts), "alerts": alerts}
+
+
 @router.get("/{vendor_id}", response_model=VendorResponse)
 async def get_vendor(org_id: VerifiedOrgId, vendor_id: UUID, db: DB, current_user: AnyInternalUser):
     return await vendor_service.get_vendor(db, org_id, vendor_id)

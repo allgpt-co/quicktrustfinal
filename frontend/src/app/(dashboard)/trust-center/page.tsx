@@ -10,6 +10,9 @@ import {
   useUpdateTrustCenterConfig,
   useTrustCenterDocuments,
   useCreateTrustCenterDocument,
+  useComplianceBadges,
+  usePublicTrustPage,
+  useNdaSignatures,
 } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
 import {
@@ -20,7 +23,33 @@ import {
   Save,
   ExternalLink,
   Shield,
+  ShieldCheck,
+  HeartPulse,
+  CreditCard,
+  Building,
+  Eye,
+  Copy,
+  Check,
+  FileSignature,
 } from "lucide-react";
+
+type ComplianceBadge = {
+  name: string;
+  color: string;
+  icon: string;
+  framework_id?: string;
+  framework_name?: string;
+  framework_version?: string;
+};
+
+const BADGE_ICON_MAP: Record<string, typeof Shield> = {
+  shield: Shield,
+  "shield-check": ShieldCheck,
+  globe: Globe,
+  "heart-pulse": HeartPulse,
+  "credit-card": CreditCard,
+  building: Building,
+};
 
 const docTypeBadge: Record<string, string> = {
   policy:
@@ -40,6 +69,27 @@ export default function TrustCenterPage() {
     useTrustCenterDocuments(orgId);
   const updateConfig = useUpdateTrustCenterConfig(orgId);
   const createDocument = useCreateTrustCenterDocument(orgId);
+  const { data: badgesData, isLoading: badgesLoading } =
+    useComplianceBadges(orgId);
+  const publicSlug = config?.slug || "";
+  const { data: publicPage, isLoading: publicPageLoading } =
+    usePublicTrustPage(publicSlug);
+  const { data: ndaSignatures, isLoading: ndaLoading } =
+    useNdaSignatures(orgId);
+  const [copied, setCopied] = useState(false);
+
+  const publicUrl =
+    typeof window !== "undefined" && publicSlug
+      ? `${window.location.origin}/trust/${publicSlug}`
+      : "";
+
+  function handleCopyPublicUrl() {
+    if (!publicUrl) return;
+    navigator.clipboard.writeText(publicUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   const [configForm, setConfigForm] = useState({
     is_published: false,
@@ -444,6 +494,242 @@ export default function TrustCenterPage() {
               <Shield className="h-10 w-10 text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">
                 No documents added yet.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Compliance Badges */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Compliance Badges</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {badgesLoading ? (
+            <div className="grid grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-24 w-full rounded-lg" />
+              ))}
+            </div>
+          ) : badgesData?.badges && badgesData.badges.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {badgesData.badges.map((badge: ComplianceBadge) => {
+                const Icon = BADGE_ICON_MAP[badge.icon] || Shield;
+                return (
+                  <div
+                    key={badge.framework_id || badge.name}
+                    className="flex flex-col items-center gap-2 rounded-lg border p-4 text-center"
+                    style={{ borderColor: badge.color }}
+                  >
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full text-white"
+                      style={{ backgroundColor: badge.color }}
+                    >
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="text-sm font-semibold">{badge.name}</div>
+                    {badge.framework_version && (
+                      <div className="text-xs text-muted-foreground">
+                        {badge.framework_version}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <ShieldCheck className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground">
+                Activate a compliance framework to display badges.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Public Page Preview */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Public Page Preview
+            </CardTitle>
+            {publicSlug && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleCopyPublicUrl}
+                className="gap-1.5"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy Public URL
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {!publicSlug ? (
+            <p className="text-sm text-muted-foreground">
+              Set a slug in the configuration section to preview the public
+              page.
+            </p>
+          ) : publicPageLoading ? (
+            <Skeleton className="h-48 w-full rounded-lg" />
+          ) : publicPage ? (
+            <div className="space-y-4 rounded-lg border bg-muted/30 p-6">
+              <div>
+                <div className="text-2xl font-bold">
+                  {publicPage.organization?.name || "Your Company"}
+                </div>
+                {publicPage.organization?.industry && (
+                  <div className="text-sm text-muted-foreground">
+                    {publicPage.organization.industry}
+                  </div>
+                )}
+              </div>
+
+              {publicPage.config?.headline && (
+                <div className="text-lg font-medium">
+                  {publicPage.config.headline}
+                </div>
+              )}
+
+              {publicPage.config?.welcome_message && (
+                <p className="text-sm text-muted-foreground">
+                  {publicPage.config.welcome_message}
+                </p>
+              )}
+
+              {publicPage.badges && publicPage.badges.length > 0 && (
+                <div>
+                  <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+                    Certifications
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {publicPage.badges.map((b: ComplianceBadge) => {
+                      const Icon = BADGE_ICON_MAP[b.icon] || Shield;
+                      return (
+                        <div
+                          key={b.name}
+                          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white"
+                          style={{ backgroundColor: b.color }}
+                        >
+                          <Icon className="h-3 w-3" />
+                          {b.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {publicPage.documents && publicPage.documents.length > 0 && (
+                <div>
+                  <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+                    Public Documents
+                  </div>
+                  <ul className="space-y-1">
+                    {publicPage.documents.map((d: any) => (
+                      <li
+                        key={d.id}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span>{d.title}</span>
+                        {d.requires_nda && (
+                          <Badge variant="warning">NDA</Badge>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {publicPage.config?.contact_email && (
+                <div className="text-xs text-muted-foreground">
+                  Contact: {publicPage.config.contact_email}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Public page not available. Publish the trust center and try
+              again.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* NDA Signatures */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileSignature className="h-5 w-5" />
+            NDA Signatures
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {ndaLoading ? (
+            <Skeleton className="h-32 w-full rounded-lg" />
+          ) : ndaSignatures?.signatures &&
+            ndaSignatures.signatures.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th className="pb-2 pr-3">Name</th>
+                    <th className="pb-2 pr-3">Email</th>
+                    <th className="pb-2 pr-3">Company</th>
+                    <th className="pb-2 pr-3">Signed At</th>
+                    <th className="pb-2">IP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ndaSignatures.signatures.map((s: any) => (
+                    <tr key={s.id} className="border-b last:border-0">
+                      <td className="py-2 pr-3 font-medium">
+                        {s.signer_name}
+                      </td>
+                      <td className="py-2 pr-3 text-muted-foreground">
+                        {s.signer_email}
+                      </td>
+                      <td className="py-2 pr-3 text-muted-foreground">
+                        {s.signer_company || "—"}
+                      </td>
+                      <td className="py-2 pr-3 text-muted-foreground">
+                        {s.signed_at
+                          ? new Date(s.signed_at).toLocaleString()
+                          : "—"}
+                      </td>
+                      <td className="py-2 text-xs text-muted-foreground">
+                        {s.ip_address || "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-3 text-xs text-muted-foreground">
+                {ndaSignatures.total} total signature
+                {ndaSignatures.total === 1 ? "" : "s"}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <FileSignature className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No NDA signatures yet.
               </p>
             </div>
           )}

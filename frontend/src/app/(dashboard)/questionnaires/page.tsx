@@ -11,9 +11,17 @@ import {
   useQuestionnaires,
   useCreateQuestionnaire,
   useQuestionnaireStats,
+  useSeedQuestionnaireTemplates,
 } from "@/hooks/use-api";
 import { useOrgId } from "@/hooks/use-org-id";
-import { ClipboardList, Plus, Loader2, Trash2 } from "lucide-react";
+import {
+  ClipboardList,
+  Plus,
+  Loader2,
+  Trash2,
+  Library,
+  Sparkles,
+} from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: string | undefined }[] = [
   { label: "All", value: undefined },
@@ -56,6 +64,7 @@ export default function QuestionnairesPage() {
     { question_text: "", question_type: "text" },
   ]);
   const createQuestionnaire = useCreateQuestionnaire(orgId);
+  const seedTemplates = useSeedQuestionnaireTemplates(orgId);
 
   const resetForm = () => {
     setForm({ title: "", source: "" });
@@ -111,11 +120,41 @@ export default function QuestionnairesPage() {
             Manage security questionnaires and auto-fill responses
           </p>
         </div>
-        <Button onClick={() => setShowCreate((v) => !v)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Questionnaire
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => seedTemplates.mutate()}
+            disabled={seedTemplates.isPending}
+          >
+            {seedTemplates.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="mr-2 h-4 w-4" />
+            )}
+            Load Templates
+          </Button>
+          <Button onClick={() => setShowCreate((v) => !v)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Questionnaire
+          </Button>
+        </div>
       </div>
+
+      {/* Response Library nav */}
+      <Link href="/questionnaires/response-library">
+        <Card className="transition-colors hover:bg-accent/50">
+          <CardContent className="flex items-center gap-4 p-4">
+            <Library className="h-8 w-8 text-primary" />
+            <div className="flex-1">
+              <div className="font-medium">Approved Response Library</div>
+              <p className="text-xs text-muted-foreground">
+                Manage pre-approved answers to reuse across questionnaires.
+              </p>
+            </div>
+            <Badge variant="outline">Open</Badge>
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* Stats */}
       {stats && (
