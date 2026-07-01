@@ -1,5 +1,27 @@
 import type { NextConfig } from "next";
 
+function originFromEnv(value: string | undefined): string | null {
+  if (!value) return null;
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
+
+const connectSrcOrigins = Array.from(
+  new Set(
+    [
+      "'self'",
+      "http://localhost:8000",
+      "http://localhost:8080",
+      originFromEnv(process.env.NEXT_PUBLIC_API_URL),
+      originFromEnv(process.env.NEXT_PUBLIC_KEYCLOAK_URL),
+      "https://api.openai.com",
+    ].filter(Boolean) as string[]
+  )
+).join(" ");
+
 const cspDirectives = [
   "default-src 'self'",
   // Next.js requires unsafe-eval in dev; tighten with nonces in production
@@ -9,7 +31,7 @@ const cspDirectives = [
   "style-src 'self' 'unsafe-inline'", // Tailwind requires inline styles
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' http://localhost:8000 http://localhost:8080 https://api.openai.com",
+  `connect-src ${connectSrcOrigins}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
