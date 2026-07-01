@@ -1,3 +1,4 @@
+import secrets
 from uuid import UUID
 
 from sqlalchemy import select, func
@@ -7,6 +8,10 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from app.services.keycloak_service import keycloak_service
+
+
+def _generate_temporary_password() -> str:
+    return f"{secrets.token_urlsafe(18)}Aa1!"
 
 
 async def list_users(
@@ -39,7 +44,7 @@ async def create_user(db: AsyncSession, org_id: UUID, data: UserCreate) -> User:
         email=data.email,
         first_name=first_name,
         last_name=last_name,
-        temp_password="changeme123",
+        temp_password=_generate_temporary_password(),
     )
     await keycloak_service.assign_realm_role(keycloak_id, data.role)
 

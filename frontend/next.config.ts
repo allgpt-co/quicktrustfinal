@@ -22,9 +22,6 @@ const nextConfig: NextConfig = {
   ...(process.env.NEXT_OUTPUT_STANDALONE === "true"
     ? { output: "standalone" as const }
     : {}),
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   async headers() {
     return [
       {

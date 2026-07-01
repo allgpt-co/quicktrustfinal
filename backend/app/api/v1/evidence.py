@@ -2,10 +2,11 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
-from fastapi.responses import RedirectResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 
+from app.config import get_settings
 from app.core.audit_middleware import log_audit
-from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
+from app.core.dependencies import DB, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import BadRequestError
 from app.schemas.common import PaginatedResponse
 from app.schemas.evidence import EvidenceCreate, EvidenceReject, EvidenceResponse
@@ -172,7 +173,7 @@ async def upload_evidence_file(
 
     object_name = f"evidence/{org_id}/{evidence_id}/{original_name}"
     file_url = upload_file(
-        bucket="quicktrust-evidence",
+        bucket=get_settings().S3_BUCKET,
         object_name=object_name,
         data=contents,
         content_type=content_type,
@@ -360,7 +361,7 @@ async def _download_evidence_package(
             }
             manifest_entries.append(entry)
 
-            # Download the file from MinIO and add to ZIP
+            # Download the file from object storage and add to ZIP
             if ev.file_url:
                 parts = ev.file_url.split("/", 1)
                 if len(parts) == 2:
@@ -539,11 +540,11 @@ async def _capture_screenshot(
             "Install with: pip install playwright && playwright install chromium",
         )
 
-    # Upload to MinIO
+    # Upload to object storage
     evidence_id = _uuid.uuid4()
     object_name = f"evidence/{org_id}/{evidence_id}/screenshot.png"
     file_url = upload_file(
-        bucket="quicktrust-evidence",
+        bucket=get_settings().S3_BUCKET,
         object_name=object_name,
         data=screenshot_bytes,
         content_type="image/png",

@@ -22,7 +22,11 @@
   "otpPolicyDigits": 6,
   "otpPolicyLookAheadWindow": 1,
   "otpPolicyPeriod": 30,
-  "defaultRoles": ["employee", "offline_access", "uma_authorization"],
+  "defaultRoles": [
+    "employee",
+    "offline_access",
+    "uma_authorization"
+  ],
   "roles": {
     "realm": [
       {
@@ -59,11 +63,13 @@
       "protocol": "openid-connect",
       "redirectUris": [
         "http://localhost:3000/*",
-        "http://localhost:3001/*"
+        "http://localhost:3001/*",
+        "http://localhost:3010/*"
       ],
       "webOrigins": [
         "http://localhost:3000",
-        "http://localhost:3001"
+        "http://localhost:3001",
+        "http://localhost:3010"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256"
@@ -80,7 +86,6 @@
       "name": "QuickTrust API",
       "enabled": true,
       "publicClient": false,
-      "secret": "quicktrust-api-secret",
       "directAccessGrantsEnabled": true,
       "standardFlowEnabled": false,
       "serviceAccountsEnabled": true,
@@ -90,45 +95,8 @@
         "profile",
         "email",
         "roles"
-      ]
-    }
-  ],
-  "users": [
-    {
-      "username": "admin@quicktrust.dev",
-      "email": "admin@quicktrust.dev",
-      "firstName": "Admin",
-      "lastName": "User",
-      "enabled": true,
-      "emailVerified": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "Admin@12345!",
-          "temporary": false
-        }
       ],
-      "realmRoles": [
-        "super_admin"
-      ]
-    },
-    {
-      "username": "manager@quicktrust.dev",
-      "email": "manager@quicktrust.dev",
-      "firstName": "Compliance",
-      "lastName": "Manager",
-      "enabled": true,
-      "emailVerified": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "Manager@12345!",
-          "temporary": false
-        }
-      ],
-      "realmRoles": [
-        "compliance_manager"
-      ]
+      "secret": "__KEYCLOAK_CLIENT_SECRET__"
     }
   ],
   "clientScopes": [

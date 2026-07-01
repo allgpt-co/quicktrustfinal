@@ -13,7 +13,7 @@ QuickTrust is an open-source, agent-first GRC (Governance, Risk, and Compliance)
 | Database | PostgreSQL 16 + pgvector |
 | Auth | Keycloak 26 (OIDC/PKCE) |
 | Cache | Redis 7 |
-| Object Storage | MinIO |
+| Object Storage | Amazon S3 in production; MinIO as local S3-compatible emulator |
 | AI Agent | LangGraph + LiteLLM |
 | Reverse Proxy | Traefik v3 |
 | Containerization | Docker Compose |
@@ -24,7 +24,7 @@ QuickTrust is an open-source, agent-first GRC (Governance, Risk, and Compliance)
 Browser ─── Next.js (3000) ─── FastAPI (8000) ─── PostgreSQL (5432)
                 │                    │                    │
                 │                    ├──── Redis (6379)   │
-                │                    ├──── MinIO (9000)   │
+                │                    ├──── S3 / MinIO local│
                 │                    └──── LangGraph      │
                 │                           (AI Agent)    │
                 └──── Keycloak (8080) ────────────────────┘
@@ -51,7 +51,8 @@ END
 2. **Agent background execution**: Agents run as `asyncio.create_task()` — simple for dev, can be upgraded to Celery for production
 3. **LLM fallback**: Agent nodes gracefully degrade to template substitution if no LLM API key is configured
 4. **PKCE auth**: Frontend uses Keycloak's PKCE flow (no client secret in browser)
-5. **Org-scoped data**: Controls, evidence, and agent runs are scoped to organizations via `org_id` foreign keys
+5. **S3-compatible storage**: Evidence, generic uploads, screenshots, and rendered reports use boto3 against Amazon S3 in production, with MinIO available only for local emulation
+6. **Org-scoped data**: Controls, evidence, and agent runs are scoped to organizations via `org_id` foreign keys
 
 ## Database Schema
 

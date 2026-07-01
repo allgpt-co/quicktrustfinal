@@ -14,7 +14,6 @@ dependencies = [
     "httpx>=0.28.0",
     "langgraph>=0.2.0",
     "litellm>=1.50.0",
-    "minio>=7.2.0",
     "redis>=5.2.0",
     "python-multipart>=0.0.17",
     "reportlab>=4.1.0",

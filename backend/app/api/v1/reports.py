@@ -2,10 +2,10 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import Response
 from pydantic import BaseModel as PydanticBaseModel
 
-from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
+from app.core.dependencies import DB, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import BadRequestError
 from app.schemas.common import PaginatedResponse
 from app.schemas.report import ReportCreate, ReportResponse, ReportStatsResponse
@@ -69,7 +69,7 @@ async def delete_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, current_
 @router.get("/{report_id}/download")
 async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, current_user: AnyInternalUser):
     """Download a rendered report file (PDF/CSV) directly."""
-    from app.core.storage import _get_client
+    from app.core.storage import download_file
 
     report = await report_service.get_report(db, org_id, report_id)
 
@@ -86,12 +86,11 @@ async def download_report(org_id: VerifiedOrgId, report_id: UUID, db: DB, curren
 
     bucket, object_name = parts
 
-    client = _get_client()
-    if not client:
+    response = download_file(bucket=bucket, object_name=object_name)
+    if response is None:
         raise BadRequestError("File storage is currently unavailable.")
 
     try:
-        response = client.get_object(bucket, object_name)
         file_bytes = response.read()
         response.close()
         response.release_conn()

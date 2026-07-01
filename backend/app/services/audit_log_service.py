@@ -320,9 +320,19 @@ async def get_audit_log_stats(db: AsyncSession, org_id: UUID) -> dict:
     act_result = await db.execute(act_q)
     by_action = {row[0]: row[1] for row in act_result.all()}
 
+    # Get counts by entity type
+    entity_q = (
+        select(AuditLog.entity_type, func.count())
+        .where(AuditLog.org_id == org_id)
+        .group_by(AuditLog.entity_type)
+    )
+    entity_result = await db.execute(entity_q)
+    by_entity_type = {row[0]: row[1] for row in entity_result.all()}
+
     return {
         "total": total,
         "by_category": by_category,
         "by_severity": by_severity,
         "by_action": by_action,
+        "by_entity_type": by_entity_type,
     }

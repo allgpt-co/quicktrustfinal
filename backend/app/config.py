@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "QuickTrust"
     APP_ENV: str = "development"
     LOG_LEVEL: str = "INFO"
-    SECRET_KEY: str = "change-me-in-production"
+    SECRET_KEY: str = ""
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
     # Database — defaults to SQLite for local dev, use postgresql+asyncpg://... for production
@@ -21,21 +21,28 @@ class Settings(BaseSettings):
     DATABASE_SSL_CA: str = ""  # Path to CA cert (e.g. /app/rds-combined-ca-bundle.pem)
 
     # Redis
-    REDIS_URL: str = "redis://:quicktrust_redis_dev@localhost:6379/0"
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     # Keycloak
     KEYCLOAK_URL: str = "http://localhost:8080"
     KEYCLOAK_REALM: str = "quicktrust"
     KEYCLOAK_CLIENT_ID: str = "quicktrust-api"
-    KEYCLOAK_CLIENT_SECRET: str = "quicktrust-api-secret"
+    KEYCLOAK_CLIENT_SECRET: str = ""
     KEYCLOAK_ADMIN_USER: str = "admin"
-    KEYCLOAK_ADMIN_PASSWORD: str = "admin"
+    KEYCLOAK_ADMIN_PASSWORD: str = ""
 
-    # MinIO
-    MINIO_URL: str = "http://localhost:9000"
-    MINIO_ROOT_USER: str = "quicktrust"
-    MINIO_ROOT_PASSWORD: str = "quicktrust_dev"
-    MINIO_BUCKET: str = "quicktrust-evidence"
+    # Amazon S3 object storage. Local development can set S3_ENDPOINT_URL to a
+    # MinIO or LocalStack endpoint while using the same boto3 code path.
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    AWS_SESSION_TOKEN: str = ""
+    AWS_REGION: str = "us-east-1"
+    S3_ENDPOINT_URL: str = ""
+    S3_BUCKET: str = "quicktrust-evidence"
+    S3_REPORTS_BUCKET: str = "quicktrust-reports"
+    S3_FORCE_PATH_STYLE: bool = False
+    S3_CREATE_BUCKET: bool = False
+    S3_SERVER_SIDE_ENCRYPTION: str = "AES256"
 
     # LiteLLM
     LITELLM_MODEL: str = "gpt-4o-mini"
@@ -59,26 +66,38 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
-        """Reject insecure default secrets in production."""
-        insecure_defaults = {
-            "SECRET_KEY": "change-me-in-production",
-            "KEYCLOAK_CLIENT_SECRET": "quicktrust-api-secret",
-            "MINIO_ROOT_PASSWORD": "quicktrust_dev",
+        """Require real secret values in production."""
+        required_secret_fields = (
+            "SECRET_KEY",
+            "KEYCLOAK_CLIENT_SECRET",
+            "KEYCLOAK_ADMIN_PASSWORD",
+            "AWS_ACCESS_KEY_ID",
+            "AWS_SECRET_ACCESS_KEY",
+            "AWS_REGION",
+            "S3_BUCKET",
+            "S3_REPORTS_BUCKET",
+        )
+        insecure_values = {
+            "change-me-in-production",
+            "quicktrust-api-secret",
+            "quicktrust_dev",
+            "quicktrust_redis_dev",
+            "admin",
+            "changeme123",
         }
         if self.APP_ENV == "production":
-            for field_name, default_value in insecure_defaults.items():
-                if getattr(self, field_name) == default_value:
-                    raise ValueError(
-                        f"CRITICAL: {field_name} still has the insecure default value. "
-                        f"Set a strong, unique value in your .env file before deploying."
-                    )
-        elif self.APP_ENV == "development":
-            for field_name, default_value in insecure_defaults.items():
-                if getattr(self, field_name) == default_value:
-                    logger.warning(
-                        "SECURITY: %s is using the default value. Change before deploying.",
-                        field_name,
-                    )
+            invalid_fields = [
+                field_name
+                for field_name in required_secret_fields
+                if not getattr(self, field_name)
+                or getattr(self, field_name) in insecure_values
+            ]
+            if invalid_fields:
+                fields = ", ".join(invalid_fields)
+                raise ValueError(
+                    f"CRITICAL: production secret values must be set to strong, "
+                    f"unique values before deploying: {fields}"
+                )
         return self
 
     @property

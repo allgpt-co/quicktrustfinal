@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(255), nullable=False),
         sa.Column("full_name", sa.String(255)),
         sa.Column("role", sa.String(50), server_default="employee"),
-        sa.Column("is_active", sa.Boolean, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean, server_default=sa.text("true")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP")),
         sa.Column("updated_at", sa.DateTime(timezone=True)),
     )
@@ -54,7 +54,7 @@ def upgrade() -> None:
         sa.Column("version", sa.String(50)),
         sa.Column("description", sa.Text),
         sa.Column("category", sa.String(100)),
-        sa.Column("is_custom", sa.Boolean, server_default=sa.text("0")),
+        sa.Column("is_custom", sa.Boolean, server_default=sa.text("false")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP")),
         sa.Column("updated_at", sa.DateTime(timezone=True)),
     )

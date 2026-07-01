@@ -26,7 +26,7 @@ docker compose up -d
 This starts 7 services:
 - **PostgreSQL** (pgvector) — port 5432
 - **Redis** — port 6379
-- **MinIO** — ports 9000 (API), 9001 (console)
+- **MinIO** — local S3-compatible emulator, ports 9000 (API), 9001 (console)
 - **Keycloak** — port 8080
 - **API** (FastAPI) — port 8000
 - **Web** (Next.js) — port 3000
@@ -53,16 +53,13 @@ This loads:
 
 - API health: http://localhost:8000/health
 - API docs: http://localhost:8000/docs
-- Keycloak admin: http://localhost:8080 (admin/admin)
+- Keycloak admin: http://localhost:8080 (use KEYCLOAK_ADMIN / KEYCLOAK_ADMIN_PASSWORD from your local .env)
 - Frontend: http://localhost:3000
-- MinIO console: http://localhost:9001
+- Local S3 emulator console: http://localhost:9001
 
 ### 6. Dev users
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@quicktrust.dev | admin123 | super_admin |
-| manager@quicktrust.dev | manager123 | compliance_manager |
+The committed Keycloak realm does not include demo users or passwords. Create local users through the Keycloak admin console or the application invitation/user-management flow, then assign the required realm roles.
 
 ## Local Development (without Docker)
 
@@ -95,6 +92,23 @@ pytest -v
 ## Environment Variables
 
 See `.env.example` for all available configuration options.
+
+### Object Storage
+
+Production uses Amazon S3 through boto3. Configure these variables in production:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` (optional)
+- `AWS_REGION`
+- `S3_BUCKET` for evidence and generic uploads
+- `S3_REPORTS_BUCKET` for rendered reports
+- `S3_ENDPOINT_URL` should be empty for AWS S3
+- `S3_FORCE_PATH_STYLE=false`
+- `S3_CREATE_BUCKET=false`
+- `S3_SERVER_SIDE_ENCRYPTION=AES256`
+
+Local Docker development still starts MinIO as an S3-compatible emulator. Keep `S3_ENDPOINT_URL=http://minio:9000`, `S3_FORCE_PATH_STYLE=true`, and `S3_CREATE_BUCKET=true` locally.
 
 ## AI Agent Configuration
 

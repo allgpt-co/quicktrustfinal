@@ -55,6 +55,12 @@ import type {
   TrustCenterDocument,
   Report,
   ReportStats,
+  Notification,
+  NotificationStats,
+  AuditLogEntry,
+  AuditLogStats,
+  GapAnalysis,
+  CrossFrameworkMatrix,
 } from "@/lib/types";
 
 // Frameworks
@@ -1865,7 +1871,7 @@ export function useNotifications(orgId: string, isRead?: boolean) {
   return useQuery({
     queryKey: ["notifications", orgId, isRead],
     queryFn: () =>
-      api.get<PaginatedResponse<any>>(
+      api.get<PaginatedResponse<Notification>>(
         `/organizations/${orgId}/notifications`,
         { params: { is_read: isRead, page_size: 50 } }
       ),
@@ -1877,7 +1883,7 @@ export function useNotifications(orgId: string, isRead?: boolean) {
 export function useNotificationStats(orgId: string) {
   return useQuery({
     queryKey: ["notification-stats", orgId],
-    queryFn: () => api.get(`/organizations/${orgId}/notifications/stats`),
+    queryFn: () => api.get<NotificationStats>(`/organizations/${orgId}/notifications/stats`),
     enabled: !!orgId,
     refetchInterval: 30000,
   });
@@ -1918,7 +1924,7 @@ export function useAuditLogs(
   return useQuery({
     queryKey: ["audit-logs", orgId, filters],
     queryFn: () =>
-      api.get<PaginatedResponse<any>>(`/organizations/${orgId}/audit-logs`, {
+      api.get<PaginatedResponse<AuditLogEntry>>(`/organizations/${orgId}/audit-logs`, {
         params: filters,
       }),
     enabled: !!orgId,
@@ -1928,7 +1934,7 @@ export function useAuditLogs(
 export function useAuditLogStats(orgId: string) {
   return useQuery({
     queryKey: ["audit-log-stats", orgId],
-    queryFn: () => api.get(`/organizations/${orgId}/audit-logs/stats`),
+    queryFn: () => api.get<AuditLogStats>(`/organizations/${orgId}/audit-logs/stats`),
     enabled: !!orgId,
   });
 }
@@ -1984,7 +1990,7 @@ export function useGapAnalysis(orgId: string, frameworkId: string) {
   return useQuery({
     queryKey: ["gap-analysis", orgId, frameworkId],
     queryFn: () =>
-      api.get(`/organizations/${orgId}/gap-analysis/framework/${frameworkId}`),
+      api.get<GapAnalysis>(`/organizations/${orgId}/gap-analysis/framework/${frameworkId}`),
     enabled: !!orgId && !!frameworkId,
   });
 }
@@ -1992,7 +1998,7 @@ export function useGapAnalysis(orgId: string, frameworkId: string) {
 export function useCrossFrameworkMatrix(orgId: string) {
   return useQuery({
     queryKey: ["cross-framework-matrix", orgId],
-    queryFn: () => api.get(`/organizations/${orgId}/gap-analysis/cross-framework`),
+    queryFn: () => api.get<CrossFrameworkMatrix>(`/organizations/${orgId}/gap-analysis/cross-framework`),
     enabled: !!orgId,
   });
 }

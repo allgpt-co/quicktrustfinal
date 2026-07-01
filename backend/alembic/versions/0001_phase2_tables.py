@@ -140,7 +140,7 @@ def upgrade() -> None:
         sa.Column("auditor_email", sa.String(255), nullable=False),
         sa.Column("auditor_name", sa.String(255)),
         sa.Column("permissions", sa.Text),  # JSON stored as text
-        sa.Column("is_active", sa.Boolean, server_default="1"),
+        sa.Column("is_active", sa.Boolean, server_default=sa.text("true")),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),

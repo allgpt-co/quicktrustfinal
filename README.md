@@ -68,7 +68,7 @@ See [docs/setup.md](docs/setup.md) for detailed setup instructions.
 | Database | PostgreSQL 16 + pgvector (SQLite for local dev) |
 | Auth | Keycloak 26 (OIDC/PKCE) |
 | AI Agent | LangGraph + LiteLLM (any LLM provider) |
-| Infrastructure | Docker Compose, Traefik, Redis, MinIO |
+| Infrastructure | Docker Compose, Traefik, Redis, Amazon S3 (MinIO for local S3 emulation) |
 
 See [docs/architecture.md](docs/architecture.md) for the full architecture overview.
 

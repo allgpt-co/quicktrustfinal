@@ -14,8 +14,6 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, UploadFile, File, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from sqlalchemy import select
-
 from app.config import get_settings
 from app.core.dependencies import DB, CurrentUser
 from app.core.storage import upload_file, get_presigned_url, delete_file
@@ -109,7 +107,7 @@ async def upload(
 
     # --- Build object path --------------------------------------------------
     settings = get_settings()
-    bucket = settings.MINIO_BUCKET
+    bucket = settings.S3_BUCKET
     file_id = str(_uuid.uuid4())
     today = datetime.utcnow().strftime("%Y-%m-%d")
     safe_filename = (file.filename or "upload").replace("/", "_").replace("\\", "_")

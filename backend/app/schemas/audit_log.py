@@ -32,5 +32,6 @@ class AuditLogResponse(BaseModel):
 class AuditLogStatsResponse(BaseModel):
     total: int
     by_action: dict[str, int]
+    by_entity_type: dict[str, int]
     by_category: dict[str, int] = {}
     by_severity: dict[str, int] = {}

@@ -91,7 +91,8 @@ class KeycloakService:
                 url,
                 data={
                     "grant_type": "password",
-                    "client_id": "quicktrust-web",
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
                     "username": username,
                     "password": password,
                 },

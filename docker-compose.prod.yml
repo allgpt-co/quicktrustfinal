@@ -43,33 +43,9 @@ services:
       timeout: 5s
       retries: 5
 
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    expose:
-      - "9000"
-      - "9001"
-    volumes:
-      - minio_data:/data
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 1G
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    command: start --import-realm --optimized
+    command: start --optimized
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -82,8 +58,6 @@ services:
       KC_PROXY: edge
     expose:
       - "8080"
-    volumes:
-      - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     deploy:
       resources:
         limits:
@@ -107,7 +81,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
-    env_file: .env.prod
+    env_file: ${QUICKTRUST_ENV_FILE:-.env.prod}
     expose:
       - "8000"
     deploy:
@@ -141,7 +115,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: production
-    env_file: .env.prod
+    env_file: ${QUICKTRUST_ENV_FILE:-.env.prod}
     expose:
       - "3000"
     deploy:
@@ -186,5 +160,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
-  minio_data:
   letsencrypt:

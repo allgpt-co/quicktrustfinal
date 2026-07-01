@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.core.exceptions import NotFoundError
 from app.models.report import Report
 from app.schemas.report import ReportCreate
@@ -189,7 +190,7 @@ async def generate_report_data(db: AsyncSession, org_id: UUID, report_id: UUID) 
             data["vendor_stats"] = {"total": len(vendor_list), **tier_counts}
             data["vendors"] = vendors_data
 
-        # Render to the requested format and upload to MinIO
+        # Render to the requested format and upload to object storage
         if report.format in ("pdf", "csv", "pptx"):
             from app.services.report_renderer import render_pdf, render_csv, render_pptx
             from app.core.storage import upload_file
@@ -211,7 +212,7 @@ async def generate_report_data(db: AsyncSession, org_id: UUID, report_id: UUID) 
                 f"reports/{org_id}/{report_id}.{extension}"
             )
             file_url = upload_file(
-                bucket="quicktrust-reports",
+                bucket=get_settings().S3_REPORTS_BUCKET,
                 object_name=object_name,
                 data=file_bytes,
                 content_type=content_type,

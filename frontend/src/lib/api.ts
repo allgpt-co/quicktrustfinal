@@ -1,5 +1,12 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+type QueryParamValue = string | number | boolean | null | undefined;
+
+interface ApiRequestOptions extends RequestInit {
+  params?: Record<string, QueryParamValue>;
+}
+
+
 class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
@@ -14,19 +21,27 @@ class ApiClient {
 
   private async request<T>(
     path: string,
-    options: RequestInit = {}
+    options: ApiRequestOptions = {}
   ): Promise<T> {
+    const { params, ...requestOptions } = options;
+    const url = new URL(`${this.baseUrl}${path}`);
+    Object.entries(params ?? {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, String(value));
+      }
+    });
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...(options.headers as Record<string, string>),
+      ...((requestOptions.headers as Record<string, string>) ?? {}),
     };
 
     if (this.token) {
       headers["Authorization"] = `Bearer ${this.token}`;
     }
 
-    const res = await fetch(`${this.baseUrl}${path}`, {
-      ...options,
+    const res = await fetch(url.toString(), {
+      ...requestOptions,
       headers,
     });
 
@@ -49,8 +64,8 @@ class ApiClient {
     return res.json();
   }
 
-  get<T>(path: string) {
-    return this.request<T>(path);
+  get<T>(path: string, options?: ApiRequestOptions) {
+    return this.request<T>(path, options);
   }
 
   post<T>(path: string, body?: unknown) {

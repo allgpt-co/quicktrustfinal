@@ -310,6 +310,13 @@ export interface Risk {
   reviewer_id: string | null;
   last_review_date: string | null;
   next_review_date: string | null;
+  acceptance_status: string | null;
+  acceptance_requested_by: string | null;
+  acceptance_requested_at: string | null;
+  acceptance_approved_by: string | null;
+  acceptance_approved_at: string | null;
+  acceptance_justification: string | null;
+  acceptance_expiry: string | null;
   control_mappings?: RiskControlMapping[];
   created_at: string;
   updated_at: string;
@@ -526,6 +533,7 @@ export interface IncidentStats {
   by_severity: Record<string, number>;
   open_p1_count: number;
   avg_resolution_hours: number;
+  avg_detect_hours: number;
 }
 
 // Vendors
@@ -884,6 +892,8 @@ export interface AuditLogStats {
   total: number;
   by_action: Record<string, number>;
   by_entity_type: Record<string, number>;
+  by_category: Record<string, number>;
+  by_severity: Record<string, number>;
 }
 
 // Auditor Marketplace

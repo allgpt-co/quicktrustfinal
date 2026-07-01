@@ -28,8 +28,8 @@ def upgrade() -> None:
         sa.Column("course_type", sa.String(50), server_default="document"),
         sa.Column("required_roles", sa.Text),
         sa.Column("duration_minutes", sa.Integer),
-        sa.Column("is_required", sa.Boolean, server_default="0"),
-        sa.Column("is_active", sa.Boolean, server_default="1"),
+        sa.Column("is_required", sa.Boolean, server_default=sa.text("false")),
+        sa.Column("is_active", sa.Boolean, server_default=sa.text("true")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )

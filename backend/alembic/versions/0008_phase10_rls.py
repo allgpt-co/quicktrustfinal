@@ -10,8 +10,11 @@ Revision ID: 0008
 Revises: 0007
 """
 
+import os
+
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import inspect
 
 revision = "0008"
 down_revision = "0007_phase3"
@@ -21,7 +24,7 @@ depends_on = None
 # Tables that hold tenant-scoped data with an org_id column
 RLS_TABLES = [
     "controls",
-    "evidences",
+    "evidence",
     "risks",
     "policies",
     "frameworks",
@@ -51,22 +54,32 @@ RLS_TABLES = [
 ]
 
 
+def _rls_enabled() -> bool:
+    return os.getenv("ENABLE_DB_RLS", "").lower() in {"1", "true", "yes"}
+
+
+def _has_org_id(table: str) -> bool:
+    inspector = inspect(op.get_bind())
+    if not inspector.has_table(table):
+        return False
+    return any(column["name"] == "org_id" for column in inspector.get_columns(table))
+
+
 def upgrade() -> None:
     conn = op.get_bind()
     if conn.dialect.name != "postgresql":
         return  # RLS is PostgreSQL-only
+    if not _rls_enabled():
+        return  # App sessions must set app.current_org before RLS can be safely forced.
 
     for table in RLS_TABLES:
-        # Check if the table exists before applying RLS
+        if not _has_org_id(table):
+            continue
         op.execute(sa.text(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY"))
         op.execute(sa.text(f"ALTER TABLE {table} FORCE ROW LEVEL SECURITY"))
 
         policy_name = f"{table}_tenant_isolation"
-        # Drop policy if it already exists (idempotent)
-        op.execute(sa.text(
-            f"DROP POLICY IF EXISTS {policy_name} ON {table}"
-        ))
-        # Create policy: rows visible only when org_id matches the session var
+        op.execute(sa.text(f"DROP POLICY IF EXISTS {policy_name} ON {table}"))
         op.execute(sa.text(
             f"CREATE POLICY {policy_name} ON {table} "
             f"USING (org_id::text = current_setting('app.current_org', true)) "
@@ -80,6 +93,8 @@ def downgrade() -> None:
         return
 
     for table in RLS_TABLES:
+        if not _has_org_id(table):
+            continue
         policy_name = f"{table}_tenant_isolation"
         op.execute(sa.text(f"DROP POLICY IF EXISTS {policy_name} ON {table}"))
         op.execute(sa.text(f"ALTER TABLE {table} DISABLE ROW LEVEL SECURITY"))

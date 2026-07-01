@@ -1,9 +1,8 @@
-"""MinIO object-storage helper with graceful degradation.
+"""S3-compatible object-storage helper with graceful degradation.
 
-If the MinIO server is unreachable the module logs a warning on
-initialisation and every subsequent call returns a sensible fallback
-(empty string for URLs, ``None`` for deletes) so the rest of the
-application can keep running without object storage.
+Production uses Amazon S3. Local development can point ``S3_ENDPOINT_URL`` at
+MinIO, LocalStack, or another S3-compatible endpoint while exercising the same
+boto3 code path used in production.
 """
 
 from __future__ import annotations
@@ -12,63 +11,147 @@ import hashlib
 import io
 import logging
 from datetime import timedelta
-from urllib.parse import urlparse
+from typing import Any, Iterator
 
-from minio import Minio
-from minio.error import S3Error
-from minio.sse import SseS3
+import boto3
+from botocore.config import Config
+from botocore.exceptions import BotoCoreError, ClientError
 
 from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-_client: Minio | None = None
+_client: Any | None = None
 _available: bool = False
 _ensured_buckets: set[str] = set()
 
 
-def _get_client() -> Minio | None:
-    """Lazily initialise the global MinIO client."""
+class StorageResponse:
+    """Small compatibility wrapper for streamed object downloads.
+
+    Existing API call sites expect the MinIO response methods ``read``,
+    ``stream``, ``close``, and ``release_conn``. This wrapper keeps that local
+    contract stable while the storage backend uses boto3.
+    """
+
+    def __init__(self, body: Any, content_type: str | None = None):
+        self._body = body
+        self.headers = {
+            "content-type": content_type or "application/octet-stream",
+        }
+
+    def read(self, amount: int = -1) -> bytes:
+        return self._body.read(amount)
+
+    def stream(self, chunk_size: int = 32 * 1024) -> Iterator[bytes]:
+        while True:
+            chunk = self._body.read(chunk_size)
+            if not chunk:
+                break
+            yield chunk
+
+    def close(self) -> None:
+        close = getattr(self._body, "close", None)
+        if close:
+            close()
+
+    def release_conn(self) -> None:
+        release_conn = getattr(self._body, "release_conn", None)
+        if release_conn:
+            release_conn()
+
+
+def _get_client() -> Any | None:
+    """Lazily initialise the global S3 client."""
     global _client, _available
 
     if _client is not None:
         return _client if _available else None
 
     settings = get_settings()
-    parsed = urlparse(settings.MINIO_URL)
-    endpoint = parsed.netloc or parsed.path  # handles "localhost:9000" or "http://…"
-    secure = parsed.scheme == "https"
+    if not settings.AWS_ACCESS_KEY_ID or not settings.AWS_SECRET_ACCESS_KEY:
+        logger.warning("S3 credentials are not configured. File storage will be disabled.")
+        _available = False
+        return None
+
+    addressing_style = "path" if settings.S3_FORCE_PATH_STYLE else "auto"
+    client_kwargs: dict[str, Any] = {
+        "service_name": "s3",
+        "region_name": settings.AWS_REGION,
+        "aws_access_key_id": settings.AWS_ACCESS_KEY_ID,
+        "aws_secret_access_key": settings.AWS_SECRET_ACCESS_KEY,
+        "config": Config(s3={"addressing_style": addressing_style}),
+    }
+    if settings.AWS_SESSION_TOKEN:
+        client_kwargs["aws_session_token"] = settings.AWS_SESSION_TOKEN
+    if settings.S3_ENDPOINT_URL:
+        client_kwargs["endpoint_url"] = settings.S3_ENDPOINT_URL
 
     try:
-        _client = Minio(
-            endpoint=endpoint,
-            access_key=settings.MINIO_ROOT_USER,
-            secret_key=settings.MINIO_ROOT_PASSWORD,
-            secure=secure,
-        )
-        # Smoke-test connectivity by listing buckets
-        _client.list_buckets()
+        _client = boto3.client(**client_kwargs)
         _available = True
-        logger.info("MinIO connected at %s", endpoint)
+        logger.info(
+            "S3 object storage client initialized for region %s%s",
+            settings.AWS_REGION,
+            f" at {settings.S3_ENDPOINT_URL}" if settings.S3_ENDPOINT_URL else "",
+        )
     except Exception as exc:
-        logger.warning("MinIO unavailable (%s). File storage will be disabled.", exc)
+        logger.warning("S3 client initialization failed (%s). File storage will be disabled.", exc)
         _available = False
 
     return _client if _available else None
 
 
-def _ensure_bucket(client: Minio, bucket: str) -> None:
-    """Create the bucket if it does not already exist (cached per process)."""
+def _error_code(exc: ClientError) -> str:
+    return str(exc.response.get("Error", {}).get("Code", ""))
+
+
+def _is_sse_unsupported_error(exc: ClientError) -> bool:
+    code = _error_code(exc)
+    message = str(exc)
+    lower_message = message.lower()
+    return (
+        code in {"NotImplemented", "NotSupported"}
+        or "kms not configured" in lower_message
+        or ("server side encryption" in lower_message and "not" in lower_message)
+    )
+
+
+def _create_bucket(client: Any, bucket: str) -> None:
+    settings = get_settings()
+    kwargs: dict[str, Any] = {"Bucket": bucket}
+    if settings.AWS_REGION and settings.AWS_REGION != "us-east-1":
+        kwargs["CreateBucketConfiguration"] = {"LocationConstraint": settings.AWS_REGION}
+    client.create_bucket(**kwargs)
+    logger.info("Created S3 bucket: %s", bucket)
+
+
+def _ensure_bucket(client: Any, bucket: str) -> None:
+    """Validate or create the bucket if configured to do so."""
     if bucket in _ensured_buckets:
         return
+
+    settings = get_settings()
     try:
-        if not client.bucket_exists(bucket):
-            client.make_bucket(bucket)
-            logger.info("Created MinIO bucket: %s", bucket)
-        _ensured_buckets.add(bucket)
-    except S3Error as exc:
-        logger.error("Failed to ensure bucket '%s': %s", bucket, exc)
-        raise
+        client.head_bucket(Bucket=bucket)
+    except ClientError as exc:
+        if _error_code(exc) in {"404", "NoSuchBucket", "NotFound"} and settings.S3_CREATE_BUCKET:
+            _create_bucket(client, bucket)
+        else:
+            logger.error("Failed to access S3 bucket '%s': %s", bucket, exc)
+            raise
+
+    _ensured_buckets.add(bucket)
+
+
+def _read_bytes(data: bytes | io.BytesIO | Any) -> bytes:
+    if isinstance(data, bytes):
+        return data
+    if isinstance(data, io.BytesIO):
+        return data.getvalue()
+    if hasattr(data, "read"):
+        return data.read()
+    return bytes(data)
 
 
 def upload_file(
@@ -79,58 +162,53 @@ def upload_file(
 ) -> str:
     """Upload *data* and return the object path ``bucket/object_name``.
 
-    Returns an empty string when MinIO is unavailable.
+    Returns an empty string when object storage is unavailable.
     """
     client = _get_client()
     if client is None:
-        logger.warning("MinIO unavailable – skipping upload of %s/%s", bucket, object_name)
+        logger.warning("S3 unavailable - skipping upload of %s/%s", bucket, object_name)
         return ""
 
-    _ensure_bucket(client, bucket)
-
-    if isinstance(data, bytes):
-        data = io.BytesIO(data)
-
-    length = data.getbuffer().nbytes if isinstance(data, io.BytesIO) else -1
-
     try:
-        # Compute SHA-256 hash for evidence integrity verification
-        if isinstance(data, io.BytesIO):
-            raw = data.getvalue()
-        else:
-            raw = data.read() if hasattr(data, "read") else data
-            data = io.BytesIO(raw)
+        _ensure_bucket(client, bucket)
+        raw = _read_bytes(data)
         sha256_hash = hashlib.sha256(raw).hexdigest()
 
-        # Try with server-side encryption first; fall back without if KMS not configured
+        put_kwargs: dict[str, Any] = {
+            "Bucket": bucket,
+            "Key": object_name,
+            "Body": raw,
+            "ContentType": content_type,
+            "Metadata": {"sha256": sha256_hash},
+        }
+        settings = get_settings()
+        if settings.S3_SERVER_SIDE_ENCRYPTION:
+            put_kwargs["ServerSideEncryption"] = settings.S3_SERVER_SIDE_ENCRYPTION
+
         try:
-            client.put_object(
-                bucket_name=bucket,
-                object_name=object_name,
-                data=data,
-                length=length,
-                content_type=content_type,
-                sse=SseS3(),
-                metadata={"x-amz-meta-sha256": sha256_hash},
-            )
-        except Exception as sse_err:
-            if "KMS" in str(sse_err) or "NotImplemented" in str(sse_err):
-                # MinIO KMS not configured — upload without SSE
-                data.seek(0)
-                client.put_object(
-                    bucket_name=bucket,
-                    object_name=object_name,
-                    data=data,
-                    length=length,
-                    content_type=content_type,
-                    metadata={"x-amz-meta-sha256": sha256_hash},
+            client.put_object(**put_kwargs)
+        except ClientError as exc:
+            if "ServerSideEncryption" in put_kwargs and _is_sse_unsupported_error(exc):
+                fallback_kwargs = dict(put_kwargs)
+                fallback_kwargs.pop("ServerSideEncryption", None)
+                client.put_object(**fallback_kwargs)
+                logger.info(
+                    "Uploaded %s/%s without SSE because the endpoint does not support it",
+                    bucket,
+                    object_name,
                 )
-                logger.info("Uploaded without SSE (KMS not configured)")
             else:
                 raise
-        logger.info("Uploaded %s/%s (%s, sha256=%s)", bucket, object_name, content_type, sha256_hash[:16])
+
+        logger.info(
+            "Uploaded %s/%s (%s, sha256=%s)",
+            bucket,
+            object_name,
+            content_type,
+            sha256_hash[:16],
+        )
         return f"{bucket}/{object_name}"
-    except S3Error as exc:
+    except (BotoCoreError, ClientError) as exc:
         logger.error("Upload failed for %s/%s: %s", bucket, object_name, exc)
         raise
 
@@ -142,12 +220,12 @@ def get_presigned_url(
 ) -> str:
     """Return a presigned GET URL valid for *expires* (default 1 hour).
 
-    Returns an empty string when MinIO is unavailable.
+    Returns an empty string when object storage is unavailable.
     """
     client = _get_client()
     if client is None:
         logger.warning(
-            "MinIO unavailable – cannot generate presigned URL for %s/%s",
+            "S3 unavailable - cannot generate presigned URL for %s/%s",
             bucket,
             object_name,
         )
@@ -157,51 +235,65 @@ def get_presigned_url(
         expires = timedelta(hours=1)
 
     try:
-        url = client.presigned_get_object(
-            bucket_name=bucket,
-            object_name=object_name,
-            expires=expires,
+        return client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": object_name},
+            ExpiresIn=int(expires.total_seconds()),
         )
-        return url
-    except S3Error as exc:
+    except (BotoCoreError, ClientError) as exc:
         logger.error(
             "Presigned URL generation failed for %s/%s: %s", bucket, object_name, exc
         )
         raise
 
 
-def download_file(bucket: str, object_name: str):
-    """Return a MinIO response object for streaming.
+def download_file(bucket: str, object_name: str) -> StorageResponse | None:
+    """Return a response object for streaming.
 
-    Returns ``None`` when MinIO is unavailable.
+    Returns ``None`` when object storage is unavailable.
     """
     client = _get_client()
     if client is None:
-        logger.warning(
-            "MinIO unavailable – cannot download %s/%s", bucket, object_name
-        )
+        logger.warning("S3 unavailable - cannot download %s/%s", bucket, object_name)
         return None
 
     try:
-        response = client.get_object(bucket_name=bucket, object_name=object_name)
-        return response
-    except S3Error as exc:
+        response = client.get_object(Bucket=bucket, Key=object_name)
+        return StorageResponse(
+            body=response["Body"],
+            content_type=response.get("ContentType"),
+        )
+    except (BotoCoreError, ClientError) as exc:
         logger.error("Download failed for %s/%s: %s", bucket, object_name, exc)
         raise
 
 
 def delete_file(bucket: str, object_name: str) -> None:
-    """Delete an object. No-op when MinIO is unavailable."""
+    """Delete an object. No-op when object storage is unavailable."""
     client = _get_client()
     if client is None:
-        logger.warning(
-            "MinIO unavailable – skipping delete of %s/%s", bucket, object_name
-        )
+        logger.warning("S3 unavailable - skipping delete of %s/%s", bucket, object_name)
         return
 
     try:
-        client.remove_object(bucket_name=bucket, object_name=object_name)
+        client.delete_object(Bucket=bucket, Key=object_name)
         logger.info("Deleted %s/%s", bucket, object_name)
-    except S3Error as exc:
+    except (BotoCoreError, ClientError) as exc:
         logger.error("Delete failed for %s/%s: %s", bucket, object_name, exc)
         raise
+
+
+def check_storage() -> tuple[bool, str | None]:
+    """Probe configured object-storage buckets for readiness checks."""
+    client = _get_client()
+    if client is None:
+        return False, "client not initialized"
+
+    settings = get_settings()
+    buckets = [settings.S3_BUCKET, settings.S3_REPORTS_BUCKET]
+    try:
+        for bucket in dict.fromkeys(bucket for bucket in buckets if bucket):
+            _ensure_bucket(client, bucket)
+        return True, None
+    except (BotoCoreError, ClientError) as exc:
+        return False, str(exc)[:200]

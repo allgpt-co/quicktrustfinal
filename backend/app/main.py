@@ -23,16 +23,24 @@ setup_logging(settings.LOG_LEVEL)
 register_rls_hook()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    from app.core.scheduler import start_scheduler, stop_scheduler
+async def _create_schema_for_non_production() -> None:
+    if settings.APP_ENV == "production":
+        return
+
     from app.core.database import Base
 
-    # Ensure all tables exist (creates new ones like invitations without dropping existing data)
+    # Local development/test convenience only. Production schema changes must run through Alembic.
     import app.models  # noqa: F401 — import so all models are registered on Base.metadata
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.core.scheduler import start_scheduler, stop_scheduler
+
+    await _create_schema_for_non_production()
     await start_scheduler()
     yield
     await stop_scheduler()
@@ -78,7 +86,7 @@ async def health():
 
 @app.get("/health/ready")
 async def health_ready():
-    """Deep health check: probes database, Redis, and MinIO."""
+    """Deep health check: probes database, Redis, and object storage."""
     import time
     from sqlalchemy import text
     from app.core.database import async_session
@@ -104,18 +112,18 @@ async def health_ready():
     except Exception as exc:
         checks["redis"] = {"status": "unavailable", "error": str(exc)[:100]}
 
-    # MinIO probe
+    # Object storage probe
     t0 = time.monotonic()
     try:
-        from app.core.storage import _get_client
-        client = _get_client()
-        if client:
-            client.list_buckets()
-            checks["minio"] = {"status": "ok", "latency_ms": round((time.monotonic() - t0) * 1000)}
+        from app.core.storage import check_storage
+
+        ok, error = check_storage()
+        if ok:
+            checks["storage"] = {"status": "ok", "latency_ms": round((time.monotonic() - t0) * 1000)}
         else:
-            checks["minio"] = {"status": "unavailable", "error": "client not initialized"}
+            checks["storage"] = {"status": "unavailable", "error": error or "client not initialized"}
     except Exception as exc:
-        checks["minio"] = {"status": "unavailable", "error": str(exc)[:100]}
+        checks["storage"] = {"status": "unavailable", "error": str(exc)[:100]}
 
     all_ok = all(c.get("status") == "ok" for c in checks.values())
     return {
