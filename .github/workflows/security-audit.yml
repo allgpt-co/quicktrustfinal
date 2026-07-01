@@ -39,7 +39,7 @@ jobs:
             git diff --name-only "$before" "$after" > .audit/changed-files.txt
           fi
 
-          if grep -Eq '^(backend/|\.github/workflows/(backend-worker-deploy|security-audit)\.yml$)' .audit/changed-files.txt; then
+          if grep -Eq '^(backend/|\.github/workflows/(build-deploy|security-audit)\.yml$)' .audit/changed-files.txt; then
             echo "true" > .audit/deploy-needed.txt
           else
             echo "false" > .audit/deploy-needed.txt
