@@ -9,23 +9,45 @@ function originFromEnv(value: string | undefined): string | null {
   }
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+
+function isLocalhostOrigin(origin: string): boolean {
+  try {
+    const hostname = new URL(origin).hostname;
+    return (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
+      hostname.endsWith(".localhost")
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedConnectOrigin(origin: string | null): origin is string {
+  if (!origin) return false;
+  return !isProduction || !isLocalhostOrigin(origin);
+}
+
 const connectSrcOrigins = Array.from(
   new Set(
     [
       "'self'",
-      "http://localhost:8000",
-      "http://localhost:8080",
+      ...(isProduction
+        ? []
+        : ["http://localhost:8000", "http://localhost:8080"]),
       originFromEnv(process.env.NEXT_PUBLIC_API_URL),
       originFromEnv(process.env.NEXT_PUBLIC_KEYCLOAK_URL),
       "https://api.openai.com",
-    ].filter(Boolean) as string[]
+    ].filter(isAllowedConnectOrigin)
   )
 ).join(" ");
 
 const cspDirectives = [
   "default-src 'self'",
   // Next.js emits inline bootstrap scripts; unsafe-eval stays dev-only.
-  process.env.NODE_ENV === "production"
+  isProduction
     ? "script-src 'self' 'unsafe-inline'"
     : "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'", // Tailwind requires inline styles

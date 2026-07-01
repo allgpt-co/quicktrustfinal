@@ -66,28 +66,27 @@ async def decode_token(token: str) -> dict:
         # the audience manually after decoding.
         valid_audiences = {settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"}
 
-        # Accept tokens issued by localhost (browser) or Docker hostname (internal)
-        try:
-            payload = jwt.decode(
-                token,
-                rsa_key,
-                algorithms=["RS256"],
-                issuer=issuer,
-                options={"verify_aud": False},
-            )
-        except JWTError:
-            # Retry with localhost issuer for Docker environments
+        issuers = [issuer]
+        if settings.APP_ENV != "production":
             localhost_issuer = f"http://localhost:8080/realms/{settings.KEYCLOAK_REALM}"
             if localhost_issuer != issuer:
+                issuers.append(localhost_issuer)
+
+        last_jwt_error: JWTError | None = None
+        for allowed_issuer in issuers:
+            try:
                 payload = jwt.decode(
                     token,
                     rsa_key,
                     algorithms=["RS256"],
-                    issuer=localhost_issuer,
+                    issuer=allowed_issuer,
                     options={"verify_aud": False},
                 )
-            else:
-                raise
+                break
+            except JWTError as e:
+                last_jwt_error = e
+        else:
+            raise last_jwt_error or JWTError("Token issuer is not accepted")
 
         # Manual audience check: token aud can be a string, list, or absent.
         # Keycloak often omits "aud" and uses "azp" (authorized party) instead.

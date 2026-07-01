@@ -14,8 +14,8 @@ import {
   KeyRound,
   ClipboardCheck,
 } from "lucide-react";
+import { API_URL } from "@/lib/public-env";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const BASE = `${API_URL}/api/v1/auditor/portal`;
 
 type TabValue = "overview" | "controls" | "evidence" | "policies" | "risks";

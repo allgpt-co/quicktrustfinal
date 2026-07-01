@@ -105,7 +105,7 @@ services:
       retries: 5
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.quicktrust.dev`)"
+      - "traefik.http.routers.api.rule=Host(`api.quicktrustapp.com`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=8000"
@@ -129,7 +129,7 @@ services:
       - frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`quicktrust.dev`)"
+      - "traefik.http.routers.web.rule=Host(`quicktrustapp.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
       - "traefik.http.services.web.loadbalancer.server.port=3000"

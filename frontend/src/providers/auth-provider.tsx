@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import api from "@/lib/api";
+import { API_URL } from "@/lib/public-env";
 
 interface AuthContextType {
   authenticated: boolean;
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             let backendRole: string = "employee";
             try {
               const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`,
+                `${API_URL}/api/v1/auth/me`,
                 { headers: { Authorization: `Bearer ${t}` } }
               );
               if (res.ok) {

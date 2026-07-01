@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Shield, FileText, ExternalLink, CheckCircle2, Lock } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { API_URL } from "@/lib/public-env";
 
 interface TrustCenterDoc {
   id: string;

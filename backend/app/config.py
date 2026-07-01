@@ -1,10 +1,22 @@
 import logging
+from urllib.parse import urlparse
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 logger = logging.getLogger(__name__)
+
+
+def _is_localhost_url(value: str) -> bool:
+    try:
+        hostname = urlparse(value).hostname
+    except Exception:
+        return False
+
+    return hostname in {"localhost", "127.0.0.1", "0.0.0.0"} or (
+        hostname is not None and hostname.endswith(".localhost")
+    )
 
 
 class Settings(BaseSettings):
@@ -66,7 +78,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
-        """Require real secret values in production."""
+        """Require real production values in production."""
         required_secret_fields = (
             "SECRET_KEY",
             "KEYCLOAK_CLIENT_SECRET",
@@ -86,6 +98,7 @@ class Settings(BaseSettings):
             "changeme123",
         }
         if self.APP_ENV == "production":
+            messages = []
             invalid_fields = [
                 field_name
                 for field_name in required_secret_fields
@@ -94,10 +107,24 @@ class Settings(BaseSettings):
             ]
             if invalid_fields:
                 fields = ", ".join(invalid_fields)
-                raise ValueError(
+                messages.append(
                     f"CRITICAL: production secret values must be set to strong, "
                     f"unique values before deploying: {fields}"
                 )
+
+            localhost_fields = []
+            if _is_localhost_url(self.KEYCLOAK_URL):
+                localhost_fields.append("KEYCLOAK_URL")
+            if any(_is_localhost_url(origin) for origin in self.cors_origins_list):
+                localhost_fields.append("CORS_ORIGINS")
+            if localhost_fields:
+                fields = ", ".join(localhost_fields)
+                messages.append(
+                    f"CRITICAL: production network settings must not use localhost: {fields}"
+                )
+
+            if messages:
+                raise ValueError("; ".join(messages))
         return self
 
     @property

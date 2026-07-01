@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import api from "@/lib/api";
+import { API_URL } from "@/lib/public-env";
 import { Shield, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 
 interface InviteInfo {
@@ -32,9 +33,7 @@ export default function InviteAcceptPage() {
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/invitations/validate/${token}`
-    )
+    fetch(`${API_URL}/api/v1/invitations/validate/${token}`)
       .then(async (res) => {
         if (!res.ok) {
           const err = await res.json().catch(() => ({ detail: "Invalid invitation" }));

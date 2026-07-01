@@ -10,6 +10,12 @@ import api from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
 import {
+  APP_URL,
+  KEYCLOAK_CLIENT_ID,
+  KEYCLOAK_REALM,
+  KEYCLOAK_URL,
+} from "@/lib/public-env";
+import {
   User,
   Shield,
   Monitor,
@@ -188,11 +194,12 @@ export default function ProfilePage() {
     .slice(0, 2) || "?";
 
   // Direct link to Keycloak password change (uses the login-actions flow which works with existing session)
-  const keycloakPasswordUrl = `${
-    process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:8080"
-  }/realms/${
-    process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "quicktrust"
-  }/protocol/openid-connect/auth?client_id=quicktrust-web&redirect_uri=${encodeURIComponent("http://localhost:3001/profile")}&response_type=code&scope=openid&kc_action=UPDATE_PASSWORD`;
+  const passwordRedirectUrl = new URL("/profile", APP_URL).toString();
+  const keycloakPasswordUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth?client_id=${encodeURIComponent(
+    KEYCLOAK_CLIENT_ID
+  )}&redirect_uri=${encodeURIComponent(
+    passwordRedirectUrl
+  )}&response_type=code&scope=openid&kc_action=UPDATE_PASSWORD`;
 
   return (
     <div className="space-y-6">
