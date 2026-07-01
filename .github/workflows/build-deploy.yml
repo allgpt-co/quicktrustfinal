@@ -1,0 +1,86 @@
+name: Build Backend Image & Deploy
+ 
+on:
+  workflow_run:
+    workflows:
+      - Security Audit
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+
+jobs:
+  build-and-deploy:
+    runs-on:
+      - self-hosted
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main'
+      )
+
+    steps:
+      - name: Download deploy scope
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-scope
+          path: .audit
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check deploy scope
+        id: deploy-scope
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        run: |
+          deploy_needed="$(cat .audit/deploy-needed.txt)"
+          echo "deploy_needed=$deploy_needed" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout code
+        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Configure AWS credentials
+        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Docker Image
+        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          docker build \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            ./backend
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Trigger Backend Deploy
+        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            "${{ vars.COOLIFY_BACKEND_WEBHOOK }}"
