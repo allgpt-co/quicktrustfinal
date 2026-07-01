@@ -38,10 +38,11 @@ describe("public environment", () => {
       NODE_ENV: "production",
       NEXT_PUBLIC_API_URL: undefined,
       NEXT_PUBLIC_APP_URL: undefined,
-      NEXT_PUBLIC_KEYCLOAK_URL: "https://keycloak.quicktrustapp.com",
+      NEXT_PUBLIC_KEYCLOAK_URL: undefined,
     });
 
     expect(env.API_URL).toBe("https://api.quicktrustapp.com");
     expect(env.APP_URL).toBe("https://quicktrustapp.com");
+    expect(env.KEYCLOAK_URL).toBe("https://keycloak.quicktrustapp.com");
   });
 });

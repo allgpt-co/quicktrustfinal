@@ -20,10 +20,11 @@ function isLocalhostUrl(value: string): boolean {
 
 function publicUrl(
   envKey: string,
+  configuredValue: string | undefined,
   developmentDefault: string,
   productionDefault?: string
 ): string {
-  const value = process.env[envKey] || (isProduction ? productionDefault : developmentDefault);
+  const value = configuredValue || (isProduction ? productionDefault : developmentDefault);
 
   if (!value) {
     throw new Error(`${envKey} must be configured in production`);
@@ -38,19 +39,23 @@ function publicUrl(
 
 export const API_URL = publicUrl(
   "NEXT_PUBLIC_API_URL",
+  process.env.NEXT_PUBLIC_API_URL,
   "http://localhost:8000",
   "https://api.quicktrustapp.com"
 );
 
 export const APP_URL = publicUrl(
   "NEXT_PUBLIC_APP_URL",
+  process.env.NEXT_PUBLIC_APP_URL,
   "http://localhost:3001",
   "https://quicktrustapp.com"
 );
 
 export const KEYCLOAK_URL = publicUrl(
   "NEXT_PUBLIC_KEYCLOAK_URL",
-  "http://localhost:8080"
+  process.env.NEXT_PUBLIC_KEYCLOAK_URL,
+  "http://localhost:8080",
+  "https://keycloak.quicktrustapp.com"
 );
 
 export const KEYCLOAK_REALM =
