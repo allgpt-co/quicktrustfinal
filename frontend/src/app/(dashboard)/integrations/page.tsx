@@ -86,7 +86,7 @@ const CREDENTIAL_FIELDS: Record<string, { label: string; placeholder: string; ty
   ],
   gcp: [
     { label: "Project ID", placeholder: "my-project-123" },
-    { label: "Service Account Key (JSON)", placeholder: '{"type": "service_account", ...}' },
+    { label: "Service Account Key (JSON)", placeholder: "Paste service account JSON" },
   ],
   gitlab: [
     { label: "GitLab Token", placeholder: "glpat-...", type: "password" },
