@@ -357,7 +357,7 @@ export default function TrainingCourseDetailPage() {
                     <input
                       type="text"
                       className="flex-1 rounded-md border bg-background p-2 text-sm font-mono"
-                      placeholder="Keycloak user UUID"
+                      placeholder="Application user UUID"
                       value={assignForm.user_id}
                       onChange={(e) => { setAssignForm({ ...assignForm, user_id: e.target.value }); setAssignError(null); }}
                     />
@@ -375,7 +375,7 @@ export default function TrainingCourseDetailPage() {
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Click &quot;Me&quot; to assign to yourself, or paste a UUID from Keycloak Admin
+                    Click &quot;Me&quot; to assign to yourself, or paste a UUID from the Members page
                   </p>
                 </div>
                 <div className="space-y-1">

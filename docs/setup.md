@@ -2,78 +2,48 @@
 
 ## Prerequisites
 
-- Docker & Docker Compose
+- Docker and Docker Compose
 - Node.js 20+ and pnpm 9+
-- Python 3.12+ (for local backend development)
+- Python 3.12+ for direct backend development
 - Git
 
-## Quick Start
-
-### 1. Clone and configure
+## Docker Quick Start
 
 ```bash
-git clone <repo-url> grcplatfrom
-cd grcplatfrom
+git clone <repo-url> quicktrust
+cd quicktrust
 cp .env.example .env
-```
-
-### 2. Start all services
-
-```bash
+# Replace all required password/key placeholders.
 docker compose up -d
-```
-
-This starts 7 services:
-- **PostgreSQL** (pgvector) — port 5432
-- **Redis** — port 6379
-- **MinIO** — local S3-compatible emulator, ports 9000 (API), 9001 (console)
-- **Keycloak** — port 8080
-- **API** (FastAPI) — port 8000
-- **Web** (Next.js) — port 3000
-- **Traefik** — ports 80, 8081
-
-### 3. Run database migrations
-
-```bash
 docker compose exec api alembic upgrade head
-```
-
-### 4. Seed data
-
-```bash
 docker compose exec api python -m seeds.run_seeds
 ```
 
-This loads:
-- SOC 2 Type II framework (9 domains, 33 requirements)
-- 25 control templates
-- 20 evidence templates
+The development stack starts six services: PostgreSQL, Redis, a local S3-compatible emulator, FastAPI, Next.js, and Traefik. The base Compose file exposes the API on `8000`, web app on `3001`, and local storage console on `9001`; the optional override may choose different host ports.
 
-### 5. Verify
+Verify:
 
 - API health: http://localhost:8000/health
-- API docs: http://localhost:8000/docs
-- Keycloak admin: http://localhost:8080 (use KEYCLOAK_ADMIN / KEYCLOAK_ADMIN_PASSWORD from your local .env)
-- Frontend: http://localhost:3000
-- Local S3 emulator console: http://localhost:9001
+- API documentation: http://localhost:8000/docs
+- Frontend: http://localhost:3001
+- Local object-storage console: http://localhost:9001
 
-### 6. Dev users
+## Create a Development Account
 
-The committed Keycloak realm does not include demo users or passwords. Create local users through the Keycloak admin console or the application invitation/user-management flow, then assign the required realm roles.
+Open `/login`, select **Create account**, and enter an email, name, and policy-compliant password. The first user of a new self-registered organization receives the existing `super_admin` role. Invited users should use their invitation link; the role and organization from the invitation are preserved.
 
-## Local Development (without Docker)
+Users that existed before application-managed authentication do not have transferable password material. Use **Forgot password?** on `/login` to establish a password. Configure SMTP to deliver links; when SMTP is intentionally absent in development, the backend logs the reset URL.
 
-### Backend
+## Local Development Without Docker
 
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+source .venv/bin/activate
 pip install -e ".[dev]"
+alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 ```
-
-### Frontend
 
 ```bash
 cd frontend
@@ -81,39 +51,33 @@ pnpm install
 pnpm dev
 ```
 
-## Running Tests
+## Authentication Configuration
 
-```bash
-cd backend
-pip install aiosqlite  # for test database
-pytest -v
-```
+- `SECRET_KEY` — strong JWT signing secret; at least 32 characters in production
+- `JWT_ISSUER`, `JWT_AUDIENCE` — access-token validation values
+- `ACCESS_TOKEN_EXPIRE_MINUTES` — short-lived access token lifetime (default 15)
+- `REFRESH_TOKEN_EXPIRE_DAYS` — refresh-session lifetime (default 7)
+- `PASSWORD_RESET_EXPIRE_MINUTES` — one-time reset-link lifetime (default 60)
+- `AUTH_COOKIE_SECURE=true` — mandatory in production
+- `AUTH_COOKIE_DOMAIN=.quicktrustapp.com` — production parent domain so the web route guard and API share the refresh cookie
+- SMTP variables — required to deliver invitation and password setup/reset email in deployed environments
 
-## Environment Variables
+The browser never persists the access JWT. The API sets the refresh secret as an HttpOnly cookie, rotates it on refresh, and stores only its SHA-256 digest.
 
-See `.env.example` for all available configuration options.
+## Object Storage
 
-### Object Storage
-
-Production uses Amazon S3 through boto3. Configure these variables in production:
-
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_SESSION_TOKEN` (optional)
-- `AWS_REGION`
-- `S3_BUCKET` for evidence and generic uploads
-- `S3_REPORTS_BUCKET` for rendered reports
-- `S3_ENDPOINT_URL` should be empty for AWS S3
-- `S3_FORCE_PATH_STYLE=false`
-- `S3_CREATE_BUCKET=false`
-- `S3_SERVER_SIDE_ENCRYPTION=AES256`
-
-Local Docker development still starts MinIO as an S3-compatible emulator. Keep `S3_ENDPOINT_URL=http://minio:9000`, `S3_FORCE_PATH_STYLE=true`, and `S3_CREATE_BUCKET=true` locally.
+Production uses Amazon S3 through boto3. Configure AWS credentials/role, `AWS_REGION`, `S3_BUCKET`, and `S3_REPORTS_BUCKET`; leave `S3_ENDPOINT_URL` empty, `S3_FORCE_PATH_STYLE=false`, and `S3_CREATE_BUCKET=false`. Local Docker uses the emulator endpoint with path-style access and bucket creation enabled.
 
 ## AI Agent Configuration
 
-To use the controls generation agent with a real LLM:
+Set `BEDROCK_ENABLED=true`, select an Anthropic Claude Sonnet model or inference profile in `BEDROCK_MODEL_ID`, provide AWS credentials through the normal boto3 credential chain, and configure positive current input/output rates. With Bedrock disabled, local development and CI use deterministic mock responses.
 
-1. Set `OPENAI_API_KEY` in `.env`
-2. Optionally change `LITELLM_MODEL` (default: `gpt-4o-mini`)
-3. The agent falls back to template-based generation if no API key is configured
+## Tests
+
+```bash
+cd backend
+pytest -v
+cd ../frontend
+pnpm test
+pnpm build
+```

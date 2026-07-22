@@ -22,8 +22,8 @@ QuickTrust uses **AI agents** to automate the most time-consuming parts of compl
 - **SOC 2 Type II** framework with 9 domains, 33 requirements, and control objectives — fully seeded and ready to use
 - **25 control templates** across 8 security domains (Access Control, Network Security, Data Protection, Change Management, Logging & Monitoring, Incident Response, Endpoint Security, HR Security)
 - **20 evidence templates** for structured evidence collection
-- **AI controls generation agent** — give it your company context and framework, get tailored draft controls in minutes (LangGraph + LiteLLM)
-- **Multi-tenant architecture** with Keycloak SSO (OIDC/PKCE)
+- **AI controls generation agent** — give it your company context and framework, get tailored draft controls in minutes (Amazon Bedrock Claude Sonnet via LiteLLM)
+- **Multi-tenant architecture** with application-managed email/password authentication, JWTs, and RBAC
 - **Compliance dashboard** with scoring, status tracking, and framework progress
 - **Full REST API** with Swagger documentation
 
@@ -66,8 +66,8 @@ See [docs/setup.md](docs/setup.md) for detailed setup instructions.
 | Frontend | Next.js 15, React 19, shadcn/ui, TanStack Query |
 | Backend | FastAPI, Python 3.12, SQLAlchemy 2.0 (async) |
 | Database | PostgreSQL 16 + pgvector (SQLite for local dev) |
-| Auth | Keycloak 26 (OIDC/PKCE) |
-| AI Agent | LangGraph + LiteLLM (any LLM provider) |
+| Auth | Argon2id passwords, JWT access tokens, rotating refresh sessions |
+| AI Agent | LangGraph + LiteLLM + Amazon Bedrock Claude Sonnet |
 | Infrastructure | Docker Compose, Traefik, Redis, Amazon S3 (MinIO for local S3 emulation) |
 
 See [docs/architecture.md](docs/architecture.md) for the full architecture overview.
@@ -78,7 +78,7 @@ See [docs/architecture.md](docs/architecture.md) for the full architecture overv
 quicktrust/
   backend/          # FastAPI API, models, services, agents, seeds
   frontend/         # Next.js UI with shadcn/ui components
-  infra/            # Keycloak realm, PostgreSQL init, Traefik config
+  infra/            # PostgreSQL init, operational scripts, Traefik config
   docs/             # Setup guide, architecture docs
   docker-compose.yml
 ```

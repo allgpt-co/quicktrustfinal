@@ -5,7 +5,12 @@ async function getCspHeaderForNodeEnv(
   env: Record<string, string | undefined> = {}
 ): Promise<string> {
   const originalEnv = { ...process.env };
-  process.env.NODE_ENV = nodeEnv;
+  Object.defineProperty(process.env, "NODE_ENV", {
+    value: nodeEnv,
+    configurable: true,
+    writable: true,
+    enumerable: true,
+  });
   Object.entries(env).forEach(([key, value]) => {
     if (value === undefined) {
       delete process.env[key];
@@ -46,7 +51,6 @@ describe("next security headers", () => {
   test("does not allow localhost connections in production CSP", async () => {
     const csp = await getCspHeaderForNodeEnv("production", {
       NEXT_PUBLIC_API_URL: "https://api.quicktrustapp.com",
-      NEXT_PUBLIC_KEYCLOAK_URL: "http://localhost:8080",
     });
 
     expect(csp).toContain("connect-src 'self'");
@@ -59,6 +63,5 @@ describe("next security headers", () => {
     const csp = await getCspHeaderForNodeEnv("development");
 
     expect(csp).toContain("http://localhost:8000");
-    expect(csp).toContain("http://localhost:8080");
   });
 });

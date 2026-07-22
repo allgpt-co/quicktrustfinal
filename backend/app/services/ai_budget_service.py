@@ -13,10 +13,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_MONTHLY_TOKEN_LIMIT = 1_000_000  # 1M tokens
 DEFAULT_MONTHLY_COST_LIMIT = 50.0  # $50 USD
 
-# Approximate cost per 1K tokens (GPT-4o-mini pricing)
-COST_PER_1K_INPUT = 0.00015
-COST_PER_1K_OUTPUT = 0.0006
-
 
 def _month_key(org_id: str) -> str:
     """Redis key for current month's usage."""
@@ -92,7 +88,14 @@ async def check_budget(org_id: str) -> tuple[bool, str]:
 
 
 def estimate_cost(tokens: int) -> float:
-    """Rough cost estimate for a given token count (assumes 50/50 input/output split)."""
+    """Estimate Bedrock cost using configured rates and a 50/50 token split."""
+    from app.config import get_settings
+
+    settings = get_settings()
     input_tokens = tokens // 2
     output_tokens = tokens - input_tokens
-    return round((input_tokens / 1000) * COST_PER_1K_INPUT + (output_tokens / 1000) * COST_PER_1K_OUTPUT, 6)
+    return round(
+        (input_tokens / 1_000_000) * settings.BEDROCK_INPUT_COST_PER_MILLION
+        + (output_tokens / 1_000_000) * settings.BEDROCK_OUTPUT_COST_PER_MILLION,
+        6,
+    )

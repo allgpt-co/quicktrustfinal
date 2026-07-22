@@ -35,13 +35,14 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    # Keycloak
-    KEYCLOAK_URL: str = "http://localhost:8080"
-    KEYCLOAK_REALM: str = "quicktrust"
-    KEYCLOAK_CLIENT_ID: str = "quicktrust-api"
-    KEYCLOAK_CLIENT_SECRET: str = ""
-    KEYCLOAK_ADMIN_USER: str = "admin"
-    KEYCLOAK_ADMIN_PASSWORD: str = ""
+    # Application-managed authentication
+    JWT_ISSUER: str = "quicktrust"
+    JWT_AUDIENCE: str = "quicktrust-api"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    PASSWORD_RESET_EXPIRE_MINUTES: int = 60
+    AUTH_COOKIE_SECURE: bool = False
+    AUTH_COOKIE_DOMAIN: str = ""
 
     # Amazon S3 object storage. Local development can set S3_ENDPOINT_URL to a
     # MinIO or LocalStack endpoint while using the same boto3 code path.
@@ -56,9 +57,11 @@ class Settings(BaseSettings):
     S3_CREATE_BUCKET: bool = False
     S3_SERVER_SIDE_ENCRYPTION: str = "AES256"
 
-    # LiteLLM
-    LITELLM_MODEL: str = "gpt-4o-mini"
-    OPENAI_API_KEY: str = ""
+    # Amazon Bedrock / Anthropic Claude Sonnet (routed through LiteLLM)
+    BEDROCK_ENABLED: bool = False
+    BEDROCK_MODEL_ID: str = ""
+    BEDROCK_INPUT_COST_PER_MILLION: float = 0.0
+    BEDROCK_OUTPUT_COST_PER_MILLION: float = 0.0
 
     # Prowler
     PROWLER_OUTPUT_DIR: str = "/tmp/prowler-output"
@@ -79,10 +82,30 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
         """Require real production values in production."""
+        if self.BEDROCK_ENABLED:
+            model_id = self.BEDROCK_MODEL_ID.lower()
+            if (
+                model_id.startswith("replace-with")
+                or "anthropic" not in model_id
+                or "claude" not in model_id
+                or "sonnet" not in model_id
+            ):
+                raise ValueError(
+                    "BEDROCK_MODEL_ID must identify an Anthropic Claude Sonnet model "
+                    "or inference profile when BEDROCK_ENABLED is true"
+                )
+            if (
+                self.BEDROCK_INPUT_COST_PER_MILLION <= 0
+                or self.BEDROCK_OUTPUT_COST_PER_MILLION <= 0
+            ):
+                raise ValueError(
+                    "BEDROCK_INPUT_COST_PER_MILLION and "
+                    "BEDROCK_OUTPUT_COST_PER_MILLION must be positive when "
+                    "BEDROCK_ENABLED is true"
+                )
+
         required_secret_fields = (
             "SECRET_KEY",
-            "KEYCLOAK_CLIENT_SECRET",
-            "KEYCLOAK_ADMIN_PASSWORD",
             "AWS_ACCESS_KEY_ID",
             "AWS_SECRET_ACCESS_KEY",
             "AWS_REGION",
@@ -96,6 +119,7 @@ class Settings(BaseSettings):
             "quicktrust_redis_dev",
             "admin",
             "changeme123",
+            "replace-with-random-32-byte-secret",
         }
         if self.APP_ENV == "production":
             messages = []
@@ -112,9 +136,16 @@ class Settings(BaseSettings):
                     f"unique values before deploying: {fields}"
                 )
 
+            if len(self.SECRET_KEY) < 32:
+                messages.append(
+                    "CRITICAL: SECRET_KEY must be at least 32 characters in production"
+                )
+            if not self.AUTH_COOKIE_SECURE:
+                messages.append(
+                    "CRITICAL: AUTH_COOKIE_SECURE must be true in production"
+                )
+
             localhost_fields = []
-            if _is_localhost_url(self.KEYCLOAK_URL):
-                localhost_fields.append("KEYCLOAK_URL")
             if any(_is_localhost_url(origin) for origin in self.cors_origins_list):
                 localhost_fields.append("CORS_ORIGINS")
             if localhost_fields:

@@ -36,7 +36,7 @@ def upgrade() -> None:
         "users",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("org_id", sa.String(36), sa.ForeignKey("organizations.id"), nullable=False),
-        sa.Column("keycloak_id", sa.String(255), unique=True),
+        sa.Column("legacy_identity_id", sa.String(255), unique=True),
         sa.Column("email", sa.String(255), nullable=False),
         sa.Column("full_name", sa.String(255)),
         sa.Column("role", sa.String(50), server_default="employee"),

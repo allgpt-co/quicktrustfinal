@@ -43,38 +43,6 @@ services:
       timeout: 5s
       retries: 5
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    command: start --optimized
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: ${POSTGRES_USER}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KC_HEALTH_ENABLED: "true"
-      KC_HOSTNAME: ${KC_HOSTNAME}
-      KC_PROXY: edge
-    expose:
-      - "8080"
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 1G
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - backend
-      - frontend
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080; echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -q '200'"]
-      interval: 10s
-      timeout: 10s
-      retries: 15
-      start_period: 30s
 
   api:
     build:

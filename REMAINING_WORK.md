@@ -42,7 +42,7 @@
 
 ### Fully Working
 - 8 user roles with RBAC enforcement (RoleChecker, AdminUser, ComplianceUser)
-- Keycloak SSO authentication with PKCE
+- Application-managed email/password authentication with JWT access and rotating refresh sessions
 - 47 database models covering all core entities
 - 42 API route files with 150+ endpoints
 - 30+ frontend pages with dark mode
@@ -61,8 +61,8 @@
 - PDF report generation (Compliance Summary, Risk Report, Evidence Audit, Training)
 - CSRF protection, rate limiting, security headers
 - Field-level AES-256-GCM encryption
-- Account lockout + password policy (Keycloak)
-- Custom Keycloak login theme with password requirements
+- Account lockout + Argon2id password policy
+- Application login, registration, and password-reset pages with password requirements
 - CI/CD security pipeline (Semgrep, Trivy, pip-audit, pnpm audit)
 - Deep health check endpoint (DB + Redis + MinIO probes)
 

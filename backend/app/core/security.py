@@ -1,105 +1,110 @@
-import time
+"""Application-managed password hashing and JWT access-token security."""
 
-import httpx
+from datetime import datetime, timedelta, timezone
+import re
+import uuid
+
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerifyMismatchError, VerificationError
+from argon2.low_level import Type
 from jose import JWTError, jwt
 
 from app.config import get_settings
-from app.core.exceptions import UnauthorizedError
+from app.core.exceptions import BadRequestError, UnauthorizedError
 
 settings = get_settings()
 
-_jwks_cache: dict | None = None
-_jwks_cache_time: float = 0
-JWKS_CACHE_TTL = 300  # 5 minutes
+JWT_ALGORITHM = "HS256"
+_password_hasher = PasswordHasher(
+    time_cost=3,
+    memory_cost=65536,
+    parallelism=4,
+    hash_len=32,
+    salt_len=16,
+    type=Type.ID,
+)
+# Used for nonexistent/unset accounts so authentication performs a password hash
+# verification regardless of whether the email is registered.
+_DUMMY_PASSWORD_HASH = _password_hasher.hash("QuickTrust dummy password 9! do not use")
 
 
-async def get_jwks() -> dict:
-    global _jwks_cache, _jwks_cache_time
-    if _jwks_cache is not None and (time.monotonic() - _jwks_cache_time) < JWKS_CACHE_TTL:
-        return _jwks_cache
+def validate_password_strength(password: str, email: str | None = None) -> None:
+    """Enforce the password policy formerly configured in the identity provider."""
+    errors: list[str] = []
+    if len(password) < 12:
+        errors.append("at least 12 characters")
+    if not re.search(r"[A-Z]", password):
+        errors.append("an uppercase letter")
+    if not re.search(r"[a-z]", password):
+        errors.append("a lowercase letter")
+    if not re.search(r"\d", password):
+        errors.append("a number")
+    if not re.search(r"[^A-Za-z0-9]", password):
+        errors.append("a special character")
+    if email and password.casefold() in {email.casefold(), email.split("@", 1)[0].casefold()}:
+        errors.append("a value different from your email")
+    if errors:
+        raise BadRequestError("Password must contain " + ", ".join(errors) + ".")
 
-    jwks_url = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}/protocol/openid-connect/certs"
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(jwks_url)
-        resp.raise_for_status()
-        _jwks_cache = resp.json()
-        _jwks_cache_time = time.monotonic()
-        return _jwks_cache
+
+def hash_password(password: str, email: str | None = None) -> str:
+    validate_password_strength(password, email)
+    return _password_hasher.hash(password)
 
 
-def clear_jwks_cache():
-    global _jwks_cache, _jwks_cache_time
-    _jwks_cache = None
-    _jwks_cache_time = 0
+def verify_password(password: str, password_hash: str | None) -> bool:
+    """Verify an Argon2id hash while using a dummy hash for unset credentials."""
+    encoded_hash = password_hash or _DUMMY_PASSWORD_HASH
+    try:
+        return _password_hasher.verify(encoded_hash, password)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        return False
+
+
+def password_needs_rehash(password_hash: str) -> bool:
+    try:
+        return _password_hasher.check_needs_rehash(password_hash)
+    except (InvalidHashError, VerificationError):
+        return True
+
+
+def create_access_token(user) -> tuple[str, int]:
+    """Create a short-lived signed JWT containing stable authorization claims."""
+    if not settings.SECRET_KEY:
+        raise RuntimeError("SECRET_KEY must be configured before issuing access tokens")
+
+    now = datetime.now(timezone.utc)
+    expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    payload = {
+        "sub": str(user.id),
+        "email": user.email,
+        "name": user.full_name,
+        "role": user.role,
+        "org_id": str(user.org_id),
+        "type": "access",
+        "jti": str(uuid.uuid4()),
+        "iat": now.timestamp(),
+        "exp": int((now + timedelta(seconds=expires_in)).timestamp()),
+        "iss": settings.JWT_ISSUER,
+        "aud": settings.JWT_AUDIENCE,
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=JWT_ALGORITHM), expires_in
 
 
 async def decode_token(token: str) -> dict:
+    """Validate a QuickTrust access token and its revocation status."""
     try:
-        jwks = await get_jwks()
-        # Get the header to find the key id
-        unverified_header = jwt.get_unverified_header(token)
-        kid = unverified_header.get("kid")
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[JWT_ALGORITHM],
+            issuer=settings.JWT_ISSUER,
+            audience=settings.JWT_AUDIENCE,
+            options={"require_exp": True, "require_iat": True, "require_sub": True},
+        )
+        if payload.get("type") != "access":
+            raise JWTError("Token is not an access token")
 
-        # Find the matching key
-        rsa_key = None
-        for key in jwks.get("keys", []):
-            if key.get("kid") == kid:
-                rsa_key = key
-                break
-
-        if rsa_key is None:
-            # Try refreshing JWKS cache
-            clear_jwks_cache()
-            jwks = await get_jwks()
-            for key in jwks.get("keys", []):
-                if key.get("kid") == kid:
-                    rsa_key = key
-                    break
-
-        if rsa_key is None:
-            raise UnauthorizedError("Unable to find signing key")
-
-        issuer = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}"
-
-        # Accept tokens issued for the API client, web client, or default Keycloak audience.
-        # python-jose audience param only accepts a single string, so we verify
-        # the audience manually after decoding.
-        valid_audiences = {settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"}
-
-        issuers = [issuer]
-        if settings.APP_ENV != "production":
-            localhost_issuer = f"http://localhost:8080/realms/{settings.KEYCLOAK_REALM}"
-            if localhost_issuer != issuer:
-                issuers.append(localhost_issuer)
-
-        last_jwt_error: JWTError | None = None
-        for allowed_issuer in issuers:
-            try:
-                payload = jwt.decode(
-                    token,
-                    rsa_key,
-                    algorithms=["RS256"],
-                    issuer=allowed_issuer,
-                    options={"verify_aud": False},
-                )
-                break
-            except JWTError as e:
-                last_jwt_error = e
-        else:
-            raise last_jwt_error or JWTError("Token issuer is not accepted")
-
-        # Manual audience check: token aud can be a string, list, or absent.
-        # Keycloak often omits "aud" and uses "azp" (authorized party) instead.
-        token_aud = payload.get("aud") or []
-        if isinstance(token_aud, str):
-            token_aud = [token_aud]
-        azp = payload.get("azp")
-        if azp:
-            token_aud.append(azp)
-        if token_aud and not valid_audiences.intersection(token_aud):
-            raise JWTError("Token audience not accepted")
-
-        # Check token blacklist (revoked tokens)
         jti = payload.get("jti")
         if jti:
             try:
@@ -110,25 +115,23 @@ async def decode_token(token: str) -> dict:
             except UnauthorizedError:
                 raise
             except Exception:
-                pass  # Redis unavailable — allow token (fail open for availability)
+                pass
 
-        # Check user-level token revocation (password change, admin force-logout)
-        sub = payload.get("sub")
-        iat = payload.get("iat")
-        if sub and iat:
+        subject = payload.get("sub")
+        issued_at = payload.get("iat")
+        if subject and issued_at:
             try:
                 from app.core.token_blacklist import is_user_token_revoked
 
-                if await is_user_token_revoked(sub, int(iat)):
-                    raise UnauthorizedError("Token has been revoked (user-level)")
+                if await is_user_token_revoked(subject, float(issued_at)):
+                    raise UnauthorizedError("Token has been revoked")
             except UnauthorizedError:
                 raise
             except Exception:
-                pass  # Fail open
+                pass
 
         return payload
-
-    except JWTError as e:
-        raise UnauthorizedError(f"Invalid token: {str(e)}")
-    except httpx.HTTPError:
-        raise UnauthorizedError("Could not validate credentials (Keycloak unreachable)")
+    except UnauthorizedError:
+        raise
+    except JWTError as exc:
+        raise UnauthorizedError(f"Invalid token: {exc}") from exc

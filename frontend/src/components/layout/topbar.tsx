@@ -35,7 +35,7 @@ export function Topbar() {
             </Button>
           </div>
         ) : (
-          <Button size="sm" onClick={login}>
+          <Button size="sm" onClick={() => login()}>
             Sign In
           </Button>
         )}

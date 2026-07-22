@@ -53,7 +53,7 @@ cd backend && pip install -e . && python -c "import asyncpg; print('OK')"
 
 ### 1.2 Enable JWT Audience Verification (Audit C-2)
 
-**Why:** Any token from the same Keycloak realm is accepted. Cross-app authentication bypass.
+**Why:** Any token from the same retired identity service realm is accepted. Cross-app authentication bypass.
 
 **File:** `backend/app/core/security.py`
 
@@ -65,7 +65,7 @@ cd backend && pip install -e . && python -c "import asyncpg; print('OK')"
             token,
             rsa_key,
             algorithms=["RS256"],
-            audience=settings.KEYCLOAK_CLIENT_ID,
+            audience=settings.LEGACY_IDP_CLIENT_ID,
             issuer=issuer,
             options={"verify_aud": True},  # CHANGED: was False
         )
@@ -75,7 +75,7 @@ cd backend && pip install -e . && python -c "import asyncpg; print('OK')"
 
 ```python
         # Accept tokens issued for either the API or web client
-        valid_audiences = [settings.KEYCLOAK_CLIENT_ID, "quicktrust-web", "account"]
+        valid_audiences = [settings.LEGACY_IDP_CLIENT_ID, "quicktrust-web", "account"]
 
         payload = jwt.decode(
             token,
@@ -113,7 +113,7 @@ pytest tests/test_rbac.py -v
         if self.APP_ENV == "production":
             insecure_defaults = {
                 "SECRET_KEY": "change-me-in-production",
-                "KEYCLOAK_CLIENT_SECRET": "quicktrust-api-secret",
+                "LEGACY_IDP_CLIENT_SECRET": "quicktrust-api-secret",
                 "MINIO_ROOT_PASSWORD": "quicktrust_dev",
             }
             for field_name, default_value in insecure_defaults.items():
@@ -132,7 +132,7 @@ pytest tests/test_rbac.py -v
 # SECURITY: You MUST change ALL of these values before deploying to production.
 # The application will refuse to start in production mode with default values.
 SECRET_KEY=CHANGE_ME_generate_with_openssl_rand_hex_32
-KEYCLOAK_CLIENT_SECRET=CHANGE_ME_match_keycloak_config
+LEGACY_IDP_CLIENT_SECRET=CHANGE_ME_match_retired_identity_service_config
 MINIO_ROOT_PASSWORD=CHANGE_ME_strong_password
 ```
 
@@ -403,12 +403,12 @@ async def logout(
     current_user: CurrentUser,
     authorization: str = Header(...),
 ):
-    """Revoke the access token in Keycloak and invalidate the session."""
+    """Revoke the access token in retired identity service and invalidate the session."""
     token = authorization.split(" ", 1)[1]
     settings = get_settings()
 
     revoke_url = (
-        f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}"
+        f"{settings.LEGACY_IDP_URL}/realms/{settings.LEGACY_IDP_REALM}"
         f"/protocol/openid-connect/revoke"
     )
 
@@ -418,8 +418,8 @@ async def logout(
                 revoke_url,
                 data={
                     "token": token,
-                    "client_id": settings.KEYCLOAK_CLIENT_ID,
-                    "client_secret": settings.KEYCLOAK_CLIENT_SECRET,
+                    "client_id": settings.LEGACY_IDP_CLIENT_ID,
+                    "client_secret": settings.LEGACY_IDP_CLIENT_SECRET,
                     "token_type_hint": "access_token",
                 },
             )
@@ -690,7 +690,7 @@ async def get_jwks() -> dict:
     if _jwks_cache is not None and (time.monotonic() - _jwks_cache_time) < JWKS_CACHE_TTL:
         return _jwks_cache
 
-    jwks_url = f"{settings.KEYCLOAK_URL}/realms/{settings.KEYCLOAK_REALM}/protocol/openid-connect/certs"
+    jwks_url = f"{settings.LEGACY_IDP_URL}/realms/{settings.LEGACY_IDP_REALM}/protocol/openid-connect/certs"
     async with httpx.AsyncClient() as client:
         resp = await client.get(jwks_url)
         resp.raise_for_status()
@@ -1353,7 +1353,7 @@ async def call_llm(
     max_tokens: int = 4096,
 ) -> tuple[str, dict]:
     """Returns (content, usage_info)."""
-    model = model or settings.LITELLM_MODEL
+    model = _bedrock_model(model)
     try:
         response = await litellm.acompletion(
             model=model,
@@ -1777,7 +1777,7 @@ CMD ["pnpm", "start"]
     networks:
       - backend
 
-  keycloak:
+  retired_identity_service:
     # ... existing config
     ports:
       - "8080:8080"   # Needed for browser auth flow
@@ -1882,20 +1882,20 @@ volumes:
 
 ---
 
-### 6.4 Fix Keycloak Security (Audit Infra 1.3)
+### 6.4 Fix retired identity service Security (Audit Infra 1.3)
 
-**File:** `infra/keycloak/realm-export.json`
+**File:** `infra/retired_identity_service/realm-export.json`
 
 ```json
 // Change line 4:
 "sslRequired": "external",  // was "none"
 ```
 
-**File:** `docker-compose.yml` - Keycloak service:
+**File:** `docker-compose.yml` - retired identity service service:
 
 ```yaml
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+  retired_identity_service:
+    image: quay.io/retired_identity_service/retired_identity_service:26.0
     command: start --import-realm --optimized  # was start-dev
     environment:
       KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
@@ -2571,7 +2571,7 @@ async def gdpr_erasure(db: AsyncSession, user_id, org_id):
     if user and str(user.org_id) == str(org_id):
         user.full_name = "[REDACTED]"
         user.email = f"redacted-{user.id}@deleted.local"
-        user.keycloak_id = None
+        user.retired_identity_service_id = None
         user.is_active = False
         user.deleted_at = datetime.utcnow()
         await db.commit()

@@ -10,6 +10,7 @@ interface ApiRequestOptions extends RequestInit {
 class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
+  private refreshHandler: (() => Promise<string | null>) | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -17,6 +18,10 @@ class ApiClient {
 
   setToken(token: string | null) {
     this.token = token;
+  }
+
+  setRefreshHandler(handler: (() => Promise<string | null>) | null) {
+    this.refreshHandler = handler;
   }
 
   private async request<T>(
@@ -40,10 +45,23 @@ class ApiClient {
       headers["Authorization"] = `Bearer ${this.token}`;
     }
 
-    const res = await fetch(url.toString(), {
+    let res = await fetch(url.toString(), {
       ...requestOptions,
+      credentials: "include",
       headers,
     });
+
+    if (res.status === 401 && this.refreshHandler) {
+      const refreshedToken = await this.refreshHandler();
+      if (refreshedToken) {
+        headers["Authorization"] = `Bearer ${refreshedToken}`;
+        res = await fetch(url.toString(), {
+          ...requestOptions,
+          credentials: "include",
+          headers,
+        });
+      }
+    }
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ detail: res.statusText }));
@@ -100,6 +118,7 @@ class ApiClient {
     }
     const res = await fetch(`${this.baseUrl}${path}`, {
       headers,
+      credentials: "include",
     });
     if (!res.ok) {
       const error = await res.json().catch(() => ({ detail: res.statusText }));
@@ -137,6 +156,7 @@ class ApiClient {
       method: "POST",
       headers,
       body: formData,
+      credentials: "include",
     });
 
     if (!res.ok) {

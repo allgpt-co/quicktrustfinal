@@ -596,7 +596,7 @@ A compliance platform that cannot demonstrate its own compliance is an existenti
 
 ## 16. Third-Party Risk & Vendor Management
 
-**Current State:** The platform uses OpenAI, Pinecone, AWS S3, and SendGrid as third-party services. No vendor risk assessment, no SLA tracking, no data processing agreements tracked.
+**Current State:** The platform uses Amazon Bedrock, AWS S3, and configured email providers as third-party services. No vendor risk assessment, no SLA tracking, no data processing agreements tracked.
 
 ### Missing Features
 
@@ -616,17 +616,17 @@ A compliance platform that cannot demonstrate its own compliance is an existenti
 
 #### 16.4 Vendor SLA Monitoring
 - **What's missing:** No monitoring of third-party service availability or performance
-- **Enterprise expectation:** SLA tracking for critical vendors (OpenAI, Pinecone, AWS), automated alerting on SLA breaches, vendor performance reporting
+- **Enterprise expectation:** SLA tracking for critical vendors (Amazon Bedrock, AWS, and configured email providers), automated alerting on SLA breaches, vendor performance reporting
 
 #### 16.5 Fourth-Party Risk (Vendor's Vendors)
 - **What's missing:** No visibility into vendors' own supply chains
-- **Enterprise expectation:** Understanding of critical fourth-party dependencies (e.g., OpenAI relies on Azure), risk assessment of concentrated dependencies
+- **Enterprise expectation:** Understanding of critical fourth-party dependencies (for example, Bedrock-hosted model provider dependencies), risk assessment of concentrated dependencies
 
 ---
 
 ## 17. AI Governance, Model Risk & LLM Safety
 
-**Current State:** Direct OpenAI API calls with no validation, no human approval, no cost controls, no bias detection, no explainability, no model risk framework.
+**Current State:** Anthropic Claude Sonnet calls through Amazon Bedrock and LiteLLM require continued model validation, cost controls, bias testing, explainability, and model risk governance.
 
 ### Missing Features
 

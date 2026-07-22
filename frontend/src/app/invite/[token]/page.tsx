@@ -212,7 +212,7 @@ export default function InviteAcceptPage() {
           ) : (
             <>
               <button
-                onClick={() => login()}
+                onClick={() => login(`/invite/${token}`, invite?.email)}
                 className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Sign In to Accept

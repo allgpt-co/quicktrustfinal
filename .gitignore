@@ -19,6 +19,7 @@ out/
 dist/
 build/
 *.egg-info/
+*.tsbuildinfo
 
 # IDE
 .vscode/
@@ -73,3 +74,6 @@ DEVELOPMENT_REPORT.md
 PROJECT_PROGRESS_REPORT.md
 REMAINING_FEATURES.md
 TECH_STACK_AND_ARCHITECTURE.md
+.codex/
+.local/
+.npm/

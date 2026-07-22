@@ -123,7 +123,7 @@ async def acknowledge(
 
     First tries matching by user_id (self-acknowledge). Falls back to
     org-only lookup so compliance managers can acknowledge on behalf of users
-    whose Keycloak sub differs from the backend user id.
+    whose access-token subject differs from the backend user id.
     """
     # Try exact match first (user acknowledging their own)
     result = await db.execute(

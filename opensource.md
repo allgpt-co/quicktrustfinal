@@ -33,7 +33,7 @@ These open source projects are already in use:
 | Database | PostgreSQL 16 + pgvector | PostgreSQL / BSD | Relational DB + vector search |
 | Cache | Redis 7 | BSD | Caching and session store |
 | Object Storage | MinIO | AGPLv3 | S3-compatible file storage |
-| Auth Server | Keycloak 26 | Apache 2.0 | OIDC/SAML identity provider |
+| Password Hashing | argon2-cffi | MIT | Argon2id application password protection |
 | Reverse Proxy | Traefik v3.2 | MIT | API gateway / load balancer |
 | Containers | Docker Compose | Apache 2.0 | Multi-service orchestration |
 | Linting | Ruff | MIT | Python linting + formatting |

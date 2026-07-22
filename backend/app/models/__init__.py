@@ -1,6 +1,7 @@
 from app.models.base import BaseModel
 from app.models.organization import Organization
 from app.models.user import User
+from app.models.auth import AuthSession, PasswordResetToken
 from app.models.framework import Framework
 from app.models.framework_domain import FrameworkDomain
 from app.models.framework_requirement import FrameworkRequirement
@@ -60,6 +61,8 @@ __all__ = [
     "BaseModel",
     "Organization",
     "User",
+    "AuthSession",
+    "PasswordResetToken",
     "Framework",
     "FrameworkDomain",
     "FrameworkRequirement",

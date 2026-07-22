@@ -36,10 +36,8 @@ const connectSrcOrigins = Array.from(
       "'self'",
       ...(isProduction
         ? []
-        : ["http://localhost:8000", "http://localhost:8080"]),
+        : ["http://localhost:8000"]),
       originFromEnv(process.env.NEXT_PUBLIC_API_URL),
-      originFromEnv(process.env.NEXT_PUBLIC_KEYCLOAK_URL),
-      "https://api.openai.com",
     ].filter(isAllowedConnectOrigin)
   )
 ).join(" ");
