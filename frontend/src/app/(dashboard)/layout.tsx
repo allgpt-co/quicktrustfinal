@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/providers/auth-provider";
-import { login } from "@/lib/auth";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -12,7 +11,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { authenticated, loading } = useAuth();
+  const { authenticated, loading, login } = useAuth();
 
   if (loading) {
     return (
@@ -28,7 +27,7 @@ export default function DashboardLayout({
         <h1 className="text-2xl font-bold">QuickTrust</h1>
         <p className="text-muted-foreground">Sign in to access your compliance dashboard</p>
         <button
-          onClick={() => login()}
+          onClick={() => login("/dashboard")}
           className="rounded-md bg-primary px-6 py-2 text-primary-foreground hover:bg-primary/90"
         >
           Sign In

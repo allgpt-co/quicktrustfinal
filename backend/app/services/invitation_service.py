@@ -121,9 +121,9 @@ async def validate_token(db: AsyncSession, token: str) -> Invitation:
 
 
 async def accept_invitation(
-    db: AsyncSession, token: str, keycloak_id: str, user_email: str
+    db: AsyncSession, token: str, user_email: str
 ) -> Invitation:
-    """Accept an invitation — called during auto-provisioning."""
+    """Accept an invitation for an authenticated application user."""
     invitation = await validate_token(db, token)
 
     if invitation.status != "pending":

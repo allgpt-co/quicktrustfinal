@@ -51,7 +51,7 @@ SEED_RESPONSES: tuple[dict, ...] = (
         "question": "How do you manage user access?",
         "answer": (
             "We use role-based access control (RBAC) with least-privilege principles. All access is "
-            "managed through our identity provider (Okta/Keycloak) with SSO and MFA enforced. Access "
+            "managed through our application with role-based access enforced. Access "
             "reviews are conducted quarterly, and privileged access requires just-in-time approval."
         ),
         "tags": ["rbac", "mfa", "sso"],

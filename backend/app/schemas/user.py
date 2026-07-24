@@ -23,7 +23,6 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     id: UUID
     org_id: UUID
-    keycloak_id: str
     email: str
     full_name: str
     role: str

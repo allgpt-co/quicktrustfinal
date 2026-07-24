@@ -12,7 +12,7 @@
                           └──────┬───────┘
                                  │
                           ┌──────▼───────┐
-                          │  Keycloak    │
+                          │  retired identity service    │
                           │  Login/SSO   │
                           └──────┬───────┘
                                  │
@@ -41,7 +41,7 @@
 ```
 ┌──────────────┐
 │  User Signup │
-│  (Keycloak)  │
+│  (retired identity service)  │
 └──────┬───────┘
        │
        ▼
@@ -675,7 +675,7 @@
        │
        ▼
   ┌──────────────┐
-  │  Keycloak    │
+  │  retired identity service    │
   │  JWT Token   │
   │  Validation  │
   └──────┬───────┘

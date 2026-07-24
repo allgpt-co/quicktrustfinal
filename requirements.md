@@ -1271,8 +1271,8 @@ Auditor Registration Flow:
 
 | Tool | License | Purpose |
 |---|---|---|
-| **Keycloak** | Apache 2.0 | Identity and access management. SSO, SAML, OIDC, MFA, user federation. |
-| **Alternative: ZITADEL** | Apache 2.0 | Modern identity management. Better DX than Keycloak. OIDC-native. |
+| **Application authentication** | Project license | Email/password identity, Argon2id hashes, JWT access tokens, rotating refresh sessions, and RBAC. |
+| **Optional enterprise federation** | Deployment-specific | SAML/OIDC federation may be added through the existing organization SSO configuration model. |
 
 ---
 
@@ -1520,7 +1520,7 @@ Complete list of all open-source tools used by the platform:
 
 | Tool | License | Category | URL |
 |---|---|---|---|
-| Keycloak | Apache 2.0 | IAM / SSO | github.com/keycloak/keycloak |
+| Application authentication | AGPL-3.0 | Email/password, JWT sessions, RBAC | In this repository |
 | ZITADEL | Apache 2.0 | Identity Management | github.com/zitadel/zitadel |
 
 ### 23.10 Secrets Management
@@ -1779,9 +1779,6 @@ services:
   temporal:     # Workflow engine
   temporal-ui:  # Temporal dashboard
 
-  # Auth
-  keycloak:     # Identity management
-
   # Secrets
   infisical:    # Secret management
 
@@ -1838,7 +1835,7 @@ services:
 
 - [ ] Project scaffolding (monorepo, CI/CD, Docker Compose)
 - [ ] PostgreSQL schema + migrations
-- [ ] Authentication (Keycloak/ZITADEL integration)
+- [x] Application-managed email/password authentication, JWT sessions, and RBAC
 - [ ] Core API: organizations, users, RBAC
 - [ ] Framework engine: load SOC 2, ISO 27001 frameworks
 - [ ] Control template library (first 50 templates)

@@ -16,7 +16,7 @@ class TenantProvisionRequest(BaseModel):
     company_size: str | None = None
     admin_email: str | None = None
     admin_name: str | None = None
-    admin_keycloak_id: str | None = None
+    admin_password: str | None = None
 
 
 @router.post("/provision", status_code=201)
@@ -29,7 +29,7 @@ async def provision_tenant(data: TenantProvisionRequest, db: DB, current_user: A
         company_size=data.company_size,
         admin_email=data.admin_email,
         admin_name=data.admin_name,
-        admin_keycloak_id=data.admin_keycloak_id,
+        admin_password=data.admin_password,
     )
 
 

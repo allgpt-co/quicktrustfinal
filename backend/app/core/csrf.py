@@ -3,7 +3,7 @@
 Validates that the Origin header on state-changing requests (POST, PUT,
 PATCH, DELETE) matches the allowed origins.  This prevents cross-site
 request forgery without requiring CSRF tokens, since we use
-``SameSite=Strict`` on Keycloak cookies and Bearer tokens for auth.
+an HttpOnly SameSite refresh cookie and Bearer access tokens for auth.
 
 Skips validation for:
 - GET, HEAD, OPTIONS requests (safe methods)

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -5,15 +6,12 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from app.core.dependencies import DB, CurrentUser, AdminUser, VerifiedOrgId
+from app.models.auth import AuthSession
 from app.models.user import User
-from app.services.keycloak_service import keycloak_service
+from app.services import auth_service
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
-
-# ---------------------------------------------------------------------------
-# Schemas
-# ---------------------------------------------------------------------------
 
 class ProfileResponse(BaseModel):
     id: str
@@ -28,8 +26,13 @@ class ProfileResponse(BaseModel):
 
 
 class ProfileUpdate(BaseModel):
-    full_name: str | None = Field(None, max_length=255)
+    full_name: str | None = Field(None, min_length=1, max_length=255)
     department: str | None = Field(None, max_length=100)
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(..., min_length=1, max_length=1024)
+    new_password: str = Field(..., min_length=12, max_length=1024)
 
 
 class SessionResponse(BaseModel):
@@ -50,19 +53,7 @@ class SuspendRequest(BaseModel):
     reason: str | None = None
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-async def _check_mfa(keycloak_id: str) -> bool:
-    try:
-        creds = await keycloak_service.get_user_credentials(keycloak_id)
-        return any(c.get("type") == "otp" for c in creds)
-    except Exception:
-        return False
-
-
-def _profile_dict(user: User, mfa_enabled: bool) -> dict:
+def _profile_dict(user: User) -> ProfileResponse:
     return ProfileResponse(
         id=str(user.id),
         email=user.email,
@@ -71,136 +62,106 @@ def _profile_dict(user: User, mfa_enabled: bool) -> dict:
         department=user.department,
         org_id=str(user.org_id),
         is_active=user.is_active,
-        mfa_enabled=mfa_enabled,
+        mfa_enabled=False,
         created_at=user.created_at.isoformat(),
     )
 
 
-# ---------------------------------------------------------------------------
-# Profile
-# ---------------------------------------------------------------------------
-
 @router.get("/me", response_model=ProfileResponse)
-async def get_profile(current_user: CurrentUser, db: DB):
-    mfa = await _check_mfa(current_user.keycloak_id)
-    return _profile_dict(current_user, mfa)
+async def get_profile(current_user: CurrentUser):
+    return _profile_dict(current_user)
 
 
 @router.patch("/me", response_model=ProfileResponse)
 async def update_profile(data: ProfileUpdate, current_user: CurrentUser, db: DB):
     if data.full_name is not None:
-        current_user.full_name = data.full_name
-        parts = data.full_name.split(" ", 1)
-        try:
-            await keycloak_service.update_user(
-                current_user.keycloak_id,
-                {"firstName": parts[0], "lastName": parts[1] if len(parts) > 1 else ""},
-            )
-        except Exception:
-            pass
+        current_user.full_name = data.full_name.strip()
     if data.department is not None:
         current_user.department = data.department
     await db.commit()
     await db.refresh(current_user)
-    mfa = await _check_mfa(current_user.keycloak_id)
-    return _profile_dict(current_user, mfa)
+    return _profile_dict(current_user)
 
 
-# ---------------------------------------------------------------------------
-# MFA
-# ---------------------------------------------------------------------------
+@router.post("/password")
+async def update_password(
+    data: PasswordChangeRequest, current_user: CurrentUser, db: DB
+):
+    await auth_service.change_password(
+        db, current_user, data.current_password, data.new_password
+    )
+    return {"message": "Password updated. Please sign in again."}
 
+
+# These routes remain for API compatibility, but MFA is intentionally not part
+# of the approved simple email/password authentication scope.
 @router.get("/mfa", response_model=MfaStatusResponse)
 async def get_mfa_status(current_user: CurrentUser):
-    try:
-        creds = await keycloak_service.get_user_credentials(current_user.keycloak_id)
-        otp = next((c for c in creds if c.get("type") == "otp"), None)
-        return MfaStatusResponse(
-            mfa_enabled=otp is not None,
-            mfa_type="totp" if otp else None,
-            credential_id=otp.get("id") if otp else None,
-        )
-    except Exception:
-        return MfaStatusResponse(mfa_enabled=False)
+    return MfaStatusResponse(mfa_enabled=False)
 
 
 @router.post("/mfa/enable")
 async def enable_mfa(current_user: CurrentUser):
-    try:
-        await keycloak_service.add_required_action(
-            current_user.keycloak_id, "CONFIGURE_TOTP"
-        )
-        return {
-            "message": "MFA setup initiated. You will be prompted to configure TOTP on your next login."
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to enable MFA: {e}")
+    raise HTTPException(status_code=501, detail="MFA is not configured")
 
 
 @router.post("/mfa/disable")
 async def disable_mfa(current_user: CurrentUser):
-    try:
-        creds = await keycloak_service.get_user_credentials(current_user.keycloak_id)
-        otp = next((c for c in creds if c.get("type") == "otp"), None)
-        if otp:
-            await keycloak_service.delete_credential(
-                current_user.keycloak_id, otp["id"]
-            )
-        await keycloak_service.remove_required_action(
-            current_user.keycloak_id, "CONFIGURE_TOTP"
-        )
-        return {"message": "MFA disabled successfully."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to disable MFA: {e}")
+    return {"message": "MFA is not enabled."}
 
-
-# ---------------------------------------------------------------------------
-# Sessions
-# ---------------------------------------------------------------------------
 
 @router.get("/sessions", response_model=list[SessionResponse])
-async def list_sessions(current_user: CurrentUser):
-    try:
-        sessions = await keycloak_service.get_user_sessions(current_user.keycloak_id)
-        return [
-            SessionResponse(
-                id=s.get("id", ""),
-                ip_address=s.get("ipAddress"),
-                started=str(s.get("start", "")),
-                last_access=str(s.get("lastAccess", "")),
-                clients=s.get("clients"),
-            )
-            for s in sessions
-        ]
-    except Exception:
-        return []
+async def list_sessions(current_user: CurrentUser, db: DB):
+    result = await db.execute(
+        select(AuthSession)
+        .where(
+            AuthSession.user_id == current_user.id,
+            AuthSession.revoked_at.is_(None),
+            AuthSession.expires_at > datetime.now(timezone.utc),
+        )
+        .order_by(AuthSession.last_accessed_at.desc())
+    )
+    return [
+        SessionResponse(
+            id=str(session.id),
+            ip_address=session.ip_address,
+            started=session.created_at.isoformat() if session.created_at else None,
+            last_access=session.last_accessed_at.isoformat()
+            if session.last_accessed_at
+            else None,
+            clients={"user_agent": session.user_agent} if session.user_agent else None,
+        )
+        for session in result.scalars().all()
+    ]
 
 
 @router.post("/sessions/logout-all")
-async def logout_all_sessions(current_user: CurrentUser):
+async def logout_all_sessions(current_user: CurrentUser, db: DB):
+    await auth_service.revoke_all_sessions(db, current_user.id)
     try:
-        await keycloak_service.logout_user_sessions(current_user.keycloak_id)
-        return {"message": "All sessions terminated."}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to terminate sessions: {e}"
-        )
+        from app.core.token_blacklist import revoke_all_user_tokens
+        await revoke_all_user_tokens(str(current_user.id))
+    except Exception:
+        pass
+    return {"message": "All sessions terminated."}
 
 
 @router.delete("/sessions/{session_id}")
-async def logout_session(session_id: str, current_user: CurrentUser):
-    try:
-        await keycloak_service.logout_session(session_id)
-        return {"message": "Session terminated."}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to terminate session: {e}"
+async def logout_session(session_id: UUID, current_user: CurrentUser, db: DB):
+    result = await db.execute(
+        select(AuthSession).where(
+            AuthSession.id == session_id,
+            AuthSession.user_id == current_user.id,
+            AuthSession.revoked_at.is_(None),
         )
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    session.revoked_at = datetime.now(timezone.utc)
+    await db.commit()
+    return {"message": "Session terminated."}
 
-
-# ---------------------------------------------------------------------------
-# Admin: Suspend / Reactivate
-# ---------------------------------------------------------------------------
 
 @router.post("/organizations/{org_id}/users/{user_id}/suspend")
 async def suspend_user(
@@ -218,16 +179,13 @@ async def suspend_user(
         raise HTTPException(status_code=404, detail="User not found")
     if str(target.id) == str(current_user.id):
         raise HTTPException(status_code=400, detail="Cannot suspend yourself")
-
     target.is_active = False
-    await db.commit()
-
+    await auth_service.revoke_all_sessions(db, target.id)
     try:
-        await keycloak_service.set_user_enabled(target.keycloak_id, False)
-        await keycloak_service.logout_user_sessions(target.keycloak_id)
+        from app.core.token_blacklist import revoke_all_user_tokens
+        await revoke_all_user_tokens(str(target.id))
     except Exception:
         pass
-
     return {"message": f"User {target.email} suspended."}
 
 
@@ -244,13 +202,6 @@ async def reactivate_user(
     target = result.scalar_one_or_none()
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
-
     target.is_active = True
     await db.commit()
-
-    try:
-        await keycloak_service.set_user_enabled(target.keycloak_id, True)
-    except Exception:
-        pass
-
     return {"message": f"User {target.email} reactivated."}

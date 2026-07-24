@@ -1009,7 +1009,7 @@ enforceEncryption().catch(console.error);
     "style-src 'self' 'unsafe-inline'",  // Tailwind requires inline styles
     "img-src 'self' data: blob: https://quicktrustapp.com https://trust.quickintell.com",
     "font-src 'self'",
-    "connect-src 'self' https://api.openai.com",  // For LLM calls
+    "connect-src 'self'",  // LLM calls are server-side through Amazon Bedrock
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

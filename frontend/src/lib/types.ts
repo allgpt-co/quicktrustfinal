@@ -24,7 +24,6 @@ export interface Organization {
 export interface User {
   id: string;
   org_id: string;
-  keycloak_id: string;
   email: string;
   full_name: string;
   role: string;
@@ -209,7 +208,7 @@ export interface AgentRunTrigger {
 }
 
 export interface UserInfo {
-  keycloak_id: string;
+  id: string;
   email: string;
   full_name: string;
   role: string;

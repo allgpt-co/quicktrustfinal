@@ -48,12 +48,12 @@ QuickTrust has a well-architected application design with comprehensive feature 
 
 #### C-2: JWT Audience Verification Disabled
 - **File:** `backend/app/core/security.py:65`
-- **Finding:** `options={"verify_aud": False}` explicitly disables JWT audience verification. A token issued for any other client in the same Keycloak realm will be accepted. The `audience="account"` parameter on line 63 is cosmetic.
+- **Finding:** `options={"verify_aud": False}` explicitly disables JWT audience verification. A token issued for any other client in the same retired identity service realm will be accepted. The `audience="account"` parameter on line 63 is cosmetic.
 - **Impact:** Cross-application token reuse within the realm.
 
 #### C-3: Hardcoded Secrets in Configuration Defaults
 - **File:** `backend/app/config.py:10,23,28`
-- **Finding:** `SECRET_KEY = "change-me-in-production"`, `KEYCLOAK_CLIENT_SECRET = "quicktrust-api-secret"`, `MINIO_ROOT_PASSWORD = "quicktrust_dev"`. No startup validation rejects default values.
+- **Finding:** `SECRET_KEY = "change-me-in-production"`, `LEGACY_IDP_CLIENT_SECRET = "quicktrust-api-secret"`, `MINIO_ROOT_PASSWORD = "quicktrust_dev"`. No startup validation rejects default values.
 
 ### 1.2 HIGH Findings
 
@@ -75,7 +75,7 @@ QuickTrust has a well-architected application design with comprehensive feature 
 
 #### H-5: Non-Functional Logout
 - **File:** `backend/app/api/v1/auth.py:32-34`
-- **Finding:** Logout endpoint returns a static message without revoking tokens in Keycloak, blacklisting tokens, or even requiring authentication.
+- **Finding:** Logout endpoint returns a static message without revoking tokens in retired identity service, blacklisting tokens, or even requiring authentication.
 
 #### H-6: Health Endpoint Leaks Database Error Details
 - **File:** `backend/app/main.py:55-56`
@@ -117,15 +117,15 @@ QuickTrust has a well-architected application design with comprehensive feature 
 
 #### M-6: JWKS Cache Has No TTL
 - **File:** `backend/app/core/security.py:10-28`
-- **Finding:** Module-level global cache with no expiration. Revoked Keycloak keys continue to be accepted until process restart.
+- **Finding:** Module-level global cache with no expiration. Revoked retired identity service keys continue to be accepted until process restart.
 
 #### M-7: Tests Bypass RBAC Globally
 - **File:** `backend/tests/conftest.py:43-60`
 - **Finding:** All tests run as `super_admin`. RBAC enforcement is never tested for non-admin roles.
 
-#### M-8: Keycloak Client ID Mismatch
-- **File:** `backend/app/services/keycloak_service.py:91`
-- **Finding:** `"client_id": "quicktrust-web"` hardcoded, differs from configurable `KEYCLOAK_CLIENT_ID` (`"quicktrust-api"`). No `client_secret` sent with password grant.
+#### M-8: retired identity service Client ID Mismatch
+- **File:** `backend/app/services/retired_identity_service_service.py:91`
+- **Finding:** `"client_id": "quicktrust-web"` hardcoded, differs from configurable `LEGACY_IDP_CLIENT_ID` (`"quicktrust-api"`). No `client_secret` sent with password grant.
 
 ### 1.4 LOW Findings
 
@@ -217,7 +217,7 @@ QuickTrust has a well-architected application design with comprehensive feature 
 
 - **File:** `agents/controls-generation/page.tsx:25-32` -- Default company context: `"My Company"`, `"Technology"`, `"50-200"`, `["AWS"]`, etc.
 - **File:** `lib/api.ts:1` -- `http://localhost:8000` fallback
-- **File:** `lib/auth.ts:3-7` -- `http://localhost:8080` Keycloak fallback
+- **File:** `lib/auth.ts:3-7` -- `http://localhost:8080` retired identity service fallback
 - **File:** `portal/page.tsx:18-19` -- Hardcoded API URL
 
 ### 2.10 LOW: Missing Features
@@ -237,16 +237,16 @@ QuickTrust has a well-architected application design with comprehensive feature 
 ### 3.1 CRITICAL Findings
 
 #### No TLS/HTTPS Anywhere in the Stack
-- **Files:** `infra/traefik/traefik.yml`, `docker-compose.yml`, `infra/keycloak/realm-export.json:4`
-- **Finding:** Traefik defines only HTTP entrypoint on port 80. No certificate resolvers. Keycloak has `"sslRequired": "none"`. All auth tokens, passwords, and compliance data transmitted in cleartext.
+- **Files:** `infra/traefik/traefik.yml`, `docker-compose.yml`, `infra/retired_identity_service/realm-export.json:4`
+- **Finding:** Traefik defines only HTTP entrypoint on port 80. No certificate resolvers. retired identity service has `"sslRequired": "none"`. All auth tokens, passwords, and compliance data transmitted in cleartext.
 
 #### Containers Run as Root
 - **Files:** `backend/Dockerfile`, `frontend/Dockerfile`
 - **Finding:** No `USER` directive. Container escape vulnerabilities grant host-level root access.
 
 #### Hardcoded Default Credentials Everywhere
-- **Files:** `docker-compose.yml:6-7`, `.env.example`, `infra/keycloak/realm-export.json:89,107`
-- **Credentials:** PostgreSQL `quicktrust:quicktrust_dev`, Keycloak admin `admin:admin`, users `admin123`/`manager123`, all with `"temporary": false`.
+- **Files:** `docker-compose.yml:6-7`, `.env.example`, `infra/retired_identity_service/realm-export.json:89,107`
+- **Credentials:** PostgreSQL `quicktrust:quicktrust_dev`, retired identity service admin `admin:admin`, users `admin123`/`manager123`, all with `"temporary": false`.
 
 #### No Database Backup Strategy
 - **Finding:** No backup scripts, no `pg_dump` automation, no WAL archiving. Makefile `clean` target runs `docker compose down -v` destroying all data.
@@ -262,8 +262,8 @@ QuickTrust has a well-architected application design with comprehensive feature 
 - **File:** `backend/pyproject.toml`
 - **Finding:** Production `DATABASE_URL` uses `postgresql+asyncpg://` but `asyncpg` is not listed as a dependency. Only `aiosqlite` is listed. Application will crash on PostgreSQL startup.
 
-#### Keycloak SSL Required Set to "none"
-- **File:** `infra/keycloak/realm-export.json:4`
+#### retired identity service SSL Required Set to "none"
+- **File:** `infra/retired_identity_service/realm-export.json:4`
 
 ### 3.2 HIGH Findings
 
@@ -274,7 +274,7 @@ QuickTrust has a well-architected application design with comprehensive feature 
 - **No SAST/DAST/container scanning** in CI
 - **No test coverage measurement** -- `pytest-cov` not in dependencies
 - **No frontend tests at all** -- only TypeScript type checking
-- **Keycloak running in dev mode** -- `start-dev` disables security features
+- **retired identity service running in dev mode** -- `start-dev` disables security features
 - **Traefik dashboard exposed without auth** -- `--api.insecure=true` on port 8081
 - **Docker socket mounted into Traefik** -- `docker.sock:/var/run/docker.sock`
 - **Source code volume-mounted** -- `./backend:/app` in the only compose file (no prod variant)
@@ -285,7 +285,7 @@ QuickTrust has a well-architected application design with comprehensive feature 
 - **No Dependabot/Renovate** configured
 - **Missing indexes in Phase 1 migration** on core tables
 - **No branch protection enforcement** in CI
-- **ROPC grant enabled** on Keycloak API client (deprecated by OAuth 2.1) -- `realm-export.json:67`
+- **ROPC grant enabled** on retired identity service API client (deprecated by OAuth 2.1) -- `realm-export.json:67`
 - **Version discrepancy** -- `featuresimplemented.md` says v0.3.0, `pendingfeatures.md` says v0.5.0, `package.json` says v0.1.0
 - **Setup docs typo** -- `docs/setup.md:15` says `grcplatfrom` (typo)
 
@@ -615,7 +615,7 @@ No model for tracking compliance deadlines, certification renewal dates, or regu
 ### 9.1 Security Features Needed
 
 1. **Secrets Management** -- HashiCorp Vault or AWS Secrets Manager integration
-2. **TLS Everywhere** -- Traefik Let's Encrypt, Keycloak SSL, encrypted DB connections
+2. **TLS Everywhere** -- Traefik Let's Encrypt, retired identity service SSL, encrypted DB connections
 3. **Rate Limiting** -- `slowapi` or Redis-based throttling on all endpoints
 4. **Security Headers Middleware** -- HSTS, CSP, X-Frame-Options
 5. **JWT Token Blacklisting** -- Redis-based revocation for logout
@@ -668,7 +668,7 @@ No model for tracking compliance deadlines, certification renewal dates, or regu
 3. **Docker Network Segmentation** -- Separate frontend/backend/data networks
 4. **Database Backups** -- Automated pg_dump with offsite storage
 5. **Redis Authentication** -- `requirepass` + TLS
-6. **Production Keycloak** -- `start` mode with external DB
+6. **Production retired identity service** -- `start` mode with external DB
 7. **CI Security Gates** -- Remove `|| true` and `continue-on-error`
 8. **SAST** -- Semgrep or Bandit integration
 9. **Container Scanning** -- Trivy in CI pipeline
@@ -706,12 +706,12 @@ No model for tracking compliance deadlines, certification renewal dates, or regu
 | # | Action | Impact |
 |---|--------|--------|
 | 7 | Add TLS via Traefik certificate resolvers | Encrypts all traffic |
-| 8 | Set Keycloak `sslRequired: "external"` | Enforces encrypted auth |
+| 8 | Set retired identity service `sslRequired: "external"` | Enforces encrypted auth |
 | 9 | Add rate limiting (slowapi + Redis) | Prevents brute force and abuse |
 | 10 | Add security response headers middleware | Defense in depth |
 | 11 | Restrict CORS methods/headers | Reduces attack surface |
 | 12 | Add file size + content validation to evidence upload | Prevents DoS |
-| 13 | Implement functional logout with Keycloak revocation | Token hygiene |
+| 13 | Implement functional logout with retired identity service revocation | Token hygiene |
 | 14 | Run containers as non-root | Container security |
 | 15 | Remove host port bindings for internal services | Network security |
 | 16 | Remove `|| true` from CI security scan | Enable vulnerability blocking |
@@ -790,7 +790,7 @@ No model for tracking compliance deadlines, certification renewal dates, or regu
 | `backend/app/agents/risk_assessment/nodes.py` | 5 |
 | `backend/app/api/v1/evidence.py` | 4 |
 | `backend/app/api/v1/files.py` | 4 |
-| `infra/keycloak/realm-export.json` | 5 |
+| `infra/retired_identity_service/realm-export.json` | 5 |
 
 ---
 

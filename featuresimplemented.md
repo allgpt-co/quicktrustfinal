@@ -2,7 +2,7 @@
 
 > **Version:** v0.3.0
 > **Last Updated:** 2026-02-24
-> **Tech Stack:** Next.js 15 + React 19 + Tailwind CSS v4 (Frontend) | FastAPI + SQLAlchemy 2.0 Async (Backend) | Keycloak 26 (Auth) | LangGraph + LiteLLM (AI Agents) | PostgreSQL / SQLite (Database)
+> **Tech Stack:** Next.js 15 + React 19 + Tailwind CSS v4 (Frontend) | FastAPI + SQLAlchemy 2.0 Async (Backend) | Argon2id + JWT sessions (Auth) | LangGraph + LiteLLM (AI Agents) | PostgreSQL / SQLite (Database)
 
 ---
 
@@ -220,14 +220,14 @@
 
 ---
 
-## 19. Authentication (Keycloak OIDC/PKCE)
+## 19. Authentication (Application Managed)
 
-- **Frontend:** Keycloak OIDC/PKCE flow via `keycloak-js`, `check-sso` on load, S256 PKCE, token auto-refresh every 60 seconds
-- **Auth context:** provides authenticated status, token, userInfo (name, email, roles, org_id)
-- **Backend:** JWT RS256 verification against Keycloak JWKS endpoint, JWKS in-memory cache
-- **Auth routes:** `/auth/token` (password grant for testing), `/auth/me`, `/auth/logout`
-- **Login/callback pages:** `/login` and `/callback` for Keycloak redirect handling
-- **Dev fallback:** Demo org ID when Keycloak is not configured
+- **Frontend:** accessible email/password sign-in, registration, forgot-password, password-reset, session, and profile security flows
+- **Auth context:** keeps the short-lived access JWT in memory and restores sessions with an HttpOnly rotating refresh cookie
+- **Backend:** Argon2id password hashing, login lockout, HS256 issuer/audience validation, database-backed refresh sessions, and one-time reset tokens
+- **Authorization:** existing roles and organization membership are always read from the database by protected dependencies
+- **Auth routes:** `/auth/token`, `/auth/register`, `/auth/refresh`, `/auth/me`, `/auth/logout`, and password forgot/reset routes
+- **Existing users:** establish a local password through the one-time reset flow; legacy identity values remain nullable audit data
 
 ---
 
@@ -244,9 +244,9 @@
 
 ## 21. Infrastructure & DevOps
 
-- **Docker Compose** setup with all services (FastAPI, Next.js, PostgreSQL, Keycloak, MinIO, Redis, Traefik)
+- **Docker Compose** setup with FastAPI, Next.js, PostgreSQL, MinIO, Redis, and Traefik
 - **Traefik reverse proxy** configuration
-- **Keycloak realm config** for OIDC
+- **Application authentication configuration** for JWT signing, refresh cookies, and password reset email
 - **Alembic** database migrations
 - **Database seeding** scripts for frameworks, templates, and demo data
 - **Health check** endpoint at `/health`

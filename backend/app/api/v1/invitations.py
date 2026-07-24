@@ -147,7 +147,7 @@ async def accept_invitation(
 ):
     """Accept an invitation. The authenticated user joins the org with the invited role."""
     inv = await invitation_service.accept_invitation(
-        db, token, current_user.keycloak_id, current_user.email
+        db, token, current_user.email
     )
 
     # Update user's org and role

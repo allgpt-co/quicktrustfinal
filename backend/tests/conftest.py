@@ -48,7 +48,6 @@ def make_test_user(org_id: uuid.UUID | None = None) -> User:
     return User(
         id=TEST_USER_ID,
         org_id=org_id or TEST_ORG_ID,
-        keycloak_id="test-keycloak-id",
         email="test@quicktrust.dev",
         full_name="Test User",
         role="super_admin",
@@ -112,7 +111,6 @@ def make_test_user_with_role(role: str, org_id: uuid.UUID | None = None) -> User
     return User(
         id=uuid.uuid4(),
         org_id=org_id or TEST_ORG_ID,
-        keycloak_id=f"test-{role}-id",
         email=f"{role}@quicktrust.dev",
         full_name=f"Test {role.title()}",
         role=role,

@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import async_session
 from app.models.user import User
-from app.services import sso_service
+from app.services import auth_service, sso_service
 
 router = APIRouter(prefix="/scim/v2", tags=["scim"])
 
@@ -125,11 +125,10 @@ async def create_user(request: Request, authorization: str = Header(...)):
         if existing.scalar_one_or_none():
             return _scim_error("User already exists", 409)
 
-        # Create user with a placeholder keycloak_id (will be linked on first SSO login)
-        import uuid
+        # Provision without a password; the user must use the password-reset flow.
         user = User(
             org_id=org_id,
-            keycloak_id=f"scim-{uuid.uuid4()}",
+            password_hash=None,
             email=email,
             full_name=display_name or email.split("@")[0],
             role="employee",
@@ -138,6 +137,7 @@ async def create_user(request: Request, authorization: str = Header(...)):
         db.add(user)
         await db.commit()
         await db.refresh(user)
+        await auth_service.request_password_reset(db, user.email)
 
         return _user_to_scim(user)
     finally:

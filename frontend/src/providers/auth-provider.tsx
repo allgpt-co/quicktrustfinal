@@ -1,29 +1,40 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import api from "@/lib/api";
-import { API_URL } from "@/lib/public-env";
+import {
+  AuthUser,
+  fetchCurrentUser,
+  refreshSession,
+  registerAccount,
+  revokeSession,
+  signIn,
+  TokenResponse,
+} from "@/lib/auth";
+
+interface UserInfo {
+  id: string | null;
+  name: string;
+  email: string;
+  role: string;
+  roles: string[];
+  org_id: string | null;
+}
 
 interface AuthContextType {
   authenticated: boolean;
   loading: boolean;
   token: string | null;
-  userInfo: {
-    id: string | null;
-    name: string;
+  userInfo: UserInfo | null;
+  login: (returnTo?: string, email?: string) => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  register: (input: {
     email: string;
-    role: string;
-    roles: string[];
-    org_id: string | null;
-  } | null;
-  login: () => void;
-  logout: () => void;
+    full_name: string;
+    password: string;
+    invitation_token?: string;
+  }) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,102 +43,135 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   userInfo: null,
   login: () => {},
-  logout: () => {},
+  signIn: async () => {},
+  register: async () => {},
+  logout: async () => {},
 });
+
+function toUserInfo(user: AuthUser): UserInfo {
+  return {
+    id: user.id,
+    name: user.full_name,
+    email: user.email,
+    role: user.role,
+    roles: [user.role],
+    org_id: user.org_id,
+  };
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
-  // Start with loading=true to avoid hydration mismatch (server and client
-  // must render the same initial HTML). Resolved in the useEffect below.
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState<AuthContextType["userInfo"]>(null);
-  const initDone = useRef(false);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const tokenRef = useRef<string | null>(null);
+  const refreshInFlight = useRef<Promise<string | null> | null>(null);
 
-  useEffect(() => {
-    if (initDone.current) return;
-    initDone.current = true;
-
-    // Timeout: never hang on loading longer than 6 seconds
-    const timeout = new Promise<boolean>((resolve) =>
-      setTimeout(() => resolve(false), 6000)
-    );
-
-    import("@/lib/auth").then(({ initKeycloak, getKeycloak }) => {
-      Promise.race([initKeycloak(), timeout])
-        .then(async (auth) => {
-          setAuthenticated(auth);
-
-          if (auth) {
-            // Remember user was logged in so next refresh shows spinner
-            sessionStorage.setItem("qt_was_auth", "1");
-
-            const kc = getKeycloak();
-            const t = kc.token || null;
-            setToken(t);
-            api.setToken(t);
-
-            let orgId: string | null = kc.tokenParsed?.org_id || null;
-            let backendRole: string = "employee";
-            try {
-              const res = await fetch(
-                `${API_URL}/api/v1/auth/me`,
-                { headers: { Authorization: `Bearer ${t}` } }
-              );
-              if (res.ok) {
-                const me = await res.json();
-                orgId = me.org_id || orgId;
-                backendRole = me.role || backendRole;
-              }
-            } catch {
-              // fall back to token org_id
-            }
-
-            setUserInfo({
-              id: kc.tokenParsed?.sub || null,
-              name: kc.tokenParsed?.name || kc.tokenParsed?.preferred_username || "",
-              email: kc.tokenParsed?.email || "",
-              role: backendRole,
-              roles: kc.tokenParsed?.realm_roles || [],
-              org_id: orgId,
-            });
-
-            setInterval(async () => {
-              try {
-                await kc.updateToken(30);
-                const newToken = kc.token || null;
-                setToken(newToken);
-                api.setToken(newToken);
-              } catch {
-                setAuthenticated(false);
-                sessionStorage.removeItem("qt_was_auth");
-              }
-            }, 60000);
-          } else {
-            // Not authenticated — clear the flag so next visit is instant
-            sessionStorage.removeItem("qt_was_auth");
-          }
-
-          setLoading(false);
-        })
-        .catch(() => {
-          sessionStorage.removeItem("qt_was_auth");
-          setLoading(false);
-        });
-    });
+  const clearSession = useCallback(() => {
+    tokenRef.current = null;
+    api.setToken(null);
+    setToken(null);
+    setUserInfo(null);
+    setAuthenticated(false);
   }, []);
 
-  const doLogin = () => {
-    import("@/lib/auth").then(({ login }) => login());
-  };
+  const applySession = useCallback(async (session: TokenResponse) => {
+    const accessToken = session.access_token;
+    tokenRef.current = accessToken;
+    api.setToken(accessToken);
+    const user = await fetchCurrentUser(accessToken);
+    setToken(accessToken);
+    setUserInfo(toUserInfo(user));
+    setAuthenticated(true);
+    return accessToken;
+  }, []);
 
-  const doLogout = () => {
-    import("@/lib/auth").then(({ logout }) => logout());
-  };
+  const refresh = useCallback(async (): Promise<string | null> => {
+    if (refreshInFlight.current) return refreshInFlight.current;
+    refreshInFlight.current = refreshSession()
+      .then(applySession)
+      .catch(() => {
+        clearSession();
+        return null;
+      })
+      .finally(() => {
+        refreshInFlight.current = null;
+      });
+    return refreshInFlight.current;
+  }, [applySession, clearSession]);
+
+  useEffect(() => {
+    let active = true;
+    refresh().finally(() => {
+      if (active) setLoading(false);
+    });
+    const refreshTimer = window.setInterval(refresh, 12 * 60 * 1000);
+    api.setRefreshHandler(refresh);
+    return () => {
+      active = false;
+      window.clearInterval(refreshTimer);
+      api.setRefreshHandler(null);
+    };
+  }, [refresh]);
+
+  const doSignIn = useCallback(
+    async (email: string, password: string) => {
+      try {
+        await applySession(await signIn(email, password));
+      } catch (error) {
+        clearSession();
+        throw error;
+      }
+    },
+    [applySession, clearSession]
+  );
+
+  const doRegister = useCallback(
+    async (input: {
+      email: string;
+      full_name: string;
+      password: string;
+      invitation_token?: string;
+    }) => {
+      try {
+        await applySession(await registerAccount(input));
+      } catch (error) {
+        clearSession();
+        throw error;
+      }
+    },
+    [applySession, clearSession]
+  );
+
+  const login = useCallback((returnTo?: string, email?: string) => {
+    const params = new URLSearchParams();
+    if (returnTo) params.set("returnTo", returnTo);
+    if (email) params.set("email", email);
+    window.location.assign(`/login${params.size ? `?${params}` : ""}`);
+  }, []);
+
+  const logout = useCallback(async () => {
+    const currentToken = tokenRef.current;
+    try {
+      if (currentToken) await revokeSession(currentToken);
+    } finally {
+      clearSession();
+      window.location.assign("/login");
+    }
+  }, [clearSession]);
 
   return (
     <AuthContext.Provider
-      value={{ authenticated, loading, token, userInfo, login: doLogin, logout: doLogout }}
+      value={{
+        authenticated,
+        loading,
+        token,
+        userInfo,
+        login,
+        signIn: doSignIn,
+        register: doRegister,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

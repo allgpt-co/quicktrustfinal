@@ -1,62 +1,88 @@
-import Keycloak from "keycloak-js";
-import {
-  KEYCLOAK_CLIENT_ID,
-  KEYCLOAK_REALM,
-  KEYCLOAK_URL,
-} from "@/lib/public-env";
+import { API_URL } from "@/lib/public-env";
 
-const keycloakConfig = {
-  url: KEYCLOAK_URL,
-  realm: KEYCLOAK_REALM,
-  clientId: KEYCLOAK_CLIENT_ID,
-};
+export interface TokenResponse {
+  access_token: string;
+  refresh_token?: string | null;
+  token_type: string;
+  expires_in?: number | null;
+}
 
-let keycloakInstance: Keycloak | null = null;
+export interface AuthUser {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  org_id: string | null;
+}
 
-export function getKeycloak(): Keycloak {
-  if (!keycloakInstance) {
-    keycloakInstance = new Keycloak(keycloakConfig);
+async function authRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_URL}/api/v1${path}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ detail: response.statusText }));
+    const detail = body.detail;
+    const message = Array.isArray(detail)
+      ? detail.map((item: { msg?: string }) => item.msg || "Invalid request").join("; ")
+      : typeof detail === "string"
+        ? detail
+        : `Authentication request failed (${response.status})`;
+    throw new Error(message);
   }
-  return keycloakInstance;
+  return response.json();
 }
 
-export async function initKeycloak(): Promise<boolean> {
-  const kc = getKeycloak();
-  try {
-    // check-sso: if user has an active Keycloak session, auto-authenticate.
-    // If not, return false without redirecting to login page.
-    const authenticated = await kc.init({
-      onLoad: "check-sso",
-      pkceMethod: "S256",
-      checkLoginIframe: false,
-    });
-    return authenticated;
-  } catch (error) {
-    console.error("Keycloak init failed:", error);
-    return false;
-  }
+export function signIn(email: string, password: string): Promise<TokenResponse> {
+  return authRequest("/auth/token", {
+    method: "POST",
+    body: JSON.stringify({ username: email, password }),
+  });
 }
 
-export function login() {
-  const kc = getKeycloak();
-  kc.login({ redirectUri: window.location.origin + "/dashboard" });
+export function registerAccount(input: {
+  email: string;
+  full_name: string;
+  password: string;
+  invitation_token?: string;
+}): Promise<TokenResponse> {
+  return authRequest("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
 
-export function logout() {
-  const kc = getKeycloak();
-  sessionStorage.removeItem("qt_was_auth");
-  kc.logout({ redirectUri: window.location.origin });
+export function refreshSession(): Promise<TokenResponse> {
+  return authRequest("/auth/refresh", { method: "POST" });
 }
 
-export function getToken(): string | undefined {
-  return getKeycloak().token;
+export async function fetchCurrentUser(accessToken: string): Promise<AuthUser> {
+  return authRequest("/auth/me", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 }
 
-export async function refreshToken(): Promise<boolean> {
-  const kc = getKeycloak();
-  try {
-    return await kc.updateToken(30);
-  } catch {
-    return false;
-  }
+export async function revokeSession(accessToken: string): Promise<void> {
+  await authRequest("/auth/logout", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  await authRequest("/auth/password/forgot", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await authRequest("/auth/password/reset", {
+    method: "POST",
+    body: JSON.stringify({ token, new_password: newPassword }),
+  });
 }

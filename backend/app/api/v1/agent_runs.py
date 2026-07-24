@@ -5,6 +5,7 @@ import logging
 from fastapi import APIRouter, HTTPException, Query, Request
 from sqlalchemy import select, func
 
+from app.config import get_settings
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.core.exceptions import NotFoundError
 from app.core.rate_limit import limiter
@@ -64,7 +65,9 @@ async def _execute_agent(agent_run_id: str, org_id: str, agent_type: str, input_
                 run.output_data = result
                 run.completed_at = datetime.now(timezone.utc)
                 run.response_time_ms = elapsed_ms
-                run.model_version = "gpt-4o-mini"
+                run.model_version = (
+                    get_settings().BEDROCK_MODEL_ID or "bedrock-claude-sonnet-mock"
+                )
 
                 # Record token usage in budget tracker
                 tokens = run.tokens_used or 0

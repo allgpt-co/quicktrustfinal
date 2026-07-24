@@ -158,7 +158,7 @@ export default function PolicyAcknowledgmentsPage() {
                   <input
                     type="text"
                     className="flex-1 rounded-md border bg-background p-2 text-sm font-mono"
-                    placeholder="Keycloak user UUID"
+                    placeholder="Application user UUID"
                     value={form.user_id}
                     onChange={(e) => { setForm({ ...form, user_id: e.target.value }); setCreateError(null); }}
                   />
@@ -176,7 +176,7 @@ export default function PolicyAcknowledgmentsPage() {
                   )}
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  Click &quot;Me&quot; to use your own ID, or paste a UUID from Keycloak Admin
+                  Click &quot;Me&quot; to use your own ID, or paste a UUID from the Members page
                 </p>
               </div>
               <div className="space-y-1">

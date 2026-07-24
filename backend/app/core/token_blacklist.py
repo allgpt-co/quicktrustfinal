@@ -46,20 +46,20 @@ async def revoke_all_user_tokens(user_id: str) -> None:
     try:
         r = await get_redis()
         key = f"user:{user_id}:tokens_revoked_at"
-        await r.setex(key, 86400, str(int(time.time())))
+        await r.setex(key, 86400, str(time.time()))
         logger.info("Revoked all tokens for user %s", user_id)
     except Exception as exc:
         logger.warning("Failed to revoke user tokens for %s: %s", user_id, exc)
 
 
-async def is_user_token_revoked(user_id: str, token_issued_at: int) -> bool:
+async def is_user_token_revoked(user_id: str, token_issued_at: float) -> bool:
     """Check if a token was issued before a user-level revocation."""
     try:
         r = await get_redis()
         revoked_at = await r.get(f"user:{user_id}:tokens_revoked_at")
         if not revoked_at:
             return False
-        return token_issued_at < int(revoked_at)
+        return token_issued_at < float(revoked_at)
     except Exception as exc:
         logger.warning("Failed to check user token revocation: %s", exc)
         return False  # Fail open

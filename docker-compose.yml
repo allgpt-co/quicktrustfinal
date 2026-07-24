@@ -53,38 +53,6 @@ services:
     networks:
       - backend
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    entrypoint: ["/bin/sh", "/opt/keycloak/render-dev-realm.sh"]
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?KEYCLOAK_ADMIN_PASSWORD is required}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?KEYCLOAK_CLIENT_SECRET is required}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: ${POSTGRES_USER:-quicktrust}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      KC_HEALTH_ENABLED: "true"
-      KC_HOSTNAME_STRICT: "false"
-      KC_SPI_THEME_CACHE_THEMES: "false"
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./infra/keycloak/realm-export.dev.json:/opt/keycloak/data/realm-export.dev.json:ro
-      - ./infra/keycloak/render-dev-realm.sh:/opt/keycloak/render-dev-realm.sh:ro
-      - ./infra/keycloak/themes/quicktrust:/opt/keycloak/themes/quicktrust
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -q '200'"]
-      interval: 10s
-      timeout: 10s
-      retries: 15
-      start_period: 30s
-    networks:
-      - backend
-      - frontend
 
   api:
     build:
@@ -93,10 +61,6 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       REDIS_URL: ${REDIS_URL:?REDIS_URL is required}
-      KEYCLOAK_URL: ${KEYCLOAK_URL:-http://keycloak:8080}
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-quicktrust}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-quicktrust-api}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?KEYCLOAK_CLIENT_SECRET is required}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID is required}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY is required}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
@@ -107,9 +71,18 @@ services:
       S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
       S3_CREATE_BUCKET: ${S3_CREATE_BUCKET:-true}
       S3_SERVER_SIDE_ENCRYPTION: ${S3_SERVER_SIDE_ENCRYPTION:-AES256}
-      LITELLM_MODEL: ${LITELLM_MODEL:-gpt-4o-mini}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      BEDROCK_ENABLED: ${BEDROCK_ENABLED:-false}
+      BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-}
+      BEDROCK_INPUT_COST_PER_MILLION: ${BEDROCK_INPUT_COST_PER_MILLION:-0}
+      BEDROCK_OUTPUT_COST_PER_MILLION: ${BEDROCK_OUTPUT_COST_PER_MILLION:-0}
       SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      JWT_ISSUER: ${JWT_ISSUER:-quicktrust}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-quicktrust-api}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-15}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      PASSWORD_RESET_EXPIRE_MINUTES: ${PASSWORD_RESET_EXPIRE_MINUTES:-60}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3001}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
@@ -138,9 +111,7 @@ services:
     environment:
       COREPACK_ENABLE_NETWORK: "0"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
-      NEXT_PUBLIC_KEYCLOAK_URL: ${NEXT_PUBLIC_KEYCLOAK_URL:-http://localhost:8080}
-      NEXT_PUBLIC_KEYCLOAK_REALM: ${NEXT_PUBLIC_KEYCLOAK_REALM:-quicktrust}
-      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID:-quicktrust-web}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3001}
     ports:
       - "3001:3000"
     volumes:
