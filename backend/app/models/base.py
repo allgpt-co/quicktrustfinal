@@ -2,7 +2,7 @@ import json
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy import DateTime, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import TypeDecorator, CHAR
 
@@ -10,16 +10,15 @@ from app.core.database import Base
 
 
 class GUID(TypeDecorator):
-    """Platform-independent UUID type. Uses CHAR(36) on SQLite, native UUID on PostgreSQL."""
+    """Platform-independent UUID stored as CHAR(36) by the Alembic schema."""
     impl = CHAR
     cache_ok = True
 
     def load_dialect_impl(self, dialect):
-        if dialect.name == "postgresql":
-            from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-            return dialect.type_descriptor(PG_UUID(as_uuid=True))
-        else:
-            return dialect.type_descriptor(CHAR(36))
+        # Historic Alembic revisions create IDs and foreign keys as String(36),
+        # including on PostgreSQL. Keep ORM bind types compatible with that
+        # deployed schema so UUID comparisons do not become VARCHAR = UUID.
+        return dialect.type_descriptor(CHAR(36))
 
     def process_bind_param(self, value, dialect):
         if value is None:

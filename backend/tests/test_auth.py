@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import asyncpg
 
 from app.core import security
 from app.core.dependencies import get_current_user
@@ -26,6 +27,13 @@ def test_argon2id_password_hashing_and_policy() -> None:
     assert not security.verify_password("wrong password", encoded)
     with pytest.raises(Exception):
         security.hash_password("short", "person@example.com")
+
+
+def test_user_uuid_bind_matches_alembic_string_ids() -> None:
+    statement = select(User).where(User.id == uuid.uuid4())
+    sql = str(statement.compile(dialect=asyncpg.dialect()))
+    assert "::UUID" not in sql
+    assert "::VARCHAR" in sql
 
 
 @pytest.mark.asyncio
