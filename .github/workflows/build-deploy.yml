@@ -8,6 +8,12 @@ on:
         required: true
         type: boolean
   workflow_dispatch:
+    inputs:
+      bootstrap_gateway:
+        description: One-time protected gateway credential bootstrap
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   actions: read
@@ -24,8 +30,38 @@ env:
   OIDC_AUDIENCE: quickintell-deploy
 
 jobs:
+  bootstrap-gateway:
+    if: github.event_name == 'workflow_dispatch' && inputs.bootstrap_gateway
+    runs-on: self-hosted
+    timeout-minutes: 5
+    steps:
+      - name: Inject protected Coolify credential and restart gateway
+        env:
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$COOLIFY_API_TOKEN"
+          payload="$(jq -cn --arg value "$COOLIFY_API_TOKEN" '{data:[{key:"COOLIFY_API_TOKEN",value:$value,is_buildtime:false,is_runtime:true,is_preview:false}]}')"
+
+          curl --fail-with-body --silent --show-error \
+            --output /dev/null \
+            --request PATCH \
+            --header "Authorization: Bearer $COOLIFY_API_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "$payload" \
+            "https://infra.quickintell.com:8444/api/v1/applications/hgdlx4sbgs8oybl4k9wm0uxm/envs/bulk"
+
+          curl --fail-with-body --silent --show-error \
+            --output /dev/null \
+            --request POST \
+            --header "Authorization: Bearer $COOLIFY_API_TOKEN" \
+            "https://infra.quickintell.com:8444/api/v1/deploy?uuid=hgdlx4sbgs8oybl4k9wm0uxm&force=false"
+
   build-and-deploy:
-    if: github.event_name == 'workflow_dispatch' || inputs.deploy_needed
+    if: >-
+      !inputs.bootstrap_gateway &&
+      (github.event_name == 'workflow_dispatch' || inputs.deploy_needed)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
