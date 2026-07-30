@@ -3,11 +3,13 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_health(client: AsyncClient):
+async def test_health(client: AsyncClient, monkeypatch):
+    monkeypatch.setenv("BUILD_SHA", "a" * 40)
+
     resp = await client.get("/health")
     assert resp.status_code == 200
     data = resp.json()
-    assert data["status"] == "ok"
+    assert data == {"status": "ok", "buildSha": "a" * 40}
 
 
 @pytest.mark.asyncio
