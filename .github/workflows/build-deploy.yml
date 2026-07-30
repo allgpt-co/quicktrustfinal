@@ -44,7 +44,7 @@ jobs:
           echo "::add-mask::$COOLIFY_API_TOKEN"
           payload="$(jq -cn --arg value "$COOLIFY_API_TOKEN" '{data:[{key:"COOLIFY_API_TOKEN",value:$value,is_buildtime:false,is_runtime:true,is_preview:false}]}')"
 
-          curl --fail-with-body --silent --show-error \
+          curl --fail --silent --show-error \
             --output /dev/null \
             --request PATCH \
             --header "Authorization: Bearer $COOLIFY_API_TOKEN" \
@@ -52,7 +52,7 @@ jobs:
             --data "$payload" \
             "https://infra.quickintell.com:8444/api/v1/applications/hgdlx4sbgs8oybl4k9wm0uxm/envs/bulk"
 
-          curl --fail-with-body --silent --show-error \
+          curl --fail --silent --show-error \
             --output /dev/null \
             --request POST \
             --header "Authorization: Bearer $COOLIFY_API_TOKEN" \
