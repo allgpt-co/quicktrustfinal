@@ -16,7 +16,7 @@ RUN cp -a node_modules /opt/node_modules_cache
 RUN chmod +x docker-entrypoint.sh
 # Development runs as root to match host bind-mount permissions.
 # Production stage uses a non-root user.
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "if [ -d /opt/node_modules_cache/.pnpm ] && [ ! -f node_modules/next/dist/bin/next ]; then echo 'node_modules missing or broken - restoring from image cache...'; rm -rf node_modules/*; cp -a /opt/node_modules_cache/. node_modules/; echo 'Done.'; fi; exec \"$@\"", "--"]
 CMD ["pnpm", "dev"]
 
 FROM base AS builder

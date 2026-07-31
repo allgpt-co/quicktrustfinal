@@ -26,6 +26,8 @@ register_rls_hook()
 async def _create_schema_for_non_production() -> None:
     if settings.APP_ENV == "production":
         return
+    if "sqlite" not in settings.DATABASE_URL:
+        return
 
     from app.core.database import Base
 
