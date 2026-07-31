@@ -8,6 +8,7 @@ from app.core import security
 from app.core.dependencies import get_current_user
 from app.main import app
 from app.models.auth import AuthSession
+from app.models.base import GUID
 from app.models.user import User
 from app.services import auth_service
 from tests.conftest import override_get_current_user
@@ -30,10 +31,12 @@ def test_argon2id_password_hashing_and_policy() -> None:
 
 
 def test_user_uuid_bind_matches_alembic_string_ids() -> None:
-    statement = select(User).where(User.id == uuid.uuid4())
+    user_id = uuid.uuid4()
+    statement = select(User).where(User.id == user_id)
     sql = str(statement.compile(dialect=asyncpg.dialect()))
     assert "::UUID" not in sql
     assert "::VARCHAR" in sql
+    assert GUID().process_bind_param(user_id, asyncpg.dialect()) == str(user_id)
 
 
 @pytest.mark.asyncio

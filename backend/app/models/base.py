@@ -23,8 +23,6 @@ class GUID(TypeDecorator):
     def process_bind_param(self, value, dialect):
         if value is None:
             return value
-        if dialect.name == "postgresql":
-            return value
         if isinstance(value, uuid.UUID):
             return str(value)
         return str(uuid.UUID(value))
