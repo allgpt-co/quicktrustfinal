@@ -7,62 +7,73 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * 1'
+    - cron: "0 3 * * 1"
 
 permissions:
-  actions: write
+  actions: read
   contents: read
+  id-token: write
 
 jobs:
   trivy:
     name: Trivy filesystem scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_needed: ${{ steps.scope.outputs.deploy_needed }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
       - name: Determine backend deploy scope
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: scope
         shell: bash
         run: |
-          mkdir -p .audit
+          set -euo pipefail
+          deploy_needed=false
 
-          before="${{ github.event.before }}"
-          after="${{ github.sha }}"
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            deploy_needed=true
+          elif [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
+            before="${{ github.event.before }}"
+            after="$GITHUB_SHA"
 
-          if [[ "$before" =~ ^0+$ ]]; then
-            git diff-tree --no-commit-id --name-only -r "$after" > .audit/changed-files.txt
-          else
-            git diff --name-only "$before" "$after" > .audit/changed-files.txt
+            if [[ "$before" =~ ^0+$ ]]; then
+              changed_files="$(git diff-tree --no-commit-id --name-only -r "$after")"
+            else
+              changed_files="$(git diff --name-only "$before" "$after")"
+            fi
+
+            if grep -Eq '^(backend/|\.github/workflows/(build-deploy|security-audit)\.yml$)' <<<"$changed_files"; then
+              deploy_needed=true
+            fi
           fi
 
-          if grep -Eq '^(backend/|\.github/workflows/(build-deploy|security-audit)\.yml$)' .audit/changed-files.txt; then
-            echo "true" > .audit/deploy-needed.txt
-          else
-            echo "false" > .audit/deploy-needed.txt
-          fi
+          echo "deploy_needed=$deploy_needed" >> "$GITHUB_OUTPUT"
 
       - name: Run Trivy security audit
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
           scanners: vuln,secret,config
           format: table
           severity: HIGH,CRITICAL
-          exit-code: '1'
+          exit-code: "1"
           hide-progress: true
           timeout: 10m
           skip-dirs: frontend/node_modules,frontend/.next,frontend/out,backend/.pytest_cache,backend/uploads,backend/screenshots,backend/data
 
-      - name: Upload deploy scope
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
-        with:
-          name: deploy-scope
-          path: .audit/
-          retention-days: 1
-          include-hidden-files: true
+  deploy-backend:
+    name: Build and deploy backend
+    needs: trivy
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.event_name != 'schedule' &&
+      needs.trivy.outputs.deploy_needed == 'true'
+    uses: ./.github/workflows/build-deploy.yml
+    with:
+      deploy_needed: true
+    secrets: inherit

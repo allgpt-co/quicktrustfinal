@@ -1,86 +1,138 @@
 name: Build Backend Image & Deploy
- 
+
 on:
-  workflow_run:
-    workflows:
-      - Security Audit
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      deploy_needed:
+        description: Build and deploy the backend after the caller's security gate passes
+        required: true
+        type: boolean
   workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+concurrency:
+  group: quicktrust-production-backend
+  cancel-in-progress: false
 
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  OIDC_AUDIENCE: quickintell-deploy
 
 jobs:
   build-and-deploy:
-    runs-on:
-      - self-hosted
-    permissions:
-      id-token: write
-      contents: read
-      actions: read
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.event == 'push' &&
-        github.event.workflow_run.head_branch == 'main'
-      )
+    if: github.event_name == 'workflow_dispatch' || inputs.deploy_needed
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
 
     steps:
-      - name: Download deploy scope
-        if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v4
-        with:
-          name: deploy-scope
-          path: .audit
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check deploy scope
-        id: deploy-scope
-        if: github.event_name == 'workflow_run'
-        shell: bash
-        run: |
-          deploy_needed="$(cat .audit/deploy-needed.txt)"
-          echo "deploy_needed=$deploy_needed" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout code
-        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Checkout audited commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Configure AWS credentials
-        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@d539f0932e70871a027e9d5a9d8fc38589180a64 # v2
 
-      - name: Build and Push Docker Image
-        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+      - name: Build and push immutable image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
+        shell: bash
         run: |
+          set -euo pipefail
+          : "${ECR_REPOSITORY:?ECR_REPOSITORY repository variable is required}"
+          image_uri="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
           docker build \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --build-arg "BUILD_SHA=$IMAGE_TAG" \
+            --tag "$image_uri" \
             ./backend
+          docker push "$image_uri"
 
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          digest="$(aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids "imageTag=$IMAGE_TAG" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text)"
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "ECR did not return a valid image digest" >&2
+            exit 1
+          fi
 
-      - name: Trigger Backend Deploy
-        if: github.event_name == 'workflow_dispatch' || steps.deploy-scope.outputs.deploy_needed == 'true'
+          echo "IMAGE_REF=$ECR_REGISTRY/$ECR_REPOSITORY@$digest" >> "$GITHUB_ENV"
+
+      - name: Request verified production deployment
+        env:
+          BROKER_URL: ${{ vars.DEPLOYMENT_GATEWAY_URL }}
+          COMMIT_SHA: ${{ github.sha }}
+        shell: bash
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
-            "${{ vars.COOLIFY_BACKEND_WEBHOOK }}"
+          set -euo pipefail
+          : "${BROKER_URL:?DEPLOYMENT_GATEWAY_URL repository variable is required}"
+          : "${IMAGE_REF:?IMAGE_REF was not produced}"
+
+          oidc_token() {
+            curl --fail-with-body --silent --show-error \
+              --header "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}" \
+              | jq -er '.value'
+          }
+
+          token="$(oidc_token)"
+          echo "::add-mask::$token"
+          payload="$(jq -cn \
+            --arg service quicktrust-backend \
+            --arg commit "$COMMIT_SHA" \
+            --arg image "$IMAGE_REF" \
+            '{service:$service,commit:$commit,image:$image}')"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --retry 3 --retry-connrefused \
+            --header "Authorization: Bearer $token" \
+            --header "Content-Type: application/json" \
+            --header "Idempotency-Key: ${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --data "$payload" \
+            "$BROKER_URL/github/deploy")"
+          request_id="$(jq -er '.request_id' <<<"$response")"
+
+          for attempt in $(seq 1 80); do
+            if (( attempt == 1 || (attempt - 1) % 16 == 0 )); then
+              token="$(oidc_token)"
+              echo "::add-mask::$token"
+            fi
+
+            status_response="$(curl --fail-with-body --silent --show-error \
+              --header "Authorization: Bearer $token" \
+              "$BROKER_URL/github/deploy/$request_id")"
+            status="$(jq -er '.status' <<<"$status_response")"
+            echo "Deployment status: $status"
+
+            case "$status" in
+              verified)
+                deployed_commit="$(jq -er '.commit_sha' <<<"$status_response")"
+                [[ "$deployed_commit" == "$COMMIT_SHA" ]]
+                exit 0
+                ;;
+              failed|rolled_back|rollback_failed)
+                error="$(jq -r '.error // "deployment failed"' <<<"$status_response")"
+                echo "$error" >&2
+                exit 1
+                ;;
+            esac
+
+            sleep 15
+          done
+
+          echo "Deployment verification timed out" >&2
+          exit 1
