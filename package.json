@@ -2,7 +2,7 @@
   "name": "quicktrust",
   "version": "0.1.0",
   "private": true,
-  "description": "Open-source, agent-first GRC platform — fast, affordable compliance automation",
+  "description": "Open-source, agent-first GRC platform \u2014 fast, affordable compliance automation",
   "scripts": {
     "dev": "docker compose up",
     "dev:frontend": "pnpm --filter frontend dev",
@@ -18,8 +18,10 @@
   "pnpm": {
     "overrides": {
       "lodash": "4.18.1",
-      "sharp": "0.35.0",
-      "postcss": "8.5.18"
+      "sharp": "0.35.4",
+      "postcss": "8.5.18",
+      "nanoid@3": "3.3.18",
+      "browserslist": "4.28.7"
     }
   }
 }

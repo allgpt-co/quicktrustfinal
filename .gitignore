@@ -77,3 +77,7 @@ TECH_STACK_AND_ARCHITECTURE.md
 .codex/
 .local/
 .npm/
+
+# Local browser validation artifacts
+output/playwright/
+.playwright-cli/

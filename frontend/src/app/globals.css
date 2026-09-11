@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --font-body: var(--marketing-font-body, sans-serif);
+  --font-display: var(--marketing-font-display, sans-serif);
+}
 
 @theme inline {
   --color-background: var(--background);

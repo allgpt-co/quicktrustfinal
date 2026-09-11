@@ -1,0 +1,125 @@
+/* Marketing tokens are local so existing application themes remain unchanged. */
+.marketing {
+  color-scheme: dark;
+  --color-slate-950: #0a0f1a;
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50: #f8fafc;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+}
+.marketing .bg-gradient-primary { background-image: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%); }
+.marketing .bg-gradient-dark { background-image: linear-gradient(180deg, #0a0f1a 0%, #0f172a 100%); }
+.marketing .bg-gradient-radial { background-image: radial-gradient(circle, var(--tw-gradient-stops)); }
+.marketing .text-coral { color: #ff6b6b; }
+.marketing .text-violet { color: #8b5cf6; }
+.marketing .animate-float-reverse { animation: marketing-float 25s ease-in-out infinite reverse; }
+.marketing .animate-fadeInUp { animation: marketing-fadeInUp 1s ease-out; }
+.marketing .animate-fadeInUp-delayed { animation: marketing-fadeInUp 1s ease-out 0.2s both; }
+.marketing .animate-pulse-slow { animation: marketing-pulse 2s ease-in-out infinite; }
+.marketing .animate-progressGrow { animation: marketing-progressGrow 2s ease-out 0.5s both; }
+.marketing .prose { overflow-wrap: anywhere; }
+.marketing .prose table { display: block; overflow-x: auto; }
+@keyframes marketing-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+}
+
+@keyframes marketing-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marketing-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes marketing-progressGrow {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes marketing-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes marketing-modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes marketing-floatBadge {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.marketing .animate-slide-in {
+  animation: marketing-slide-in 0.3s ease;
+}
+
+.marketing .animate-modalIn {
+  animation: marketing-modalIn 0.3s ease-out;
+}
+
+.marketing .animate-on-scroll {
+  opacity: 1;
+  transform: none;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marketing .animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.marketing .animate-float {
+  animation: marketing-floatBadge 3s ease-in-out infinite;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing *, .marketing *::before, .marketing *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
