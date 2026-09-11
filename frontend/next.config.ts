@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { ARTICLE_REDIRECTS } from "./src/lib/marketing-routes";
 
 function originFromEnv(value: string | undefined): string | null {
   if (!value) return null;
@@ -59,6 +60,15 @@ const cspDirectives = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: { "/*": ["./content/content_output/**/*.md"] },
+  async redirects() {
+    return [
+      { source: "/signup", destination: "/login?mode=register", permanent: true },
+      ...Object.entries(ARTICLE_REDIRECTS).map(([slug, destination]) => ({
+        source: `/blog/${slug}`, destination, permanent: true,
+      })),
+    ];
+  },
   // 'standalone' output requires symlink permissions on Windows.
   // Enable only in Docker/CI builds via NEXT_OUTPUT_STANDALONE env var.
   ...(process.env.NEXT_OUTPUT_STANDALONE === "true"

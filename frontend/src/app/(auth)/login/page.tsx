@@ -20,7 +20,7 @@ function LoginForm() {
   const { authenticated, loading, signIn, register } = useAuth();
   const returnTo = safeReturnTo(searchParams.get("returnTo"));
   const invitationToken = returnTo.match(/^\/invite\/([^/?]+)/)?.[1];
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<Mode>(searchParams.get("mode") === "register" ? "register" : "signin");
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
