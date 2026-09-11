@@ -53,7 +53,7 @@ export default function Footer() {
               <li><Link href="/about" className="text-sm text-slate-500 no-underline hover:text-teal-400 transition-colors">About</Link></li>
               <li><Link href="/pricing" className="text-sm text-slate-500 no-underline hover:text-teal-400 transition-colors">Pricing</Link></li>
               <li><Link href="/blog" className="text-sm text-slate-500 no-underline hover:text-teal-400 transition-colors">Blog</Link></li>
-              <li><a href="mailto:hello@quicktrust.io" className="text-sm text-slate-500 no-underline hover:text-teal-400 transition-colors">Contact</a></li>
+              <li><Link href="/contact" className="text-sm text-slate-500 no-underline hover:text-teal-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
 
