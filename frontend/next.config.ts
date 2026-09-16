@@ -39,6 +39,9 @@ const connectSrcOrigins = Array.from(
         ? []
         : ["http://localhost:8000"]),
       originFromEnv(process.env.NEXT_PUBLIC_API_URL),
+      "https://app.truconversion.com",
+      "https://io.truconversion.com",
+      "wss://io.truconversion.com",
     ].filter(isAllowedConnectOrigin)
   )
 ).join(" ");
@@ -47,12 +50,13 @@ const cspDirectives = [
   "default-src 'self'",
   // Next.js emits inline bootstrap scripts; unsafe-eval stays dev-only.
   isProduction
-    ? "script-src 'self' 'unsafe-inline'"
-    : "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+    ? "script-src 'self' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com"
+    : "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com",
   "style-src 'self' 'unsafe-inline'", // Tailwind requires inline styles
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src ${connectSrcOrigins}`,
+  "frame-src 'self' https://cdn.truconversion.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

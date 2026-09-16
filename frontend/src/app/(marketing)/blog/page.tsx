@@ -228,12 +228,12 @@ export default function BlogPage() {
                 100% pass rate across 100+ audits. Audit-ready in 6-10 weeks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
+                <a
                   href="/login?mode=register"
                   className="inline-flex items-center justify-center px-8 py-4 font-display font-semibold text-base rounded-xl bg-gradient-primary text-slate-950 no-underline shadow-[0_4px_20px_rgba(45,212,191,0.4)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(45,212,191,0.5)] transition-all"
                 >
                   Get Started Free
-                </Link>
+                </a>
                 <Link
                   href="/"
                   className="inline-flex items-center justify-center px-8 py-4 font-display font-semibold text-base rounded-xl bg-white/5 text-slate-200 border border-white/10 no-underline hover:bg-white/10 hover:border-white/20 transition-all"

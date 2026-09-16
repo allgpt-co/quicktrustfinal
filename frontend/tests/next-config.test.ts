@@ -59,6 +59,24 @@ describe("next security headers", () => {
     expect(csp).not.toContain("127.0.0.1");
   });
 
+  test("allows TruConversion scripts, storage frame and HTTPS/WebSocket collection", async () => {
+    const csp = await getCspHeaderForNodeEnv("production");
+    const directives = csp.split("; ");
+    const scripts = directives.find((directive) => directive.startsWith("script-src "))!.split(" ");
+    const connections = directives.find((directive) => directive.startsWith("connect-src "))!.split(" ");
+
+    expect(scripts).toEqual(expect.arrayContaining([
+      "https://app.truconversion.com",
+      "https://cdn.truconversion.com",
+    ]));
+    expect(connections).toEqual(expect.arrayContaining([
+      "https://app.truconversion.com",
+      "https://io.truconversion.com",
+      "wss://io.truconversion.com",
+    ]));
+    expect(directives).toContain("frame-src 'self' https://cdn.truconversion.com");
+  });
+
   test("keeps localhost connections available for development CSP", async () => {
     const csp = await getCspHeaderForNodeEnv("development");
 

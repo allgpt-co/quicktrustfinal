@@ -115,12 +115,12 @@ export default function ContactPage() {
                   We will map your current security posture against your target framework
                   and give you a clear picture of what it takes to get certified.
                 </p>
-                <Link
+                <a
                   href="/login?mode=register"
                   className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-display font-semibold text-sm bg-gradient-to-r from-teal-400 to-teal-500 text-slate-950 no-underline hover:-translate-y-0.5 transition-all"
                 >
                   Get Your Free Snapshot
-                </Link>
+                </a>
               </div>
 
               <div className="rounded-2xl bg-white/5 border border-white/10 p-6">

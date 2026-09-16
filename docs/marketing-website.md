@@ -19,6 +19,15 @@ https://quicktrustapp.com. Marketing content was imported from
 - Dates do not introduce publication scheduling. Preserve the source's explicit
   `published` flag behavior when adding content.
 
+## Website analytics
+
+The marketing layout loads TruConversion site `63943` (`013c8.js`) after
+hydration using Next.js Script. The loader initializes `_tip` and prevents
+duplicate script injection. The Content Security Policy allows its app/CDN
+scripts, CDN storage frame and HTTPS/WebSocket collection endpoints. Links from
+marketing pages to login or registration use full navigation so the tracker does
+not persist into the authenticated application.
+
 ## Lead delivery
 
 The frontend exposes `POST /api/contact` and `POST /api/readiness-snapshot`.
