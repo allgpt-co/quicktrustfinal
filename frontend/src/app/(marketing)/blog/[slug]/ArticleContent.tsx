@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeRaw from 'rehype-raw';
+import { canonicalMarketingHref } from '@/lib/marketing-routes';
 
 interface ArticleContentProps {
   content: string;
@@ -37,6 +38,9 @@ export default function ArticleContent({ content }: ArticleContentProps) {
         rehypePlugins={[rehypeSlug, rehypeRaw]}
         components={{
           h1: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
+          a: ({ href, children, node: _node, ...props }) => (
+            <a {...props} href={canonicalMarketingHref(href)}>{children}</a>
+          ),
         }}
       >
         {content}
