@@ -193,7 +193,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
       {/* Article Body */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-        <ArticleContent content={article.content} />
+        <ArticleContent content={article.content} articlePath={`/blog/${article.slug}`} />
       </article>
 
       {/* CTA Banner — contextual to article topic */}

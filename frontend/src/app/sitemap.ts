@@ -1,91 +1,86 @@
 import type { MetadataRoute } from 'next';
 import { getAllArticles } from '@/lib/blog';
 
+// A rebuild is not a content update. Omit unknown, invalid or future dates.
+function knownModificationDate(value: string | undefined): Date | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value || date.getTime() > Date.now()) return undefined;
+  return date;
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://quicktrustapp.com';
   const articles = getAllArticles();
-  const now = new Date();
+
 
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/contact`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     // Framework pages
     {
       url: `${baseUrl}/soc-2-compliance`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/hipaa-compliance`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/iso-27001-certification`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     // Comparison pages
     {
       url: `${baseUrl}/compare/quicktrust-vs-vanta`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/compare/quicktrust-vs-drata`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     // Solution pages
     {
       url: `${baseUrl}/solutions/security-questionnaire-automation`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     // Trust pages
     {
       url: `${baseUrl}/pricing`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/privacy-policy`,
-      lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/terms-of-service`,
-      lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
@@ -107,7 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       return {
         url: `${baseUrl}/blog/${article.slug}`,
-        lastModified: article.last_updated ? new Date(article.last_updated) : now,
+        lastModified: knownModificationDate(article.last_updated),
         changeFrequency: 'monthly' as const,
         priority,
       };

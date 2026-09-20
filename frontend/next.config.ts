@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { ARTICLE_REDIRECTS } from "./src/lib/marketing-routes";
+import { CONTENT_REDIRECTS } from "./src/lib/marketing-routes";
 
 function originFromEnv(value: string | undefined): string | null {
   if (!value) return null;
@@ -68,8 +68,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/signup", destination: "/login?mode=register", permanent: true },
-      ...Object.entries(ARTICLE_REDIRECTS).map(([slug, destination]) => ({
-        source: `/blog/${slug}`, destination, permanent: true,
+      ...Object.entries(CONTENT_REDIRECTS).map(([source, destination]) => ({
+        source, destination, permanent: true,
       })),
     ];
   },

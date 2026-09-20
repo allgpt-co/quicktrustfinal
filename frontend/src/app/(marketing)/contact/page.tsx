@@ -129,7 +129,7 @@ export default function ContactPage() {
                   See how QuickTrust compares to Vanta, Drata, Secureframe, and others.
                 </p>
                 <Link
-                  href="/blog/quicktrust-vs-vanta"
+                  href="/compare/quicktrust-vs-vanta"
                   className="text-teal-400 hover:text-teal-300 text-sm no-underline transition-colors"
                 >
                   View comparisons &rarr;
