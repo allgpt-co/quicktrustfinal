@@ -8,9 +8,10 @@ import { canonicalMarketingHref } from '@/lib/marketing-routes';
 
 interface ArticleContentProps {
   content: string;
+  articlePath: string;
 }
 
-export default function ArticleContent({ content }: ArticleContentProps) {
+export default function ArticleContent({ content, articlePath }: ArticleContentProps) {
   return (
     <div className="prose prose-invert prose-slate max-w-none
       prose-headings:font-display prose-headings:text-slate-50 prose-headings:font-bold
@@ -39,7 +40,7 @@ export default function ArticleContent({ content }: ArticleContentProps) {
         components={{
           h1: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
           a: ({ href, children, node: _node, ...props }) => (
-            <a {...props} href={canonicalMarketingHref(href)}>{children}</a>
+            <a {...props} href={canonicalMarketingHref(href, articlePath)}>{children}</a>
           ),
         }}
       >

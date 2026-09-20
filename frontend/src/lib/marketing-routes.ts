@@ -32,10 +32,10 @@ export function isResourceSlug(slug: string): boolean {
   return RESOURCE_SLUGS.some((resource) => resource === slug);
 }
 
-export function canonicalMarketingHref(href: string | undefined): string | undefined {
+export function canonicalMarketingHref(href: string | undefined, articlePath = '/'): string | undefined {
   if (!href || href.startsWith('#')) return href;
   try {
-    const url = new URL(href, 'https://quicktrustapp.com');
+    const url = new URL(href, `https://quicktrustapp.com${articlePath}`);
     if (!['https:', 'http:'].includes(url.protocol) || ![
       'quicktrustapp.com', 'www.quicktrustapp.com', 'quicktrust.ai', 'www.quicktrust.ai',
     ].includes(url.hostname)) return href;
