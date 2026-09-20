@@ -1,0 +1,51 @@
+name: Verify or deploy existing frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: Full current main commit already tested and approved for this release
+        required: true
+        type: string
+      deploy:
+        description: Deploy after verifying the existing frontend identity and green security check
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: quicktrust-frontend-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && github.repository == 'allgpt-co/quicktrustfinal'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify identity and optionally deploy
+        env:
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+          APPLY_DEPLOY: ${{ inputs.deploy }}
+        run: |
+          python3 -m unittest discover -s frontend/scripts -p test_deploy_marketing.py
+          python3 frontend/scripts/deploy-marketing.py
+      - name: Verify public release behavior
+        if: inputs.deploy
+        run: python3 frontend/scripts/verify-marketing-recovery.py --report "${RUNNER_TEMP}/frontend-acceptance.json"
+      - name: Retain acceptance evidence
+        if: always() && inputs.deploy
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-acceptance-${{ github.run_id }}
+          path: ${{ runner.temp }}/frontend-acceptance.json
+          if-no-files-found: warn

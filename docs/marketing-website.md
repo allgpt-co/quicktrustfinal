@@ -64,6 +64,16 @@ workflow does not deploy frontend-only changes. No DNS or database changes are
 needed. The Dockerfile and Next.js file tracing retain Markdown content at
 runtime as well as build time.
 
+The manual `Verify or deploy existing frontend` workflow accepts the tested
+current main SHA. By default it only checks the existing Coolify application.
+With `deploy=true`, it requires a green security check on that exact main SHA,
+reads and verifies the application UUID/domain/repository/branch/base directory,
+then requests one deployment. It checks the terminal deployment commit and runs
+the public link/download/authentication/sitemap acceptance script. The existing
+`COOLIFY_API_TOKEN` must legitimately permit application inspection and deployment;
+403s stop the workflow without changing permissions or app settings. An uncertain
+deployment response must be reconciled in Coolify before another dispatch.
+
 Before rollout, retain the current application image and configure lead email
 variables. After rollout, check every sitemap URL, robots, social images,
 contact validation, anonymous dashboard redirects and login/registration. If
