@@ -18,6 +18,8 @@
  *   keywords        - comma-separated keyword string
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 interface ArticleSchemaProps {
   title: string;
   description: string;
@@ -26,6 +28,7 @@ interface ArticleSchemaProps {
   datePublished?: string;
   dateModified?: string;
   keywords?: string;
+  basePath?: string;
 }
 
 export default function ArticleSchema({
@@ -36,8 +39,9 @@ export default function ArticleSchema({
   datePublished,
   dateModified,
   keywords,
+  basePath = '/blog',
 }: ArticleSchemaProps) {
-  const articleUrl = `https://quicktrustapp.com/blog/${slug}`;
+  const articleUrl = `https://quicktrustapp.com${basePath}/${slug}`;
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -89,7 +93,7 @@ export default function ArticleSchema({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

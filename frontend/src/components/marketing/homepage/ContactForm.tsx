@@ -1,5 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { trackMarketingLead } from "@/lib/marketing-analytics";
 
 export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
@@ -14,7 +15,10 @@ export default function ContactForm() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(Object.fromEntries(new FormData(form))),
       });
-      if (!response.ok || !(await response.json()).success) throw new Error("Submit failed");
+      if (!response.ok) throw new Error("Submit failed");
+      const result = await response.json();
+      if (result.success !== true) throw new Error(result.error || "Submit failed");
+      trackMarketingLead("contact");
       form.reset();
       setStatus("success");
     } catch { setStatus("error"); }

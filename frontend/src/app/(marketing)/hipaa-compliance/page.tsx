@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/marketing/schema/FAQSchema';
+import ServicePageSchema from '@/components/marketing/schema/ServicePageSchema';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
 export const metadata: Metadata = {
   title: 'HIPAA Compliance Software — Automated Readiness for Healthcare Tech',
@@ -75,7 +77,13 @@ export default function HIPAACompliancePage() {
     <div className="font-body bg-slate-950 text-slate-300 overflow-x-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+      />
+      <ServicePageSchema
+        name="HIPAA Compliance Implementation"
+        description="HIPAA readiness for healthcare technology teams with safeguard mapping, engineer-led remediation, evidence collection, and assessment coordination."
+        url="https://quicktrustapp.com/hipaa-compliance"
+        serviceType="HIPAA compliance implementation"
       />
       <FAQSchema faqs={faqs} />
         <main className="pt-28 sm:pt-36">

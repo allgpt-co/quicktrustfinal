@@ -10,6 +10,8 @@
  *   url        - canonical URL of the page
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 interface WebPageSchemaProps {
   name: string;
   description: string;
@@ -38,7 +40,7 @@ export default function WebPageSchema({ name, description, url }: WebPageSchemaP
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

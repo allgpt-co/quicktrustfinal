@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/marketing/schema/FAQSchema';
+import ServicePageSchema from '@/components/marketing/schema/ServicePageSchema';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
 export const metadata: Metadata = {
   title: 'SOC 2 Compliance Software — Get Audit-Ready in Weeks',
@@ -75,7 +77,13 @@ export default function SOC2CompliancePage() {
     <div className="font-body bg-slate-950 text-slate-300 overflow-x-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+      />
+      <ServicePageSchema
+        name="SOC 2 Compliance Implementation"
+        description="SOC 2 Type I and Type II readiness with control mapping, engineer-led remediation, evidence collection, and audit coordination."
+        url="https://quicktrustapp.com/soc-2-compliance"
+        serviceType="SOC 2 compliance implementation"
       />
       <FAQSchema faqs={faqs} />
         <main className="pt-28 sm:pt-36">

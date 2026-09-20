@@ -9,6 +9,8 @@
  * Google Docs: https://developers.google.com/search/docs/appearance/structured-data/sitelinks-searchbox
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 export default function WebSiteSchema() {
   const schema = {
     "@context": "https://schema.org",
@@ -34,7 +36,7 @@ export default function WebSiteSchema() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

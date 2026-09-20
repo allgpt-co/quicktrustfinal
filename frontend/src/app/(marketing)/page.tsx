@@ -18,8 +18,9 @@ import SoftwareApplicationSchema from '@/components/marketing/schema/SoftwareApp
 import WebPageSchema from '@/components/marketing/schema/WebPageSchema';
 import OrganizationSchema from '@/components/marketing/schema/OrganizationSchema';
 import WebSiteSchema from '@/components/marketing/schema/WebSiteSchema';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
-const howToSchema = JSON.stringify({
+const howToSchema = serializeJsonLd({
   '@context': 'https://schema.org',
   '@type': 'HowTo',
   name: 'How to Get Compliance Certified with QuickTrust',
@@ -49,7 +50,7 @@ const howToSchema = JSON.stringify({
 const BASE = 'https://quicktrustapp.com';
 
 export const metadata: Metadata = {
-  title: 'Compliance Automation Platform | QuickTrust',
+  title: 'Compliance Automation Platform',
   description:
     'Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA. Free readiness assessment.',
   alternates: { canonical: BASE },

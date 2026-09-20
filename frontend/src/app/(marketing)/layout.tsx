@@ -6,18 +6,29 @@ import Footer from "@/components/marketing/homepage/Footer";
 import ModalProvider from "@/components/marketing/homepage/ModalProvider";
 import ScrollAnimationInit from "@/components/marketing/homepage/ScrollAnimationInit";
 import SmoothScroll from "@/components/marketing/homepage/SmoothScroll";
+import MarketingAnalytics from "@/components/marketing/MarketingAnalytics";
 import "./marketing.css";
 
 const bodyFont = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--marketing-font-body", display: "swap" });
 const displayFont = Space_Grotesk({ subsets: ["latin"], variable: "--marketing-font-display", display: "swap" });
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://quicktrustapp.com"),
-  title: { default: "Compliance Automation Platform | QuickTrust", template: "%s | QuickTrust" },
+  // Page titles provide the descriptive portion; this template owns the brand
+  // suffix so it is emitted exactly once across marketing routes.
+  title: { default: "Compliance Automation Platform", template: "%s | QuickTrust" },
   description: "Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA. Free readiness assessment.",
   icons: { icon: "/marketing-icon.svg" },
   manifest: "/site.webmanifest",
   robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "QuickTrust",
+    images: [{ url: "/og/home", width: 1200, height: 630, alt: "QuickTrust compliance automation platform" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og/home"],
+  },
 };
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -34,6 +45,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             tjs.parentNode.insertBefore(js, tjs);
           }(document, 'script', 'ti-js'));`}
       </Script>
+      <MarketingAnalytics />
       <ModalProvider>
         <Navigation />
         <ScrollAnimationInit />

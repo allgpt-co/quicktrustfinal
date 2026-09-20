@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import PageBreadcrumbSchema from '@/components/marketing/schema/PageBreadcrumbSchema';
+import ServicePageSchema from '@/components/marketing/schema/ServicePageSchema';
 
 export const metadata: Metadata = {
   title: 'Security Questionnaire Automation — Map & Respond Faster',
@@ -21,6 +23,18 @@ export const metadata: Metadata = {
 export default function SecurityQuestionnaireAutomationPage() {
   return (
     <div className="font-body bg-slate-950 text-slate-300 overflow-x-hidden">
+      <PageBreadcrumbSchema
+        items={[
+          { name: 'Home', item: 'https://quicktrustapp.com' },
+          { name: 'Security Questionnaire Automation', item: 'https://quicktrustapp.com/solutions/security-questionnaire-automation' },
+        ]}
+      />
+      <ServicePageSchema
+        name="Security Questionnaire Automation"
+        description="Automate security questionnaire responses by mapping questions to policies, generating consistent answers, and preserving an audit trail."
+        url="https://quicktrustapp.com/solutions/security-questionnaire-automation"
+        serviceType="Security questionnaire automation"
+      />
 
         {/* Hero */}
         <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-24 overflow-hidden">

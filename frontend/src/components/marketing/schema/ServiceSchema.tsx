@@ -10,6 +10,8 @@
  * These are derived directly from the Packages section on the homepage.
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 export default function ServiceSchema() {
   const schema = {
     "@context": "https://schema.org",
@@ -92,7 +94,7 @@ export default function ServiceSchema() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

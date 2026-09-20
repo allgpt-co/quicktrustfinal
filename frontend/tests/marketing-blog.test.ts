@@ -35,14 +35,28 @@ describe('migrated marketing content', () => {
   });
   test('sitemap contains only public canonical URLs and valid dates', async () => {
     const entries = sitemap();
-    expect(entries).toHaveLength(179);
+    expect(entries.length).toBe(179);
     expect(new Set(entries.map((entry) => entry.url)).size).toBe(entries.length);
     expect(entries.every((entry) => entry.url.startsWith('https://quicktrustapp.com'))).toBe(true);
     expect(entries.some((entry) => /\/login|\/dashboard|\/blog\/quicktrust-vs-(vanta|drata)$/.test(entry.url))).toBe(false);
+    expect(entries.some((entry) => new URL(entry.url).pathname.startsWith('/resources/'))).toBe(false);
     expect(entries.every((entry) => !entry.lastModified || !Number.isNaN(new Date(entry.lastModified).getTime()))).toBe(true);
     expect(await config.redirects?.()).toEqual(expect.arrayContaining([
       expect.objectContaining({ source: '/signup', destination: '/login?mode=register' }),
       expect.objectContaining({ source: '/blog/quicktrust-vs-vanta', destination: '/compare/quicktrust-vs-vanta', permanent: true }),
     ]));
+  });
+
+  test('normalizes legacy business links and source-file article links at render time', () => {
+    const article = getArticleBySlug('pillar-pci-dss-complete-guide');
+    expect(article?.content).not.toContain('trust.quickintell.com');
+    expect(article?.content).toContain('/blog/pci-dss-4-requirements-changes');
+    expect(article?.content).not.toContain('./pci-dss-4-requirements-changes.md');
+  });
+
+  test('does not expose legacy domains or source-file article links in any published article', () => {
+    const contents = getAllSlugs().map((slug) => getArticleBySlug(slug)?.content || '').join('\n');
+    expect(contents).not.toContain('trust.quickintell.com');
+    expect(contents).not.toMatch(/\]\((?:\.\.\/|\.\/|\/content\/|\/blog\/)[^)]*\.md(?:[#?][^)]*)?\)/);
   });
 });

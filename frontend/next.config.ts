@@ -11,6 +11,8 @@ function originFromEnv(value: string | undefined): string | null {
 }
 
 const isProduction = process.env.NODE_ENV === "production";
+const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim();
+const hasGa4MeasurementId = Boolean(ga4MeasurementId && /^G-[A-Z0-9]+$/.test(ga4MeasurementId));
 
 function isLocalhostOrigin(origin: string): boolean {
   try {
@@ -42,6 +44,9 @@ const connectSrcOrigins = Array.from(
       "https://app.truconversion.com",
       "https://io.truconversion.com",
       "wss://io.truconversion.com",
+      ...(hasGa4MeasurementId
+        ? ["https://www.google-analytics.com", "https://region1.google-analytics.com", "https://analytics.google.com"]
+        : []),
     ].filter(isAllowedConnectOrigin)
   )
 ).join(" ");
@@ -50,8 +55,8 @@ const cspDirectives = [
   "default-src 'self'",
   // Next.js emits inline bootstrap scripts; unsafe-eval stays dev-only.
   isProduction
-    ? "script-src 'self' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com"
-    : "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com",
+    ? `script-src 'self' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com${hasGa4MeasurementId ? " https://www.googletagmanager.com" : ""}`
+    : `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://app.truconversion.com https://cdn.truconversion.com${hasGa4MeasurementId ? " https://www.googletagmanager.com" : ""}`,
   "style-src 'self' 'unsafe-inline'", // Tailwind requires inline styles
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",

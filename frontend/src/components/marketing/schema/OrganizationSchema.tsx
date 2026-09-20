@@ -9,8 +9,9 @@
  * Google Docs: https://developers.google.com/search/docs/appearance/structured-data/organization
  */
 
-export default function OrganizationSchema() {
-  const schema = {
+import { serializeJsonLd } from './jsonLd';
+
+export const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": "https://quicktrustapp.com/#organization",
@@ -24,7 +25,6 @@ export default function OrganizationSchema() {
       "height": 60
     },
     "description": "Compliance automation platform with implementation engineers. Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them.",
-    "foundingDate": "2025",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "651N Broad Street, Suite 201",
@@ -35,15 +35,9 @@ export default function OrganizationSchema() {
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+1-234-567-890",
       "email": "hello@quicktrust.io",
       "contactType": "sales"
     },
-    "sameAs": [
-      "https://www.linkedin.com/company/quicktrust",
-      "https://twitter.com/quicktrust",
-      "https://github.com/rahuliitk/quicktrust"
-    ],
     "knowsAbout": [
       "SOC 2 Compliance",
       "ISO 27001 Certification",
@@ -54,12 +48,14 @@ export default function OrganizationSchema() {
       "Security Audit",
       "DevSecOps"
     ]
-  };
+  } as const;
+
+export default function OrganizationSchema() {
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationSchema) }}
     />
   );
 }
