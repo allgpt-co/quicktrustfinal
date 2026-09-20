@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/marketing/schema/FAQSchema';
+import ServicePageSchema from '@/components/marketing/schema/ServicePageSchema';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
 export const metadata: Metadata = {
   title: 'ISO 27001 Certification — Fast-Track Implementation',
@@ -75,7 +77,13 @@ export default function ISO27001CertificationPage() {
     <div className="font-body bg-slate-950 text-slate-300 overflow-x-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
+      />
+      <ServicePageSchema
+        name="ISO 27001 Certification Implementation"
+        description="ISO 27001 readiness with ISMS documentation, Annex A control implementation, evidence preparation, and certification audit support."
+        url="https://quicktrustapp.com/iso-27001-certification"
+        serviceType="ISO 27001 certification implementation"
       />
       <FAQSchema faqs={faqs} />
         <main className="pt-28 sm:pt-36">

@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState, useRef } from 'react';
+import { trackMarketingLead } from '@/lib/marketing-analytics';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -78,11 +79,12 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
       const result = await response.json();
 
-      // Double check the result for success
-      if (!result.success && result.error) {
-        throw new Error(result.error);
+      // Count a conversion only when the API explicitly confirms delivery.
+      if (result.success !== true) {
+        throw new Error(result.error || 'Failed to send message');
       }
 
+      trackMarketingLead('booking');
       setSubmitStatus('success');
 
       // Reset form safely using ref

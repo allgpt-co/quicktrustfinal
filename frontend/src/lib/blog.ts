@@ -47,7 +47,41 @@ function articleFiles(): Map<string, string> {
   return files;
 }
 
-function readArticle(slug: string, filename: string): Article | null {
+const PUBLIC_ORIGIN = 'https://quicktrustapp.com';
+const SOURCE_ARTICLE_ALIASES: Record<string, string> = {
+  'iso-27001-vs-soc2-guide': 'iso27001-vs-soc2-comparison',
+};
+
+function canonicalArticleHref(href: string, sourceFilename: string, files: Map<string, string>): string {
+  const [pathPart, suffix = ''] = href.split(/(?=[?#])/, 2);
+  let slug: string | undefined;
+
+  if (pathPart.startsWith('/content/')) {
+    slug = path.basename(pathPart).replace(/\.md$/, '');
+  } else if (pathPart.startsWith('/blog/') && pathPart.endsWith('.md')) {
+    slug = path.basename(pathPart, '.md');
+  } else if ((pathPart.startsWith('./') || pathPart.startsWith('../')) && pathPart.endsWith('.md')) {
+    const target = path.resolve(path.dirname(sourceFilename), pathPart);
+    slug = path.basename(target, '.md');
+  }
+
+  slug = slug && (files.has(slug) ? slug : SOURCE_ARTICLE_ALIASES[slug]);
+  if (!slug || !files.has(slug)) return href;
+  return `${ARTICLE_REDIRECTS[slug] || `/blog/${slug}`}${suffix}`;
+}
+
+function normalizeArticleContent(content: string, sourceFilename: string, files: Map<string, string>): string {
+  return content
+    .replaceAll('https://trust.quickintell.com', PUBLIC_ORIGIN)
+    .replaceAll('trust.quickintell.com', 'quicktrustapp.com')
+    .replace(/\]\(([^)]+)\)/g, (match, destination: string) => {
+      const [href, ...rest] = destination.split(/(\s+.*)/, 2);
+      const canonicalHref = canonicalArticleHref(href, sourceFilename, files);
+      return canonicalHref === href ? match : `](${canonicalHref}${rest.join('')})`;
+    });
+}
+
+function readArticle(slug: string, filename: string, files = articleFiles()): Article | null {
   const { data, content } = matter(fs.readFileSync(filename, 'utf8'), matterOptions);
   if (data.published === false) return null;
   const [folder, subfolder] = path.relative(contentDirectory, filename).split(path.sep);
@@ -64,18 +98,20 @@ function readArticle(slug: string, filename: string): Article | null {
     published: true,
     category: folder === 'evergreen' ? 'Evergreen' : folder.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     subcategory: folder === 'evergreen' ? subfolder : undefined,
-    content,
+    content: normalizeArticleContent(content, filename, files),
   };
 }
 
 export function getArticleBySlug(slug: string): Article | null {
-  const filename = articleFiles().get(slug);
-  return filename ? readArticle(slug, filename) : null;
+  const files = articleFiles();
+  const filename = files.get(slug);
+  return filename ? readArticle(slug, filename, files) : null;
 }
 
 export function getAllArticles(): ArticleMeta[] {
-  return [...articleFiles()].filter(([slug]) => !ARTICLE_REDIRECTS[slug]).flatMap(([slug, filename]) => {
-    const article = readArticle(slug, filename);
+  const files = articleFiles();
+  return [...files].filter(([slug]) => !ARTICLE_REDIRECTS[slug]).flatMap(([slug, filename]) => {
+    const article = readArticle(slug, filename, files);
     if (!article) return [];
     const { content: _content, ...metadata } = article;
     return [metadata];

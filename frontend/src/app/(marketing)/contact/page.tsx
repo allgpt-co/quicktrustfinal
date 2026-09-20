@@ -1,6 +1,7 @@
 import ContactForm from "@/components/marketing/homepage/ContactForm";
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
 
 // Breadcrumb schema for this page — uses hardcoded static JSON so the content
 // is fully trusted and cannot be influenced by user input.
-const breadcrumbSchema = JSON.stringify({
+const breadcrumbSchema = serializeJsonLd({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [

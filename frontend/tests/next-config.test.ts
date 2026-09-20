@@ -82,4 +82,19 @@ describe("next security headers", () => {
 
     expect(csp).toContain("http://localhost:8000");
   });
+
+  test("allows GA4 only when the configured measurement ID is valid", async () => {
+    const csp = await getCspHeaderForNodeEnv("production", {
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: "G-64YMH28D8R",
+    });
+    expect(csp).toContain("https://www.googletagmanager.com");
+    expect(csp).toContain("https://www.google-analytics.com");
+    expect(csp).toContain("https://region1.google-analytics.com");
+    expect(csp).toContain("https://analytics.google.com");
+
+    const withoutId = await getCspHeaderForNodeEnv("production", {
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: undefined,
+    });
+    expect(withoutId).not.toContain("https://www.googletagmanager.com");
+  });
 });

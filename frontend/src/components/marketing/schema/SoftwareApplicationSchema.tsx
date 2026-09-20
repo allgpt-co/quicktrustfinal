@@ -10,6 +10,8 @@
  * Google Docs: https://developers.google.com/search/docs/appearance/structured-data/software-app
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 export default function SoftwareApplicationSchema() {
   const schema = {
     "@context": "https://schema.org",
@@ -46,7 +48,7 @@ export default function SoftwareApplicationSchema() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

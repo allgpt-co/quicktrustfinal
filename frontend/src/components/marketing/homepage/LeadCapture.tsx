@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState, useRef } from 'react';
+import { trackMarketingLead } from '@/lib/marketing-analytics';
 
 export default function LeadCapture() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -53,11 +54,12 @@ export default function LeadCapture() {
 
       const result = await response.json();
 
-      // Double check the result for success
-      if (!result.success && result.error) {
-        throw new Error(result.error);
+      // Count a conversion only when the API explicitly confirms delivery.
+      if (result.success !== true) {
+        throw new Error(result.error || 'Failed to submit request');
       }
 
+      trackMarketingLead('readiness');
       setSubmitStatus('success');
 
       // Reset form safely using ref

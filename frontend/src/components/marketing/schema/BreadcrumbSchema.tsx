@@ -13,6 +13,8 @@
  *   articleSlug  - the URL slug of the current article
  */
 
+import { serializeJsonLd } from './jsonLd';
+
 interface BreadcrumbSchemaProps {
   articleTitle: string;
   articleSlug: string;
@@ -47,7 +49,7 @@ export default function BreadcrumbSchema({ articleTitle, articleSlug }: Breadcru
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
     />
   );
 }

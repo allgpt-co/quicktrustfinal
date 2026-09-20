@@ -2,6 +2,13 @@ import legacyContentRedirects from './marketing-content-redirects.json';
 
 export const MARKETING_PATHS = [
   "/", "/blog", "/about", "/contact", "/pricing", "/privacy-policy", "/terms-of-service",
+  "/hitrust-certification", "/pci-dss-compliance", "/gdpr-compliance", "/iso-42001-ai-governance",
+  "/compare/quicktrust-vs-secureframe", "/compare/quicktrust-vs-sprinto", "/compare/quicktrust-vs-thoropass",
+  "/solutions/evidence-collection-automation", "/solutions/policy-gap-analysis", "/solutions/continuous-compliance-monitoring",
+  "/resources/case-studies", "/resources/guides", "/resources/templates", "/resources/webinars",
+  "/use-cases/startups", "/use-cases/fintech", "/use-cases/healthcare-saas", "/use-cases/enterprise",
+  "/integrations", "/company/team", "/company/careers", "/company/partners", "/trust-center",
+  "/tools/soc-2-readiness-assessment", "/tools/compliance-roi-calculator",
   "/soc-2-compliance", "/iso-27001-certification", "/hipaa-compliance",
   "/compare/quicktrust-vs-vanta", "/compare/quicktrust-vs-drata",
   "/solutions/security-questionnaire-automation",

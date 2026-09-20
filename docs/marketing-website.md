@@ -28,6 +28,18 @@ scripts, CDN storage frame and HTTPS/WebSocket collection endpoints. Links from
 marketing pages to login or registration use full navigation so the tracker does
 not persist into the authenticated application.
 
+The approved GA4 stream is `G-64YMH28D8R` (account `379364257`, property
+`555117580`, stream `15810585098`). `MarketingAnalytics` loads it only after an
+explicit `qt_analytics_consent=granted` decision and only inside the public
+marketing route group. It configures `send_page_view: false`, applies Consent
+Mode defaults denied, and sends one sanitized `page_view` per pathname plus
+`generate_lead` only after a lead API returns `{ "success": true }`. Event
+parameters are bounded to `page_path`, `page_location`, `page_title`,
+`page_referrer` (origin-only) and `form_type`; query strings, referrer paths and
+form fields are excluded. Set
+`NEXT_PUBLIC_GA4_MEASUREMENT_ID` on the Coolify web app; do not add a second
+GA4 property or copy a raw Google snippet.
+
 ## Lead delivery
 
 The frontend exposes `POST /api/contact` and `POST /api/readiness-snapshot`.

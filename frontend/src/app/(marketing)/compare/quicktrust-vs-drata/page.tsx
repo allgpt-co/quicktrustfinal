@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/marketing/schema/FAQSchema';
+import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 
 export const metadata: Metadata = {
   title: 'QuickTrust vs Drata — Compliance Platform Comparison (2026)',
@@ -76,7 +77,7 @@ export default function QuickTrustVsDrataPage() {
     <div className="font-body bg-slate-950 text-slate-300 overflow-x-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       <FAQSchema faqs={faqs} />
         <main className="pt-28 sm:pt-36">
