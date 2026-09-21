@@ -7,10 +7,17 @@ import ModalProvider from "@/components/marketing/homepage/ModalProvider";
 import ScrollAnimationInit from "@/components/marketing/homepage/ScrollAnimationInit";
 import SmoothScroll from "@/components/marketing/homepage/SmoothScroll";
 import MarketingAnalytics from "@/components/marketing/MarketingAnalytics";
+import MarketingConsent from "@/components/marketing/MarketingConsent";
+import { MARKETING_PATHS } from "@/lib/marketing-routes";
+import { getAllSlugs } from "@/lib/blog";
 import "./marketing.css";
 
 const bodyFont = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--marketing-font-body", display: "swap" });
 const displayFont = Space_Grotesk({ subsets: ["latin"], variable: "--marketing-font-display", display: "swap" });
+// The published article manifest is static for a build; keep its server-side
+// file scan out of each layout render while passing only route strings to the
+// client analytics boundary.
+const analyticsPaths = [...MARKETING_PATHS, ...getAllSlugs().map((slug) => `/blog/${slug}`)];
 export const metadata: Metadata = {
   metadataBase: new URL("https://quicktrustapp.com"),
   // Page titles provide the descriptive portion; this template owns the brand
@@ -45,7 +52,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             tjs.parentNode.insertBefore(js, tjs);
           }(document, 'script', 'ti-js'));`}
       </Script>
-      <MarketingAnalytics />
+      <MarketingAnalytics allowedPaths={analyticsPaths} />
+      <MarketingConsent />
       <ModalProvider>
         <Navigation />
         <ScrollAnimationInit />
