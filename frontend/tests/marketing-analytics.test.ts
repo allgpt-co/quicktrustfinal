@@ -44,7 +44,11 @@ describe("trackMarketingLead", () => {
     trackMarketingLead("readiness");
 
     expect(gtag).toHaveBeenCalledOnce();
-    expect(gtag).toHaveBeenCalledWith("event", "generate_lead", { form_type: "readiness" });
+    expect(gtag).toHaveBeenCalledWith("event", "generate_lead", expect.objectContaining({
+      form_type: "readiness",
+      page_location: "http://localhost:3000/",
+      page_referrer: "https://quicktrustapp.com",
+    }));
     expect(JSON.stringify(gtag.mock.calls[0])).not.toMatch(/@|email|phone|company|message/i);
   });
 
@@ -83,13 +87,13 @@ describe("trackMarketingLead", () => {
 
   test("allows only public marketing paths", () => {
     expect(isAllowedAnalyticsPath("/contact")).toBe(true);
-    expect(isAllowedAnalyticsPath("/blog/security-guide")).toBe(true);
-    expect(isAllowedAnalyticsPath("/resources/soc2-readiness-scorecard")).toBe(true);
+    expect(isAllowedAnalyticsPath("/blog")).toBe(true);
+    expect(isAllowedAnalyticsPath("/blog/security-guide")).toBe(false);
     expect(isAllowedAnalyticsPath("/dashboard")).toBe(false);
     expect(isAllowedAnalyticsPath("/login")).toBe(false);
     expect(isAllowedAnalyticsPath("/privacy-policy")).toBe(false);
     expect(isAllowedAnalyticsPath("/resources/private")).toBe(false);
-    expect(isAllowedAnalyticsPath("/resources/soc2-readiness-scorecard")).toBe(true);
+    expect(isAllowedAnalyticsPath("/resources/soc2-readiness-scorecard")).toBe(false);
   });
 
   test("does not emit leads from app, legal, or unknown resource paths", () => {
