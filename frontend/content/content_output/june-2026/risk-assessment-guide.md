@@ -1,15 +1,18 @@
 ---
-title: "Risk Assessment Template: The Complete Guide to Conducting Security Risk Assessments for Compliance"
-meta_description: "Conduct security risk assessments for SOC 2, ISO 27001, HIPAA, and PCI DSS. Includes methodology, scoring, risk register template, and treatment options."
+title: "Security Risk Assessment: Scoring and Prioritization"
+meta_description: "Security Risk Assessment: Scoring and Prioritization. Practical guidance for choosing a method and evaluating likelihood, impact and treatment."
 target_keyword: "security risk assessment compliance"
 secondary_keywords: "risk assessment template, risk register template, ISO 27001 risk assessment, HIPAA risk assessment, SOC 2 risk assessment, risk treatment plan, qualitative risk assessment"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
 ---
 
-# Risk Assessment Template: The Complete Guide to Conducting Security Risk Assessments for Compliance
+
+# Security Risk Assessment: Scoring and Prioritization
+
+This guide focuses on choosing a method and evaluating likelihood, impact and treatment. For organizing assessment documentation, owners and review decisions, see [Risk Assessment Records for Compliance Programs](/blog/risk-assessment-template-compliance-guide).
 
 Risk assessment is the single most important control in any compliance program. It is not an exaggeration to say that every other security control exists because of risk assessment -- you implement encryption, access controls, monitoring, and incident response because a risk assessment identified the threats those controls mitigate. Every major compliance framework (SOC 2, ISO 27001, HIPAA, PCI DSS) requires a formal, documented risk assessment process. Yet many organizations treat it as a checkbox exercise, producing a spreadsheet once a year that no one reads and nothing acts on.
 

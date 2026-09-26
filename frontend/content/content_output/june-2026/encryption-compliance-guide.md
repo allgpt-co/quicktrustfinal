@@ -1,15 +1,18 @@
 ---
-title: "Encryption at Rest and In Transit: The Complete Compliance Guide for SOC 2, ISO 27001, HIPAA, and PCI DSS"
-meta_description: "Encryption requirements for SOC 2, ISO 27001, HIPAA, and PCI DSS. Covers AES-256, TLS, key management, cloud KMS, and common audit failures."
+title: "Encryption Compliance: Key Management and Evidence"
+meta_description: "Encryption Compliance: Key Management and Evidence. Practical guidance for reviewing key-management operations and evidence needs."
 target_keyword: "encryption compliance requirements"
 secondary_keywords: "encryption at rest SOC 2, TLS compliance HIPAA, AES-256 compliance, key management ISO 27001, PCI DSS encryption requirements, AWS KMS compliance"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
 ---
 
-# Encryption at Rest and In Transit: The Complete Compliance Guide for SOC 2, ISO 27001, HIPAA, and PCI DSS
+
+# Encryption Compliance: Key Management and Evidence
+
+This guide focuses on reviewing key-management operations and evidence needs. For distinguishing protection boundaries and practical implementation choices, see [Encryption at Rest and in Transit: Implementation Guide](/blog/encryption-at-rest-in-transit-compliance).
 
 Encryption is one of the most scrutinized controls in any compliance audit. Every major framework -- SOC 2, ISO 27001, HIPAA, and PCI DSS -- requires organizations to protect sensitive data through encryption, both when it is stored (at rest) and when it moves between systems (in transit). Despite this universal requirement, encryption remains a frequent source of audit findings, not because organizations fail to encrypt, but because they encrypt inconsistently, manage keys poorly, or cannot produce evidence of their encryption posture.
 

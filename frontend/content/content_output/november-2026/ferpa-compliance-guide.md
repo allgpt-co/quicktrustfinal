@@ -233,7 +233,7 @@ The overlap is not perfect. Key differences include:
 | **Age threshold** | No age limit -- applies to all students at covered institutions | Under 13 only |
 | **Applies to vendors?** | Indirectly, through school contracts | Directly, if the service is directed to children under 13 |
 
-For a comprehensive look at how an EdTech startup navigated the intersection of SOC 2, FERPA, and COPPA in a real procurement cycle, see our [EdTech case study: SOC 2 and student privacy compliance in 7 weeks](/content/august-2026/case-study-edtech-soc2-student-privacy).
+For a comprehensive look at how an EdTech startup navigated the intersection of SOC 2, FERPA, and COPPA in a real procurement cycle, see our [Illustrative Scenario: School Procurement Evidence Review](/content/august-2026/case-study-edtech-soc2-student-privacy).
 
 ---
 
@@ -439,7 +439,7 @@ EdTech procurement runs on a fixed calendar. Most districts have two or three ap
 
 The math is stark. A $500K district contract delayed by six months costs the company $250K in lost revenue and potentially the deal itself, since the district may allocate budget to the vendor who was ready. Multiply that across five or ten prospective district deals, and the cost of FERPA unpreparedness reaches seven figures.
 
-For a real-world example of how one EdTech company turned compliance readiness into a seven-figure contract win, see our [EdTech case study](/content/august-2026/case-study-edtech-soc2-student-privacy).
+For a real-world example of how one EdTech company turned compliance readiness into a seven-figure contract win, see our [Illustrative Scenario: School Procurement Evidence Review](/content/august-2026/case-study-edtech-soc2-student-privacy).
 
 ---
 
@@ -567,7 +567,7 @@ Whether you are preparing for your first school district contract or scaling to 
 
 ### Related resources
 
-- [Case Study: How an EdTech Startup Got SOC 2 Certified and FERPA/COPPA Compliant in 7 Weeks](/content/august-2026/case-study-edtech-soc2-student-privacy)
+- [Illustrative Scenario: School Procurement Evidence Review](/content/august-2026/case-study-edtech-soc2-student-privacy)
 - [The Complete SOC 2 Compliance Guide for SaaS Startups](/content/march-2026/pillar-soc2-complete-guide)
 - [Incident Response Plan: The Complete Compliance Guide](/content/november-2026/incident-response-plan-compliance-guide)
 - [Vendor Risk Management: The Complete Program Guide](/content/november-2026/vendor-risk-management-complete-guide)

@@ -67,6 +67,35 @@ export default function Footer() {
           </div>
         </div>
 
+        <nav aria-label="Explore QuickTrust" className="grid grid-cols-2 gap-8 border-t border-white/5 py-8 md:grid-cols-4">
+          {[
+            { title: 'Implementation', links: [
+              ['/hitrust-certification', 'HITRUST readiness'], ['/iso-42001-ai-governance', 'AI governance'],
+              ['/solutions/evidence-collection-automation', 'Evidence collection'], ['/solutions/policy-gap-analysis', 'Policy gap analysis'],
+              ['/solutions/continuous-compliance-monitoring', 'Continuous monitoring'],
+            ] },
+            { title: 'Teams', links: [
+              ['/use-cases/startups', 'Startups'], ['/use-cases/healthcare-saas', 'Healthcare SaaS'],
+              ['/use-cases/fintech', 'Fintech'], ['/use-cases/enterprise', 'Enterprise'],
+              ['/company/team', 'Implementation team'],
+            ] },
+            { title: 'Resources', links: [
+              ['/resources/guides', 'Guides'], ['/resources/templates', 'Templates'],
+              ['/resources/case-studies', 'Illustrative scenarios'], ['/tools/soc-2-readiness-assessment', 'Readiness self-assessment'],
+              ['/tools/compliance-roi-calculator', 'Business-case calculator'],
+            ] },
+            { title: 'Evaluation', links: [
+              ['/compare/quicktrust-vs-secureframe', 'vs Secureframe'], ['/compare/quicktrust-vs-sprinto', 'vs Sprinto'],
+              ['/compare/quicktrust-vs-thoropass', 'vs Thoropass'], ['/integrations', 'Integrations'], ['/trust-center', 'Trust information'],
+            ] },
+          ].map((group) => <div key={group.title}>
+            <h4 className="mb-4 text-sm font-semibold text-slate-300">{group.title}</h4>
+            <ul className="space-y-2.5">{group.links.map(([href, label]) => <li key={href}>
+              <Link href={href} className="text-sm text-slate-500 no-underline hover:text-teal-400">{label}</Link>
+            </li>)}</ul>
+          </div>)}
+        </nav>
+
         <div className="pt-6 sm:pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-5">
           <p className="text-[10px] sm:text-xs text-slate-600 text-center md:text-left">
             &copy; {new Date().getFullYear()} GPT Innovations, Inc. All rights reserved.

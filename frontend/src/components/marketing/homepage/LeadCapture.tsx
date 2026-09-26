@@ -115,8 +115,8 @@ export default function LeadCapture() {
             Get a Free Readiness Snapshot
           </h2>
           <p className="text-lg text-slate-400">
-            In 48 hours, we&apos;ll return your certification path, scope outline, top
-            10 gaps, and estimated timeline.
+            Share your target framework and deadline so we can discuss scope,
+            evidence needs, implementation gaps, and a realistic next step.
           </p>
         </div>
 

@@ -84,12 +84,12 @@ const navItems: NavItem[] = [
   { href: "/access-reviews", label: "Access Reviews", icon: UserCheck, section: "People", allowedRoles: COMPLIANCE_ROLES },
   // Trust
   { href: "/questionnaires", label: "Questionnaires", icon: MessageSquare, section: "Trust", allowedRoles: COMPLIANCE_ROLES },
-  { href: "/trust-center", label: "Trust Center", icon: Globe, section: "Trust", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/settings/trust-center", label: "Trust Center", icon: Globe, section: "Trust", allowedRoles: COMPLIANCE_ROLES },
   { href: "/audits", label: "Audits", icon: ClipboardCheck, section: "Trust", allowedRoles: COMPLIANCE_ROLES },
   { href: "/auditor-marketplace", label: "Auditor Market", icon: Search, section: "Trust", allowedRoles: COMPLIANCE_ROLES },
   // Insights
   { href: "/reports", label: "Reports", icon: BarChart3, section: "Insights", allowedRoles: EXECUTIVE_PLUS },
-  { href: "/integrations", label: "Integrations", icon: Plug, section: "Insights", allowedRoles: COMPLIANCE_ROLES },
+  { href: "/settings/integrations", label: "Integrations", icon: Plug, section: "Insights", allowedRoles: COMPLIANCE_ROLES },
   // Config
   { href: "/control-templates", label: "Templates", icon: FileStack, section: "Config", allowedRoles: COMPLIANCE_ROLES },
   { href: "/agents", label: "AI Agents", icon: Bot, section: "Config", allowedRoles: COMPLIANCE_ROLES },

@@ -1,14 +1,18 @@
 ---
-meta_description: "SAST vs DAST explained: when to use each, how they map to SOC 2 and PCI DSS compliance, and how to build a complete application security testing program with SAST, DAST, IAST, and SCA."
+meta_description: "Application Security Testing: SAST, DAST and SCA. Practical guidance for building a broader application-testing program and evidence trail."
 target_keyword: "sast dast"
 secondary_keywords: "SAST vs DAST, static application security testing, dynamic application security testing, application security testing, SAST DAST IAST, AppSec testing"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-21
+last_updated: "2026-09-26"
+title: "Application Security Testing: SAST, DAST and SCA"
 ---
 
-# SAST vs DAST: The Complete Guide to Application Security Testing for Compliance
+
+# Application Security Testing: SAST, DAST and SCA
+
+This guide focuses on building a broader application-testing program and evidence trail. For comparing test approaches and delivery-pipeline placement, see [SAST vs DAST: Choosing Application Security Tests](/blog/sast-vs-dast-guide).
 
 Applications are the primary attack surface for most technology companies. Not networks. Not endpoints. Applications. The Verizon 2025 Data Breach Investigations Report found that web application attacks accounted for more than 60% of confirmed breaches -- and the trend line is going up, not down. APIs, microservices, and cloud-native architectures have expanded the attack surface faster than most security programs have adapted.
 

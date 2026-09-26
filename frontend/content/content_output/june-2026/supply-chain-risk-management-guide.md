@@ -1,15 +1,18 @@
 ---
-title: "Supply Chain Risk Management: How to Build a Compliance-Ready SCRM Program That Protects Your Business"
-meta_description: "Build a supply chain risk management program covering vendor assessments, SBOM requirements, NIST frameworks, and contractual protections for SaaS companies."
+title: "Supply Chain Risk: Supplier Reviews and Response"
+meta_description: "Supply Chain Risk: Supplier Reviews and Response. Practical guidance for organizing vendor assessment, monitoring and incident follow-up."
 target_keyword: "supply chain risk management"
 secondary_keywords: "SCRM program, software supply chain security, SBOM, vendor risk management, NIST supply chain risk, third-party risk management, dependency scanning"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
 ---
 
-# Supply Chain Risk Management: How to Build a Compliance-Ready SCRM Program That Protects Your Business
+
+# Supply Chain Risk: Supplier Reviews and Response
+
+This guide focuses on organizing vendor assessment, monitoring and incident follow-up. For reviewing software dependencies, component records and program evidence, see [Software Supply Chain Security and Compliance Evidence](/blog/supply-chain-risk-management-compliance).
 
 The SolarWinds attack in 2020 changed how the industry thinks about supply chain risk. The Log4j vulnerability in 2021 reinforced the lesson. The 3CX compromise in 2023 drove it home again. Every year produces new evidence that your security posture is only as strong as the weakest link in your supply chain -- and for SaaS companies, that supply chain extends deep into open-source dependencies, cloud providers, SaaS vendors, and managed service providers.
 

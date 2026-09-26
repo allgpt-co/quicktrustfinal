@@ -1,13 +1,17 @@
 ---
-meta_description: "SOC 2 compliance for AI and ML companies has unique challenges: training data governance, model access controls, prompt injection risks."
+meta_description: "SOC 2 for AI: Control Mapping and Evidence. Practical guidance for mapping AI-related operating risks to security controls."
 target_keyword: "soc 2 ai company, ai compliance, llm security compliance"
 secondary_keywords: "ai vendor soc 2, machine learning compliance, ai data handling compliance"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "SOC 2 for AI: Control Mapping and Evidence"
 ---
 
-# SOC 2 for AI Companies: Special Considerations for LLM, ML, and Data-Intensive Startups
+
+# SOC 2 for AI: Control Mapping and Evidence
+
+This guide focuses on mapping AI-related operating risks to security controls. For reviewing training data, model access and startup implementation questions, see [SOC 2 for AI Startups: Data and Model Security](/blog/soc2-for-ai-companies).
 
 Your SOC 2 auditor has seen SaaS companies, payment processors, and cloud infrastructure providers. They have not seen a training pipeline that ingests 14 terabytes of customer data, a fine-tuned LLM that can be coerced into leaking PII through a carefully crafted prompt, or a model registry where the wrong version deployed to production because nobody tracks model artifacts the way they track application code.
 

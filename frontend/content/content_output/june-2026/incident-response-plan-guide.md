@@ -1,14 +1,18 @@
 ---
-meta_description: "Build an incident response plan that passes SOC 2, ISO 27001, HIPAA, and PCI DSS audits: 6 phases, roles, templates, testing, and evidence requirements."
+meta_description: "Incident Response: Roles and Response Procedures. Practical guidance for defining operational responsibilities and response steps."
 target_keyword: "incident response plan"
 secondary_keywords: "incident response plan template, IRP compliance, incident response SOC 2, incident response ISO 27001, tabletop exercise"
 word_count_target: "1800"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Incident Response: Roles and Response Procedures"
 ---
 
-# How to Build an Incident Response Plan That Passes Every Compliance Audit (SOC 2, ISO 27001, HIPAA, PCI DSS)
+
+# Incident Response: Roles and Response Procedures
+
+This guide focuses on defining operational responsibilities and response steps. For maintaining a response program and documenting its review, see [Incident Response Plans: Governance and Review Evidence](/blog/incident-response-plan-compliance-guide).
 
 Every major compliance framework requires an incident response plan. SOC 2, ISO 27001, HIPAA, and PCI DSS all mandate that you have documented procedures for detecting, responding to, and recovering from security incidents. What none of them do particularly well is tell you how to build one that actually works in practice and satisfies all of them simultaneously.
 

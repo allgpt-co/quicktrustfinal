@@ -1,14 +1,18 @@
 ---
-meta_description: "Get SOC 2, ISO 27001, and HIPAA certified simultaneously. Learn control overlap, evidence reuse, and how to cut multi-framework compliance costs by 40-60%."
+meta_description: "Multi-Framework Controls: Mapping and Evidence Reuse. Practical guidance for organizing shared controls and reviewing whether evidence can be reused."
 target_keyword: "multi-framework compliance certification"
 secondary_keywords: "SOC 2 ISO 27001 HIPAA, control mapping, compliance framework overlap, dual certification, multi-framework audit"
 word_count_target: "2000"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Multi-Framework Controls: Mapping and Evidence Reuse"
 ---
 
-# How to Get SOC 2, ISO 27001, and HIPAA Certified at the Same Time (Without Tripling the Work)
+
+# Multi-Framework Controls: Mapping and Evidence Reuse
+
+This guide focuses on organizing shared controls and reviewing whether evidence can be reused. For planning framework-specific obligations and implementation order, see [Multi-Framework Compliance: Scope and Sequencing](/blog/multi-framework-compliance-strategy).
 
 Most growing SaaS companies do not need just one compliance framework. They need two or three. Your US enterprise customers require SOC 2. Your European clients want ISO 27001. Your healthcare prospects will not sign without HIPAA compliance. And your board wants all of them done yesterday.
 

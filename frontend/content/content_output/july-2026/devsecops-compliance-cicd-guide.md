@@ -1,13 +1,17 @@
 ---
-meta_description: "Build a CI/CD pipeline that satisfies SOC 2 CC8 change management and ISO 27001 Annex A requirements."
+meta_description: "CI/CD Compliance: Controls Across the Delivery Pipeline. Practical guidance for mapping control work to individual delivery stages."
 target_keyword: "devsecops compliance, ci/cd compliance, secure sdlc"
 secondary_keywords: "soc 2 ci/cd requirements, devops security, change management compliance"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "CI/CD Compliance: Controls Across the Delivery Pipeline"
 ---
 
-# DevSecOps for Compliance: How to Build a CI/CD Pipeline That Passes SOC 2 and ISO 27001 Audits
+
+# CI/CD Compliance: Controls Across the Delivery Pipeline
+
+This guide focuses on mapping control work to individual delivery stages. For organizing reviewable evidence from the software-delivery process, see [DevSecOps Evidence for Compliance Reviews](/blog/devsecops-compliance-guide).
 
 Most engineering teams treat compliance as a documentation exercise. They write a change management policy, file it in a shared drive, and then continue deploying the way they always have — merging to main, running a build, shipping to production. When the auditor arrives, someone scrambles to reconstruct evidence from Git logs, Slack messages, and memory.
 

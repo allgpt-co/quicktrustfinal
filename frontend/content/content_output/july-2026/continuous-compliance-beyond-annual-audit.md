@@ -1,13 +1,17 @@
 ---
-meta_description: "Stop scrambling before every audit. Learn how to build a continuous compliance program that keeps your SOC 2, ISO 27001."
+meta_description: "Continuous Compliance: Quarterly Operating Calendar. Practical guidance for organizing recurring reviews and program responsibilities."
 target_keyword: "continuous compliance, compliance monitoring, compliance automation"
 secondary_keywords: "audit preparation, compliance drift, evidence collection automation, annual audit"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "Continuous Compliance: Quarterly Operating Calendar"
 ---
 
-# Beyond the Annual Audit: How to Build a Continuous Compliance Program That Actually Works
+
+# Continuous Compliance: Quarterly Operating Calendar
+
+This guide focuses on organizing recurring reviews and program responsibilities. For handling operational changes, evidence and exceptions between assessments, see [Continuous Compliance: Managing Changes Between Audits](/blog/continuous-compliance-guide).
 
 There is a pattern that plays out at thousands of SaaS companies every year. The audit is six weeks away. Suddenly, compliance becomes the top priority. Engineers get pulled off product work. Someone discovers that the access review process stopped four months ago. The incident response plan references a Slack channel that no longer exists. Three policies were never updated after last year's infrastructure migration. Evidence folders are empty or disorganized. The next six weeks are a scramble — late nights, rushed documentation, and a growing sense that the entire compliance program exists only during audit season.
 

@@ -1,14 +1,18 @@
 ---
-meta_description: "Build a disaster recovery plan for SaaS that passes SOC 2, ISO 27001, and HIPAA audits. Covers RTO/RPO, cloud DR strategies, and testing methods."
+meta_description: "Disaster Recovery: RTO, RPO and Cloud Strategies. Practical guidance for setting recovery objectives and evaluating technical approaches."
 target_keyword: "disaster recovery plan SaaS"
 secondary_keywords: "DR plan compliance, RTO RPO, cloud disaster recovery, disaster recovery testing, business continuity plan"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Disaster Recovery: RTO, RPO and Cloud Strategies"
 ---
 
-# Disaster Recovery Plan for SaaS Companies: How to Build a DR Strategy That Passes Compliance Audits
+
+# Disaster Recovery: RTO, RPO and Cloud Strategies
+
+This guide focuses on setting recovery objectives and evaluating technical approaches. For building a service-specific plan and retaining exercise records, see [SaaS Disaster Recovery Plans and Exercise Evidence](/blog/disaster-recovery-plan-saas-guide).
 
 A disaster recovery plan that exists only as a document in a shared drive is not a plan. It is a liability. Auditors know the difference, and they will test for it.
 

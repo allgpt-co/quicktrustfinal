@@ -1,14 +1,18 @@
 ---
-meta_description: "What is a SOC 1 report? Learn everything about SOC 1 audits — who needs them, what they cover, Type 1 vs Type 2, costs, and how SOC 1 differs from SOC 2. Plain-English guide for tech companies."
+meta_description: "SOC 1 Reports: Types, Contents and Audit Process. Practical guidance for understanding report structure and the examination process."
 target_keyword: "what is soc 1"
 secondary_keywords: "soc 1 report, soc 1 audit, soc 1 type 1, soc 1 type 2, what is a soc 1 report, soc 1 meaning"
 word_count_target: 3000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "SOC 1 Reports: Types, Contents and Audit Process"
 ---
 
-# What Is SOC 1? The Complete Guide to SOC 1 Reports for Service Organizations
+
+# SOC 1 Reports: Types, Contents and Audit Process
+
+This guide focuses on understanding report structure and the examination process. For deciding how to respond to a customer request for financial-control assurance, see [Do You Need a SOC 1 Report? A Buyer Request Guide](/blog/what-is-soc1).
 
 A SOC 1 report (System and Organization Controls 1) is an independent audit report that evaluates a service organization's internal controls relevant to its clients' financial reporting. Issued by a licensed CPA firm under the SSAE 18 attestation standard, a SOC 1 report gives your clients — and their auditors — assurance that your organization will not introduce errors, misstatements, or fraud risks into their financial statements.
 

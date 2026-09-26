@@ -1,71 +1,37 @@
 # QuickTrust
-> Compliance automation platform with implementation engineers
+> Compliance automation and scoped implementation support
 
-## About
-QuickTrust is a compliance automation platform built by GPT Innovations, Inc.
-Unlike pure-software tools, QuickTrust combines an intelligent platform with
-security/DevOps engineers who implement controls, close gaps, and coordinate
-with auditors — so you get certified faster with minimal internal lift.
+QuickTrust helps teams organize policies, controls and evidence, review gaps,
+prepare security questionnaire responses, and plan remediation work.
+Implementation support is scoped to the customer's environment and responsibilities.
+An independent auditor or certification body determines assessment outcomes.
+SOC 2 is an attestation report, and HIPAA compliance is not a QuickTrust-issued certification.
 
-## Frameworks Supported
-- SOC 2 Type I & II (Trust Services Criteria)
-- ISO 27001 (Information Security Management)
-- ISO 42001 (AI Governance)
-- HIPAA (Healthcare Compliance)
-- HITRUST (Healthcare Security)
-- PCI DSS (Payment Security)
-- GDPR (Data Protection)
-- Custom Frameworks
+## Service information
+- [SOC 2 readiness](https://quicktrustapp.com/soc-2-compliance)
+- [ISO 27001 readiness](https://quicktrustapp.com/iso-27001-certification)
+- [HIPAA support](https://quicktrustapp.com/hipaa-compliance)
+- [HITRUST readiness](https://quicktrustapp.com/hitrust-certification)
+- [AI governance](https://quicktrustapp.com/iso-42001-ai-governance)
+- [Security questionnaires](https://quicktrustapp.com/solutions/security-questionnaire-automation)
+- [Evidence collection](https://quicktrustapp.com/solutions/evidence-collection-automation)
+- [Policy gap analysis](https://quicktrustapp.com/solutions/policy-gap-analysis)
+- [Continuous monitoring](https://quicktrustapp.com/solutions/continuous-compliance-monitoring)
+- [Integrations and scope](https://quicktrustapp.com/integrations)
+- [Trust information](https://quicktrustapp.com/trust-center)
 
-## Core Capabilities
-- Question → Policy → Control mapping for any security questionnaire
-- Automated policy gap detection and remediation planning
-- Evidence collection, organization, and auditor-ready portal
-- Security/DevOps engineer implementation (IAM, logging, encryption, SDLC)
-- Continuous compliance monitoring and drift detection
-- Audit coordination and readiness scoring
+## Resources
+- [Guides](https://quicktrustapp.com/resources/guides)
+- [Templates](https://quicktrustapp.com/resources/templates)
+- [Illustrative scenarios](https://quicktrustapp.com/resources/case-studies)
+- [Readiness self-assessment](https://quicktrustapp.com/tools/soc-2-readiness-assessment)
+- [Business-case calculator](https://quicktrustapp.com/tools/compliance-roi-calculator)
 
-## Key Stats
-- 100% audit pass rate across 100+ audits
-- Audit-ready in 6-10 weeks (fastest: 8 weeks)
-- 90% reduction in engineering time for compliance
-- Platform + engineers model (unique in market)
-
-## Key Differentiator
-Platform + implementation team. QuickTrust engineers actually implement
-the controls (IAM, SIEM, encryption, CI/CD security, etc.) — not just
-advise. Audit-ready in weeks, not months.
-
-## Who It's For
-- B2B SaaS companies (Seed to Series C)
-- Healthcare technology companies
-- Fintech companies
-- Any company needing compliance certification to close enterprise deals
-
-## Primary Solutions
-- Audit readiness acceleration
-- Security questionnaire automation
-- Evidence collection and management
-- Continuous compliance monitoring
-- Gap analysis and remediation
-
-## Company
-- Legal Entity: GPT Innovations, Inc.
-- Location: 651N Broad Street, Suite 201, Middletown, Delaware 19709
-- Contact: hello@quicktrust.io
-
-## Pages
-- [Homepage](https://quicktrustapp.com/)
-- [SOC 2 Compliance](https://quicktrustapp.com/soc-2-compliance)
-- [ISO 27001 Certification](https://quicktrustapp.com/iso-27001-certification)
-- [HIPAA Compliance](https://quicktrustapp.com/hipaa-compliance)
-- [Security Questionnaire Automation](https://quicktrustapp.com/solutions/security-questionnaire-automation)
-- [QuickTrust vs Vanta](https://quicktrustapp.com/compare/quicktrust-vs-vanta)
-- [QuickTrust vs Drata](https://quicktrustapp.com/compare/quicktrust-vs-drata)
-- [Pricing](https://quicktrustapp.com/pricing)
-- [Blog](https://quicktrustapp.com/blog)
-- [About](https://quicktrustapp.com/about)
+Pages under historical case-study URLs are explicitly hypothetical illustrative
+scenarios, not verified customer case studies or evidence of achieved outcomes.
+Tool outputs depend on visitor inputs and are not audit opinions, guarantees or forecasts.
 
 ## Contact
-- Email: hello@quicktrust.io
-- Website: https://quicktrustapp.com
+- [Discuss scope](https://quicktrustapp.com/contact)
+- [Pricing](https://quicktrustapp.com/pricing)
+- [About](https://quicktrustapp.com/about)
