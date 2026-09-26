@@ -122,7 +122,7 @@ export default function IntegrationDetailPage() {
     return (
       <div className="space-y-4">
         <Link
-          href="/integrations"
+          href="/settings/integrations"
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -139,7 +139,7 @@ export default function IntegrationDetailPage() {
     <div className="space-y-6">
       {/* Back link */}
       <Link
-        href="/integrations"
+        href="/settings/integrations"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />

@@ -505,7 +505,7 @@ Any cloud service provider (CSP) that wants to offer services to federal agencie
 - **FedRAMP Moderate** is based on the NIST 800-53 Moderate baseline, with approximately 325 controls
 - **FedRAMP High** is based on the NIST 800-53 High baseline, with approximately 421 controls
 
-Most federal agencies require Moderate authorization at minimum. Achieving [FedRAMP authorization](/content/september-2026/case-study-govtech-fedramp) is one of the most demanding compliance undertakings in the industry, typically requiring 9-18 months and a third-party assessment organization (3PAO).
+Most federal agencies require Moderate authorization at minimum. Achieving [Illustrative Scenario: Federal Cloud Readiness Scoping](/content/september-2026/case-study-govtech-fedramp) is one of the most demanding compliance undertakings in the industry, typically requiring 9-18 months and a third-party assessment organization (3PAO).
 
 ### Defense Contractors (DFARS and CMMC)
 

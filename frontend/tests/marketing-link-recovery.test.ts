@@ -53,7 +53,7 @@ describe('public content link recovery', () => {
     for (const entry of sitemap()) {
       const pathname = new URL(entry.url).pathname;
       expect(CONTENT_REDIRECTS[pathname]).toBeUndefined();
-      expect(pathname.startsWith('/resources/')).toBe(false);
+      expect(RESOURCE_SLUGS.some((slug) => pathname === '/resources/' + slug)).toBe(false);
       if (!pathname.startsWith('/blog/')) expect(entry.lastModified).toBeUndefined();
       if (entry.lastModified) expect(new Date(entry.lastModified).getTime()).toBeLessThanOrEqual(Date.now());
     }

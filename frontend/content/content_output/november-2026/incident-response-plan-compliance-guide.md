@@ -1,14 +1,18 @@
 ---
-meta_description: "Build an incident response plan that satisfies SOC 2, ISO 27001, HIPAA, and PCI DSS auditors. Step-by-step template with roles, phases, and real-world examples."
+meta_description: "Incident Response Plans: Governance and Review Evidence. Practical guidance for maintaining a response program and documenting its review."
 target_keyword: "incident response plan"
 secondary_keywords: "incident response plan template, incident response procedure, security incident response, incident response framework, cyber incident response plan"
 word_count_target: 4500+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Incident Response Plans: Governance and Review Evidence"
 ---
 
-# How to Build an Incident Response Plan That Passes Every Compliance Audit (SOC 2, ISO 27001, HIPAA, PCI DSS)
+
+# Incident Response Plans: Governance and Review Evidence
+
+This guide focuses on maintaining a response program and documenting its review. For defining operational responsibilities and response steps, see [Incident Response: Roles and Response Procedures](/blog/incident-response-plan-guide).
 
 The average cost of a data breach in 2025 reached $4.88 million globally, according to IBM's annual Cost of a Data Breach Report. But buried in that same report is a statistic that should change how every security team allocates its time: organizations with a tested incident response plan saved an average of $1.49 million per breach compared to those without one.
 

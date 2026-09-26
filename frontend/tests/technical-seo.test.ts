@@ -10,6 +10,7 @@ import sitemap from '@/app/sitemap';
 import { metadata as privacyMetadata } from '@/app/(marketing)/privacy-policy/page';
 import { metadata as termsMetadata } from '@/app/(marketing)/terms-of-service/page';
 import { metadata as homepageMetadata } from '@/app/(marketing)/page';
+import { RESOURCE_SLUGS } from '@/lib/marketing-routes';
 
 describe('technical SEO safeguards', () => {
   test('escapes script-significant JSON-LD characters while preserving JSON values', () => {
@@ -61,7 +62,7 @@ describe('technical SEO safeguards', () => {
   test('sitemap keeps downloads out and only emits known, non-future article dates', () => {
     const entries = sitemap();
     const urls = entries.map((entry) => entry.url);
-    expect(urls.some((url) => new URL(url).pathname.startsWith('/resources/'))).toBe(false);
+    expect(urls.some((url) => RESOURCE_SLUGS.some((slug) => new URL(url).pathname === '/resources/' + slug))).toBe(false);
     for (const entry of entries) {
       const pathname = new URL(entry.url).pathname;
       if (pathname.startsWith('/blog/') && entry.lastModified) {

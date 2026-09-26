@@ -1,14 +1,18 @@
 ---
-meta_description: "The complete NIST Cybersecurity Framework (CSF 2.0) implementation guide for tech companies. Learn the 6 core functions, 22 categories, and how to map NIST controls to SOC 2 and ISO 27001."
+meta_description: "NIST Cybersecurity Framework: Functions and Profiles. Practical guidance for understanding framework concepts and their use in program design."
 target_keyword: "nist cybersecurity framework"
 secondary_keywords: "NIST CSF, NIST CSF 2.0, nist cybersecurity framework implementation, nist framework categories, nist compliance"
 word_count_target: 5000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "NIST Cybersecurity Framework: Functions and Profiles"
 ---
 
-# NIST Cybersecurity Framework (CSF 2.0): The Complete Implementation Guide for Tech Companies
+
+# NIST Cybersecurity Framework: Functions and Profiles
+
+This guide focuses on understanding framework concepts and their use in program design. For turning framework functions into an operating improvement plan, see [NIST CSF 2.0: Implementation and Review Planning](/blog/nist-csf-implementation-guide).
 
 The NIST Cybersecurity Framework started as a set of voluntary guidelines for critical infrastructure operators. Today, it is the single most influential cybersecurity framework in the world -- adopted by over 50% of US organizations, referenced by regulators across 12 countries, and increasingly treated as a prerequisite in enterprise procurement cycles, even by companies that have no legal obligation to follow it.
 

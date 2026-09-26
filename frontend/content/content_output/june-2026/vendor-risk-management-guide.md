@@ -1,14 +1,18 @@
 ---
-meta_description: "Complete vendor risk management guide for SaaS companies: program structure, vendor classification, assessments, ongoing monitoring."
+meta_description: "Vendor Risk Reviews: Due Diligence and Monitoring. Practical guidance for running supplier reviews and tracking ongoing responsibilities."
 target_keyword: "vendor risk management"
 secondary_keywords: "vendor risk management program, VRM SaaS, third party risk management, vendor due diligence, vendor assessment"
 word_count_target: "1800"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Vendor Risk Reviews: Due Diligence and Monitoring"
 ---
 
-# Vendor Risk Management: The Complete Program Guide for SaaS Companies in 2026
+
+# Vendor Risk Reviews: Due Diligence and Monitoring
+
+This guide focuses on running supplier reviews and tracking ongoing responsibilities. For designing supplier tiers, assessment methods and program ownership, see [Vendor Risk Management: Program Design and Scoring](/blog/vendor-risk-management-complete-guide).
 
 Every SaaS company depends on vendors. Cloud providers, payment processors, analytics platforms, email services, CI/CD tools, and dozens of other third-party services form the operational backbone of modern software businesses. The average SaaS company with 100 employees uses between 80 and 120 SaaS tools. Each one represents a potential risk vector.
 

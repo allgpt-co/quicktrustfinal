@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllArticles } from '@/lib/blog';
+import { getMarketingPages } from '@/lib/marketing-pages';
 
 // A rebuild is not a content update. Omit unknown, invalid or future dates.
 function knownModificationDate(value: string | undefined): Date | undefined {
@@ -74,16 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.6,
     },
-    {
-      url: `${baseUrl}/privacy-policy`,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terms-of-service`,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
   ];
 
   const articlePages: MetadataRoute.Sitemap = articles
@@ -108,5 +99,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       };
     });
 
-  return [...staticPages, ...articlePages];
+  const publicationRecords = getMarketingPages();
+  const completedPages: MetadataRoute.Sitemap = publicationRecords.filter((page) => page.indexable).map((page) => ({
+    url: baseUrl + page.path, changeFrequency: 'monthly', priority: page.service ? 0.8 : 0.6,
+  }));
+  const completedUrls = new Set(publicationRecords.map((page) => baseUrl + page.path));
+  return [...staticPages.filter((page) => !completedUrls.has(page.url)), ...completedPages, ...articlePages];
 }

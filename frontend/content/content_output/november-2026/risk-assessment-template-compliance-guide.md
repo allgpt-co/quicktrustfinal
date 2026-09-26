@@ -1,14 +1,18 @@
 ---
-meta_description: "Free risk assessment template for SOC 2, ISO 27001, and HIPAA compliance. Step-by-step guide to conducting security risk assessments with scoring matrices, risk registers, and audit-ready documentation."
+meta_description: "Risk Assessment Records for Compliance Programs. Practical guidance for organizing assessment documentation, owners and review decisions."
 target_keyword: "risk assessment template"
 secondary_keywords: "security risk assessment, risk assessment matrix, cyber risk assessment, risk assessment methodology, compliance risk assessment"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Risk Assessment Records for Compliance Programs"
 ---
 
-# Risk Assessment Template: The Complete Guide to Conducting Security Risk Assessments for Compliance
+
+# Risk Assessment Records for Compliance Programs
+
+This guide focuses on organizing assessment documentation, owners and review decisions. For choosing a method and evaluating likelihood, impact and treatment, see [Security Risk Assessment: Scoring and Prioritization](/blog/risk-assessment-guide).
 
 Every compliance framework begins in the same place: understanding what can go wrong. Before you write a single security policy, configure a monitoring tool, or engage an auditor, you must systematically identify the threats facing your organization, evaluate how likely they are to materialize, assess the damage they would cause, and decide what to do about each one. That process is a risk assessment, and it is the foundation on which every SOC 2, ISO 27001, HIPAA, PCI DSS, and NIST-aligned compliance program is built.
 

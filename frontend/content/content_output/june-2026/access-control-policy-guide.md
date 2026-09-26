@@ -1,14 +1,18 @@
 ---
-meta_description: "Learn how to build an access control policy that satisfies SOC 2, ISO 27001, HIPAA, and PCI DSS. Covers RBAC, least privilege, MFA, and more."
+meta_description: "Access Control Policy: Roles and Review Procedures. Practical guidance for defining role-based access, approval and recurring reviews."
 target_keyword: "access control policy"
 secondary_keywords: "RBAC compliance, least privilege principle, privileged access management, access control SOC 2, logical access controls"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Access Control Policy: Roles and Review Procedures"
 ---
 
-# Access Control Policy: The Complete Guide to Logical Access Controls for SOC 2, ISO 27001, HIPAA, and PCI DSS Compliance
+
+# Access Control Policy: Roles and Review Procedures
+
+This guide focuses on defining role-based access, approval and recurring reviews. For comparing access models and organizing assessment evidence, see [Access Control Models and Compliance Evidence](/blog/access-control-policy-compliance-guide).
 
 Access control failures show up in more audit findings than almost any other category. When an auditor pulls your user access list and finds former employees with active accounts, shared service credentials without rotation schedules, or administrators operating without multi-factor authentication, the result is a qualified opinion, a failed audit, or a remediation timeline that delays your certification by months.
 

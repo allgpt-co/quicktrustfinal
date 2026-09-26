@@ -1,14 +1,18 @@
 ---
-meta_description: "Build a continuous compliance program that works: monitoring cadence, automation, evidence freshness, drift detection, and staying audit-ready year-round."
+meta_description: "Continuous Compliance: Managing Changes Between Audits. Practical guidance for handling operational changes, evidence and exceptions between assessments."
 target_keyword: "continuous compliance"
 secondary_keywords: "continuous compliance monitoring, continuous compliance program, compliance automation, compliance drift"
 word_count_target: "1800"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Continuous Compliance: Managing Changes Between Audits"
 ---
 
-# Beyond the Annual Audit: How to Build a Continuous Compliance Program That Actually Works
+
+# Continuous Compliance: Managing Changes Between Audits
+
+This guide focuses on handling operational changes, evidence and exceptions between assessments. For organizing recurring reviews and program responsibilities, see [Continuous Compliance: Quarterly Operating Calendar](/blog/continuous-compliance-beyond-annual-audit).
 
 There is a pattern that plays out at hundreds of SaaS companies every year. The audit window opens. The team scrambles for 4 to 8 weeks to gather evidence, update policies, fix configurations that drifted since the last audit, and fill gaps that were deprioritized after the previous certification. The auditor arrives. The team holds its breath. The report comes back with findings. The team patches the findings, gets the certificate, and promptly stops paying attention to compliance until the next audit cycle begins.
 

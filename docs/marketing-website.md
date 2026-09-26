@@ -15,9 +15,34 @@ https://quicktrustapp.com. Marketing content was imported from
   rendering, related content, listings, static generation and sitemap generation.
 - The two comparison article URLs redirect to the comparison landing pages and
   are excluded from article listings and the sitemap. There are currently 166
-  canonical blog articles and 13 other sitemap URLs.
+  canonical blog articles and 31 other sitemap URLs (197 total).
 - Dates do not introduce publication scheduling. Preserve the source's explicit
   `published` flag behavior when adding content.
+
+## September 26 content completion
+
+`frontend/content/marketing-pages/` contains 28 distinct publication records.
+`marketing-pages.ts` validates them and supplies rendering, metadata and sitemap
+eligibility. Four resource hubs use explicit routes so the download handler does
+not intercept them. Careers, partners and webinars have truthful holding content
+and remain noindex until substantive listings exist. Legal noindex pages are
+also excluded from the sitemap; the five downloadable resources stay noindex.
+
+Public `/integrations` and `/trust-center` now belong to marketing. Their
+management screens moved to `/settings/integrations` and `/settings/trust-center`;
+the sidebar and integration-detail back links use these protected destinations.
+Existing `/integrations/[id]` detail links and public `/trust/[slug]` remain valid.
+
+All 33 article-title collisions were reviewed without speculative redirects.
+The 19 case-study URLs now explicitly describe hypothetical scenarios, with no
+verified-customer framing or achieved outcome statistics. Original URLs remain
+stable. The repaired public routes are eligible for consented GA4 page views; management and download paths remain excluded. The homepage no longer presents unsupported performance statistics or
+an empty customer section; its visible FAQ and structured data share one record.
+Self-assessment and business-case tool results explain their limits.
+
+Source acceptance: 76 frontend tests, TypeScript, production build (272 generated
+pages), four deployment-guard tests and 430 local HTTP checks passed. Production
+acceptance must follow the reviewed main merge through the existing webhook.
 
 ## Website analytics
 
