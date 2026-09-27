@@ -2,6 +2,7 @@ import ContactForm from "@/components/marketing/homepage/ContactForm";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
+import { DEMO_BOOKING_URL } from '@/lib/marketing-booking';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -83,6 +84,18 @@ export default function ContactPage() {
 
             {/* Contact Info */}
             <div className="space-y-8">
+              <div className="rounded-2xl bg-gradient-to-br from-teal-500/10 to-teal-600/5 border border-teal-500/20 p-6">
+                <h2 className="font-display text-2xl font-semibold text-slate-100 mb-3">See QuickTrust in action</h2>
+                <p className="text-slate-400 text-sm mb-4">
+                  Choose a time for a demo and discuss your compliance needs with our team.
+                </p>
+                <a
+                  href={DEMO_BOOKING_URL}
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-display font-semibold text-sm bg-gradient-primary text-slate-950 no-underline hover:-translate-y-0.5 transition-transform"
+                >
+                  Book a demo
+                </a>
+              </div>
               <div>
                 <h2 className="font-display text-2xl font-semibold text-slate-100 mb-6">Other Ways to Reach Us</h2>
 

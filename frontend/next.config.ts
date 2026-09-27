@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { CONTENT_REDIRECTS } from "./src/lib/marketing-routes";
+import { DEMO_BOOKING_URL } from "./src/lib/marketing-booking";
 
 function originFromEnv(value: string | undefined): string | null {
   if (!value) return null;
@@ -73,6 +74,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/signup", destination: "/login?mode=register", permanent: true },
+      { source: "/demo", destination: DEMO_BOOKING_URL, permanent: false },
       ...Object.entries(CONTENT_REDIRECTS).map(([source, destination]) => ({
         source, destination, permanent: true,
       })),

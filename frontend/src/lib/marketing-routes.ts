@@ -1,4 +1,5 @@
 import legacyContentRedirects from './marketing-content-redirects.json';
+import { DEMO_BOOKING_URL } from './marketing-booking';
 
 export const MARKETING_PATHS = [
   "/", "/blog", "/about", "/contact", "/pricing", "/privacy-policy", "/terms-of-service",
@@ -46,6 +47,7 @@ export function canonicalMarketingHref(href: string | undefined, articlePath = '
     if (!['https:', 'http:'].includes(url.protocol) || ![
       'quicktrustapp.com', 'www.quicktrustapp.com', 'quicktrust.ai', 'www.quicktrust.ai',
     ].includes(url.hostname)) return href;
+    if (url.pathname === '/demo' || url.pathname === '/demo/') return DEMO_BOOKING_URL;
     const target = CONTENT_REDIRECTS[url.pathname];
     return target ? `${target}${url.search}${url.hash}` : href;
   } catch {

@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useModal } from './ModalProvider';
+import { DEMO_BOOKING_URL } from '@/lib/marketing-booking';
 
 export default function FinalCTA() {
-  const { openModal } = useModal();
   return (
     <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-slate-900 to-slate-950 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -25,9 +24,8 @@ export default function FinalCTA() {
             paperwork exercise.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8">
-            <button
-              onClick={openModal}
-              suppressHydrationWarning
+            <a
+              href={DEMO_BOOKING_URL}
               className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-4 font-display text-sm sm:text-base font-semibold no-underline rounded-xl transition-all bg-gradient-primary text-slate-950 shadow-[0_4px_20px_rgba(45,212,191,0.4)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(45,212,191,0.5)] touch-manipulation"
             >
               <svg
@@ -42,8 +40,8 @@ export default function FinalCTA() {
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
-              Contact Us
-            </button>
+              Book a demo
+            </a>
             <a
               href="mailto:hello@quicktrust.io"
               className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-4 font-display text-sm sm:text-base font-semibold no-underline rounded-xl transition-all bg-white/5 text-slate-200 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5 touch-manipulation"
