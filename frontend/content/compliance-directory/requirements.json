@@ -1,0 +1,3491 @@
+[
+  {
+    "id": "soc-2",
+    "name": "SOC 2 examination",
+    "aliases": [],
+    "type": "attestation",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "American Institute of Certified Public Accountants",
+    "summary": "An assurance examination concerning controls at a service organization.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/soc-2-compliance",
+    "sourceIds": [
+      "soc-2-official"
+    ],
+    "applicationUrl": "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "soc-2-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-27001",
+    "name": "ISO/IEC 27001 certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Information security management system certification; scope and certification body must be established.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/iso-27001-certification",
+    "sourceIds": [
+      "iso-27001-official"
+    ],
+    "applicationUrl": "https://www.iso.org/standard/27001",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-27001-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "hipaa",
+    "name": "HIPAA compliance",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "R",
+      "K"
+    ],
+    "crossSector": false,
+    "authority": "US Department of Health and Human Services",
+    "summary": "US health information obligations; covered-entity and business-associate applicability need individual assessment.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/hipaa-compliance",
+    "sourceIds": [
+      "hipaa-official"
+    ],
+    "applicationUrl": "https://www.hhs.gov/hipaa/for-professionals/index.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "hipaa-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "pci-dss",
+    "name": "PCI DSS compliance",
+    "aliases": [],
+    "type": "framework",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "PCI Security Standards Council",
+    "summary": "Payment card security standard; validation depends on the relevant payment ecosystem.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/blog/pillar-pci-dss-complete-guide",
+    "sourceIds": [
+      "pci-dss-official"
+    ],
+    "applicationUrl": "https://www.pcisecuritystandards.org/standards/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "pci-dss-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "hitrust",
+    "name": "HITRUST assessment and certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "HITRUST",
+    "summary": "Assessment and certification routes under the HITRUST assurance program.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/hitrust-certification",
+    "sourceIds": [
+      "hitrust-official"
+    ],
+    "applicationUrl": "https://hitrustalliance.net/assessments-and-certifications",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "hitrust-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-42001",
+    "name": "ISO/IEC 42001 certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Management system standard for artificial intelligence governance.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/iso-42001-ai-governance",
+    "sourceIds": [
+      "iso-42001-official"
+    ],
+    "applicationUrl": "https://www.iso.org/standard/42001",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-42001-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-9001",
+    "name": "ISO 9001 quality management certification",
+    "aliases": [
+      "ISO9001"
+    ],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Quality management system certification: current edition, scope, independent assessment and transition questions.",
+    "status": "verified",
+    "currentStatus": "ISO lists the 2026 edition as published and the 2015 edition as withdrawn.",
+    "canonicalPath": "/compliance-directory/requirements/iso-9001",
+    "sourceIds": [
+      "iso-9001-official",
+      "iso-certification",
+      "iso-9001-2015-source"
+    ],
+    "applicationUrl": "https://www.iso.org/certification.html",
+    "applicability": "Organizations across sectors may use the quality management standard. Certification is voluntary under the standard; customer contracts or other rules can create separate requirements.",
+    "exemptions": "No universal business license is created by ISO 9001. Establish the intended QMS scope and assess any exclusions against the applicable edition.",
+    "application": "Define the quality management system scope, implement it, and select an independent certification body if certification is needed. ISO does not issue certificates.",
+    "renewal": "Confirm surveillance, recertification and the 2015-to-2026 transition arrangements with the certification body. No universal transition deadline is asserted here.",
+    "fees": "Certification costs require a scope-specific quote from the certification body; buying the standard is a separate cost.",
+    "documents": [
+      {
+        "text": "Record the QMS scope, relevant products/services and the edition to be assessed.",
+        "sourceId": "iso-9001-official"
+      },
+      {
+        "text": "Check the certification body and its accreditation for the intended scope.",
+        "sourceId": "iso-certification"
+      },
+      {
+        "text": "If holding a 2015 certificate, obtain written transition arrangements from the certification body.",
+        "sourceId": "iso-9001-2015-source"
+      }
+    ],
+    "version": "ISO 9001:2026 (edition 6)",
+    "effectiveDate": "2026-09-16",
+    "reviewedAt": "2026-09-27",
+    "nextReviewAt": "2026-12-27",
+    "updatedAt": "2026-09-27",
+    "review": {
+      "reviewer": "QuickTrust editorial source review (automated)",
+      "scope": "Educational overview and preparation checklist only; organization-specific applicability and assessment are not verified.",
+      "authority": true,
+      "applicability": true,
+      "currentStatus": true,
+      "sources": true,
+      "substantiveContent": true
+    },
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-16",
+        "summary": "ISO published the 2026 edition and withdrew the 2015 edition. Certificate holders should confirm transition arrangements with their certification body.",
+        "sourceIds": [
+          "iso-9001-official",
+          "iso-9001-2015-source"
+        ]
+      },
+      {
+        "date": "2026-09-26",
+        "summary": "Official sources reviewed for the overview, authority, current status and preparation checklist.",
+        "sourceIds": [
+          "iso-9001-official",
+          "iso-certification",
+          "iso-9001-2015-source"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Final editorial review of the published overview and source-linked preparation checklist. Organization-specific applicability remains outside the review scope.",
+        "sourceIds": [
+          "iso-9001-official",
+          "iso-certification",
+          "iso-9001-2015-source"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-14001",
+    "name": "ISO 14001 environmental management certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Environmental management system standard; edition and transition arrangements require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/iso-14001",
+    "sourceIds": [
+      "iso-14001-official"
+    ],
+    "applicationUrl": "https://www.iso.org/iso-14001-environmental-management.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-14001-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-45001",
+    "name": "ISO 45001 occupational health and safety certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Occupational health and safety management system certification.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/iso-45001",
+    "sourceIds": [
+      "iso-45001-official"
+    ],
+    "applicationUrl": "https://www.iso.org/iso-45001-occupational-health-and-safety.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-45001-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-13485",
+    "name": "ISO 13485 medical device quality management certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [
+      "C",
+      "R"
+    ],
+    "crossSector": false,
+    "authority": "International Organization for Standardization",
+    "summary": "Quality management system requirements associated with medical devices.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/iso-13485",
+    "sourceIds": [
+      "iso-13485-official"
+    ],
+    "applicationUrl": "https://www.iso.org/iso-13485-medical-devices.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-13485-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-22000",
+    "name": "ISO 22000 food safety management certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [
+      "A",
+      "C",
+      "G",
+      "I"
+    ],
+    "crossSector": false,
+    "authority": "International Organization for Standardization",
+    "summary": "Food safety management system standard for organizations in the food chain.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/iso-22000",
+    "sourceIds": [
+      "iso-22000-official"
+    ],
+    "applicationUrl": "https://www.iso.org/iso-22000-food-safety-management.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-22000-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-22301",
+    "name": "ISO 22301 business continuity certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Business continuity management system standard.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/iso-22301",
+    "sourceIds": [
+      "iso-22301-official"
+    ],
+    "applicationUrl": "https://www.iso.org/standard/75106.html",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "iso-22301-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "cmmc",
+    "name": "Cybersecurity Maturity Model Certification (CMMC)",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "US Department of Defense",
+    "summary": "US defense supplier cybersecurity program; contractual applicability and assessment level require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/cmmc",
+    "sourceIds": [
+      "cmmc-official"
+    ],
+    "applicationUrl": "https://dodcio.defense.gov/CMMC/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "cmmc-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "fedramp",
+    "name": "Federal Risk and Authorization Management Program (FedRAMP)",
+    "aliases": [],
+    "type": "framework",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "K"
+    ],
+    "crossSector": false,
+    "authority": "FedRAMP",
+    "summary": "US federal cloud security assessment and authorization program.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/fedramp",
+    "sourceIds": [
+      "fedramp-official"
+    ],
+    "applicationUrl": "https://www.fedramp.gov/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "fedramp-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "nist-800-171",
+    "name": "NIST SP 800-171 controlled unclassified information protection",
+    "aliases": [],
+    "type": "framework",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "National Institute of Standards and Technology",
+    "summary": "Security requirements for protecting controlled unclassified information; contract requirements and revisions need review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/nist-800-171",
+    "sourceIds": [
+      "nist-800-171-official"
+    ],
+    "applicationUrl": "https://csrc.nist.gov/pubs/sp/800/171/r3/final",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "nist-800-171-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "nist-csf",
+    "name": "NIST Cybersecurity Framework 2.0",
+    "aliases": [],
+    "type": "framework",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "National Institute of Standards and Technology",
+    "summary": "A framework for organizing cybersecurity risk outcomes, profiles and improvement priorities.",
+    "status": "verified",
+    "currentStatus": "NIST publishes CSF 2.0 and supporting implementation resources.",
+    "canonicalPath": "/blog/pillar-nist-cybersecurity-framework-guide",
+    "sourceIds": [
+      "nist-csf-official",
+      "nist-csf-faq",
+      "nist-csf-guides"
+    ],
+    "applicationUrl": "https://www.nist.gov/cyberframework",
+    "applicability": "Organizations of any size and sector can use CSF to manage cybersecurity risk. Adoption is generally voluntary; a contract or sector-specific rule may reference it.",
+    "exemptions": "CSF is an outcomes framework, not a government business license. Applicability of separate regulations is outside this overview.",
+    "application": "Define the organizational context, build a Current Profile, choose a Target Profile and prioritize gaps. Use the official quick-start guides and reference tools.",
+    "renewal": "There is no NIST-issued CSF certificate to renew. Review the profile as risks, services and business needs change.",
+    "fees": "NIST framework resources are available from the official website. Optional third-party consulting and assessment arrangements are separate.",
+    "documents": [
+      {
+        "text": "Record the organizational scope and stakeholders for the CSF profile.",
+        "sourceId": "nist-csf-guides"
+      },
+      {
+        "text": "Document the Current Profile and desired Target Profile.",
+        "sourceId": "nist-csf-guides"
+      },
+      {
+        "text": "Assign owners and evidence to prioritized improvement actions.",
+        "sourceId": "nist-csf-guides"
+      }
+    ],
+    "version": "CSF 2.0",
+    "effectiveDate": "2024-02-26",
+    "reviewedAt": "2026-09-27",
+    "nextReviewAt": "2026-12-27",
+    "updatedAt": "2026-09-27",
+    "review": {
+      "reviewer": "QuickTrust editorial source review (automated)",
+      "scope": "Educational overview and preparation checklist only; organization-specific applicability and assessment are not verified.",
+      "authority": true,
+      "applicability": true,
+      "currentStatus": true,
+      "sources": true,
+      "substantiveContent": true
+    },
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Official sources reviewed for the overview, authority, current status and preparation checklist.",
+        "sourceIds": [
+          "nist-csf-official",
+          "nist-csf-faq",
+          "nist-csf-guides"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Existing canonical overview refreshed and connected to directory comparison and preparation checklist.",
+        "sourceIds": [
+          "nist-csf-official",
+          "nist-csf-faq",
+          "nist-csf-guides"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Final editorial review of the published overview and source-linked preparation checklist. Organization-specific applicability remains outside the review scope.",
+        "sourceIds": [
+          "nist-csf-official",
+          "nist-csf-faq",
+          "nist-csf-guides"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "cyber-essentials",
+    "name": "Cyber Essentials certification",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "National Cyber Security Centre / IASME",
+    "summary": "UK cybersecurity certification scheme covering five technical control areas and two assurance levels.",
+    "status": "verified",
+    "currentStatus": "Active NCSC scheme delivered through IASME and licensed certification bodies.",
+    "canonicalPath": "/compliance-directory/requirements/cyber-essentials",
+    "sourceIds": [
+      "cyber-essentials-official",
+      "iasme-cyber-essentials"
+    ],
+    "applicationUrl": "https://iasme.co.uk/cyber-essentials/",
+    "applicability": "Organizations seeking baseline cyber security assurance, including suppliers whose customers require it. Check the contract and scope rather than assuming every UK business must certify.",
+    "exemptions": "The scheme does not create a blanket statutory licensing obligation. Contractual requirements and scope exclusions must be checked separately.",
+    "application": "Use IASME or a licensed certification body. Cyber Essentials uses an assessed self-assessment; Cyber Essentials Plus adds technical testing of the same control areas.",
+    "renewal": "Confirm the certificate expiry date and current renewal requirements with IASME or the selected certification body before relying on a certificate.",
+    "fees": "Current pricing depends on the scheme route and organization; use the official scheme quote or pricing page.",
+    "documents": [
+      {
+        "text": "Define which systems and organizational units will be in the assessment scope.",
+        "sourceId": "iasme-cyber-essentials"
+      },
+      {
+        "text": "Review the current question set and requirements for the five technical controls.",
+        "sourceId": "cyber-essentials-official"
+      },
+      {
+        "text": "Decide whether the requesting customer needs Cyber Essentials or Cyber Essentials Plus.",
+        "sourceId": "cyber-essentials-official"
+      }
+    ],
+    "version": "Current scheme guidance; confirm the assessment question-set version when applying",
+    "effectiveDate": null,
+    "reviewedAt": "2026-09-27",
+    "nextReviewAt": "2026-12-27",
+    "updatedAt": "2026-09-27",
+    "review": {
+      "reviewer": "QuickTrust editorial source review (automated)",
+      "scope": "Educational overview and preparation checklist only; organization-specific applicability and assessment are not verified.",
+      "authority": true,
+      "applicability": true,
+      "currentStatus": true,
+      "sources": true,
+      "substantiveContent": true
+    },
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Official sources reviewed for the overview, authority, current status and preparation checklist.",
+        "sourceIds": [
+          "cyber-essentials-official",
+          "iasme-cyber-essentials"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Final editorial review of the published overview and source-linked preparation checklist. Organization-specific applicability remains outside the review scope.",
+        "sourceIds": [
+          "cyber-essentials-official",
+          "iasme-cyber-essentials"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "gdpr",
+    "name": "General Data Protection Regulation (GDPR)",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "EU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "European Union / national supervisory authorities",
+    "summary": "EU personal data protection regulation; territorial scope can include organizations outside the EU.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/blog/gdpr-compliance-us-saas-guide",
+    "sourceIds": [
+      "gdpr-official"
+    ],
+    "applicationUrl": "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "gdpr-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-gdpr",
+    "name": "UK GDPR and Data Protection Act compliance",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Information Commissioner's Office",
+    "summary": "UK personal data protection obligations; amendments and territorial scope require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-gdpr",
+    "sourceIds": [
+      "uk-gdpr-official"
+    ],
+    "applicationUrl": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-gdpr-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "ccpa-cpra",
+    "name": "California Consumer Privacy Act, as amended by CPRA",
+    "aliases": [
+      "CCPA",
+      "CPRA"
+    ],
+    "type": "regulation",
+    "jurisdictions": [
+      "US-CA"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "California Privacy Protection Agency",
+    "summary": "California privacy obligations; thresholds, exemptions and current regulations require verification.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/ccpa-cpra",
+    "sourceIds": [
+      "ccpa-cpra-official"
+    ],
+    "applicationUrl": "https://cppa.ca.gov/regulations/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "ccpa-cpra-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "lgpd",
+    "name": "Lei Geral de Proteção de Dados Pessoais (LGPD)",
+    "aliases": [
+      "Lei Geral de Protecao de Dados"
+    ],
+    "type": "regulation",
+    "jurisdictions": [
+      "BR"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Autoridade Nacional de Proteção de Dados",
+    "summary": "Brazilian personal data protection law and ANPD guidance.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/lgpd",
+    "sourceIds": [
+      "lgpd-official"
+    ],
+    "applicationUrl": "https://www.gov.br/anpd/pt-br",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "lgpd-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "india-dpdp",
+    "name": "Digital Personal Data Protection Act compliance",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "IN"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Ministry of Electronics and Information Technology",
+    "summary": "Indian digital personal data protection framework; commencement, rules and phased obligations require current review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/india-dpdp",
+    "sourceIds": [
+      "india-dpdp-official"
+    ],
+    "applicationUrl": "https://www.meity.gov.in/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "india-dpdp-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "singapore-pdpa",
+    "name": "Personal Data Protection Act (Singapore)",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "SG"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Personal Data Protection Commission",
+    "summary": "Singapore personal data protection obligations.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/singapore-pdpa",
+    "sourceIds": [
+      "singapore-pdpa-official"
+    ],
+    "applicationUrl": "https://www.pdpc.gov.sg/overview-of-pdpa/the-legislation/personal-data-protection-act",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "singapore-pdpa-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uae-data-protection",
+    "name": "UAE federal personal data protection law",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "AE"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "UAE Government / UAE Data Office",
+    "summary": "UAE federal data protection framework; free-zone regimes require separate consideration.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uae-data-protection",
+    "sourceIds": [
+      "uae-data-protection-official"
+    ],
+    "applicationUrl": "https://u.ae/en/about-the-uae/digital-uae/data/data-protection-laws",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uae-data-protection-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "australia-privacy",
+    "name": "Australian Privacy Act compliance",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "AU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Office of the Australian Information Commissioner",
+    "summary": "Australian privacy law; covered entities, exemptions and amendments require verification.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/australia-privacy",
+    "sourceIds": [
+      "australia-privacy-official"
+    ],
+    "applicationUrl": "https://www.oaic.gov.au/privacy/privacy-legislation/the-privacy-act",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "australia-privacy-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "canada-pipeda",
+    "name": "Personal Information Protection and Electronic Documents Act (PIPEDA)",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "CA"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Office of the Privacy Commissioner of Canada",
+    "summary": "Canadian federal private-sector privacy law; provincial laws may also be relevant.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/canada-pipeda",
+    "sourceIds": [
+      "canada-pipeda-official"
+    ],
+    "applicationUrl": "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "canada-pipeda-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "eu-ai-act",
+    "name": "EU Artificial Intelligence Act",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "EU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "European Union / European AI Office",
+    "summary": "AI regulation with role, risk and implementation-date distinctions requiring review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/eu-ai-act",
+    "sourceIds": [
+      "eu-ai-act-official"
+    ],
+    "applicationUrl": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "eu-ai-act-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "nis2",
+    "name": "NIS2 Directive",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "EU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "European Union / national competent authorities",
+    "summary": "EU cybersecurity directive; national implementation and entity classification require local review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/nis2",
+    "sourceIds": [
+      "nis2-official"
+    ],
+    "applicationUrl": "https://digital-strategy.ec.europa.eu/en/policies/nis2-directive",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "nis2-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "dora",
+    "name": "Digital Operational Resilience Act (DORA)",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "EU"
+    ],
+    "activities": [
+      "L",
+      "K"
+    ],
+    "crossSector": false,
+    "authority": "European Union / European Supervisory Authorities",
+    "summary": "Digital operational resilience requirements in the EU financial sector.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/dora",
+    "sourceIds": [
+      "dora-official"
+    ],
+    "applicationUrl": "https://www.eba.europa.eu/activities/direct-supervision-and-oversight/digital-operational-resilience-act",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "dora-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "sox",
+    "name": "Sarbanes–Oxley Act internal control obligations",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "US Securities and Exchange Commission",
+    "summary": "US issuer reporting and internal control obligations; issuer category and applicability require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/sox",
+    "sourceIds": [
+      "sox-official"
+    ],
+    "applicationUrl": "https://www.sec.gov/spotlight/sarbanes-oxley.htm",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "sox-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "glba",
+    "name": "Gramm–Leach–Bliley Act Safeguards Rule",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "US Federal Trade Commission",
+    "summary": "Safeguards obligations for financial institutions within the FTC's jurisdiction.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/glba",
+    "sourceIds": [
+      "glba-official"
+    ],
+    "applicationUrl": "https://www.ftc.gov/business-guidance/resources/ftc-safeguards-rule-what-your-business-needs-know",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "glba-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "fca-authorisation",
+    "name": "FCA firm authorisation or registration",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "Financial Conduct Authority",
+    "summary": "UK regulated financial activities may require specific permissions or registration.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/fca-authorisation",
+    "sourceIds": [
+      "fca-authorisation-official"
+    ],
+    "applicationUrl": "https://www.fca.org.uk/firms/authorisation/apply",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "fca-authorisation-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "mas-payment-services",
+    "name": "Payment services licensing in Singapore",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "SG"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "Monetary Authority of Singapore",
+    "summary": "Singapore payment services licensing and regulatory information.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/mas-payment-services",
+    "sourceIds": [
+      "mas-payment-services-official"
+    ],
+    "applicationUrl": "https://www.mas.gov.sg/regulation/payments",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "mas-payment-services-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-money-transmitter",
+    "name": "US state money transmitter licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "State financial regulators; NMLS State Resource Center",
+    "summary": "Research entry for state money transmission permissions; individual state rules remain to be mapped.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-money-transmitter",
+    "sourceIds": [
+      "us-money-transmitter-official"
+    ],
+    "applicationUrl": "https://mortgage.nationwidelicensingsystem.org/slr/Pages/default.aspx",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-money-transmitter-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "apra-cps234",
+    "name": "APRA CPS 234 information security",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "AU"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "Australian Prudential Regulation Authority",
+    "summary": "Australian prudential information security standard for relevant APRA-regulated entities.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/apra-cps234",
+    "sourceIds": [
+      "apra-cps234-official"
+    ],
+    "applicationUrl": "https://www.apra.gov.au/standards/cps-234",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-27",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "apra-cps234-official"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Official source URL refreshed after availability review; substantive verification remains pending.",
+        "sourceIds": [
+          "apra-cps234-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "essential-eight",
+    "name": "Essential Eight mitigation strategies",
+    "aliases": [],
+    "type": "framework",
+    "jurisdictions": [
+      "AU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Australian Signals Directorate",
+    "summary": "Australian cyber security mitigation guidance and maturity model.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/essential-eight",
+    "sourceIds": [
+      "essential-eight-official"
+    ],
+    "applicationUrl": "https://www.cyber.gov.au/business-government/asds-cyber-security-frameworks/essential-eight",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-27",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "essential-eight-official"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Official source URL refreshed after availability review; substantive verification remains pending.",
+        "sourceIds": [
+          "essential-eight-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "fssai",
+    "name": "FSSAI food business licensing and registration",
+    "aliases": [
+      "FSSAI license",
+      "FoSCoS"
+    ],
+    "type": "license",
+    "jurisdictions": [
+      "IN"
+    ],
+    "activities": [
+      "A",
+      "C",
+      "G",
+      "I"
+    ],
+    "crossSector": false,
+    "authority": "Food Safety and Standards Authority of India",
+    "summary": "Indian food business licensing and registration routes through FoSCoS.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/fssai",
+    "sourceIds": [
+      "fssai-official"
+    ],
+    "applicationUrl": "https://foscos.fssai.gov.in/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "fssai-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "india-gst",
+    "name": "Goods and Services Tax registration (India)",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "IN"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Goods and Services Tax authorities",
+    "summary": "Indian GST registration; turnover, supplies, exceptions and state registrations require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/india-gst",
+    "sourceIds": [
+      "india-gst-official"
+    ],
+    "applicationUrl": "https://www.gst.gov.in/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "india-gst-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "india-iec",
+    "name": "Importer Exporter Code (India)",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "IN"
+    ],
+    "activities": [
+      "C",
+      "G",
+      "H"
+    ],
+    "crossSector": false,
+    "authority": "Directorate General of Foreign Trade",
+    "summary": "Indian importer/exporter identification and associated DGFT processes.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/india-iec",
+    "sourceIds": [
+      "india-iec-official"
+    ],
+    "applicationUrl": "https://www.dgft.gov.in/CP/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "india-iec-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "india-bis",
+    "name": "BIS product certification",
+    "aliases": [],
+    "type": "product-approval",
+    "jurisdictions": [
+      "IN"
+    ],
+    "activities": [
+      "C",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "Bureau of Indian Standards",
+    "summary": "Indian product conformity schemes; the specific product and applicable scheme must be identified.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/india-bis",
+    "sourceIds": [
+      "india-bis-official"
+    ],
+    "applicationUrl": "https://www.bis.gov.in/product-certification/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "india-bis-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-fda-device-registration",
+    "name": "FDA medical device establishment registration and listing",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "C",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "US Food and Drug Administration",
+    "summary": "US medical device establishment registration and listing. Registration is distinct from product clearance or approval.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-fda-device-registration",
+    "sourceIds": [
+      "us-fda-device-registration-official"
+    ],
+    "applicationUrl": "https://www.fda.gov/medical-devices/how-study-and-market-your-device/device-registration-and-listing",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-fda-device-registration-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "eu-ce-marking",
+    "name": "CE marking and EU product conformity",
+    "aliases": [],
+    "type": "product-approval",
+    "jurisdictions": [
+      "EU"
+    ],
+    "activities": [
+      "C",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "European Commission / relevant market surveillance authorities",
+    "summary": "Product-specific EU conformity assessment and marking requirements.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/eu-ce-marking",
+    "sourceIds": [
+      "eu-ce-marking-official"
+    ],
+    "applicationUrl": "https://single-market-economy.ec.europa.eu/single-market/ce-marking_en",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "eu-ce-marking-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-food-registration",
+    "name": "Food business registration in England, Wales and Northern Ireland",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "GB-ENG",
+      "GB-WLS",
+      "GB-NIR"
+    ],
+    "activities": [
+      "I",
+      "C",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "Food Standards Agency / relevant local authority",
+    "summary": "Food business registration guidance; local authority and activity-specific approvals require checking.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-food-registration",
+    "sourceIds": [
+      "uk-food-registration-official"
+    ],
+    "applicationUrl": "https://register.food.gov.uk/new",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-27",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-food-registration-official"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Official source URL refreshed after availability review; substantive verification remains pending.",
+        "sourceIds": [
+          "uk-food-registration-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "singapore-food-shop",
+    "name": "Food Shop Licence (Singapore)",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "SG"
+    ],
+    "activities": [
+      "I"
+    ],
+    "crossSector": false,
+    "authority": "Singapore Food Agency",
+    "summary": "Singapore food shop licensing; premises and activity requirements remain to be reviewed.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/singapore-food-shop",
+    "sourceIds": [
+      "singapore-food-shop-official"
+    ],
+    "applicationUrl": "https://www.sfa.gov.sg/food-retail/licensing-permits/food-shop-licence",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "singapore-food-shop-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "nyc-food-service",
+    "name": "New York City food service establishment permit",
+    "aliases": [],
+    "type": "permit",
+    "jurisdictions": [
+      "US-NY-NYC"
+    ],
+    "activities": [
+      "I"
+    ],
+    "crossSector": false,
+    "authority": "New York City Department of Health and Mental Hygiene",
+    "summary": "Local food service establishment permitting in New York City.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/nyc-food-service",
+    "sourceIds": [
+      "nyc-food-service-official"
+    ],
+    "applicationUrl": "https://www.nyc.gov/site/doh/business/permits-and-licenses/restaurants.page",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-27",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "nyc-food-service-official"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Official source URL refreshed after availability review; substantive verification remains pending.",
+        "sourceIds": [
+          "nyc-food-service-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "california-alcohol",
+    "name": "California alcoholic beverage license",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "US-CA"
+    ],
+    "activities": [
+      "I",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "California Department of Alcoholic Beverage Control",
+    "summary": "California alcohol licensing; license class depends on the proposed business activity.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/california-alcohol",
+    "sourceIds": [
+      "california-alcohol-official"
+    ],
+    "applicationUrl": "https://www.abc.ca.gov/licensing/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "california-alcohol-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-premises-alcohol",
+    "name": "Premises licence (England and Wales)",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "GB-ENG",
+      "GB-WLS"
+    ],
+    "activities": [
+      "I",
+      "S"
+    ],
+    "crossSector": false,
+    "authority": "Relevant licensing authority / Home Office guidance",
+    "summary": "Premises licensing for applicable activities in England and Wales.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-premises-alcohol",
+    "sourceIds": [
+      "uk-premises-alcohol-official"
+    ],
+    "applicationUrl": "https://www.gov.uk/premises-licence",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-premises-alcohol-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "singapore-hotel",
+    "name": "Singapore hotel registration and licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "SG"
+    ],
+    "activities": [
+      "I"
+    ],
+    "crossSector": false,
+    "authority": "Hotels Licensing Board",
+    "summary": "Hotel licensing information in Singapore.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/singapore-hotel",
+    "sourceIds": [
+      "singapore-hotel-official"
+    ],
+    "applicationUrl": "https://www.hlb.gov.sg/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "singapore-hotel-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "dubai-trade",
+    "name": "Dubai mainland business licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "AE-DU"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Dubai Department of Economy and Tourism",
+    "summary": "Dubai mainland business setup and licensing; free-zone permissions are separate.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/dubai-trade",
+    "sourceIds": [
+      "dubai-trade-official"
+    ],
+    "applicationUrl": "https://www.investindubai.gov.ae/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "dubai-trade-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "difc-commercial",
+    "name": "DIFC commercial licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "AE-DU-DIFC"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Dubai International Financial Centre Registrar of Companies",
+    "summary": "Commercial establishment and registration in the DIFC special jurisdiction.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/difc-commercial",
+    "sourceIds": [
+      "difc-commercial-official"
+    ],
+    "applicationUrl": "https://www.difc.com/business/starting-business",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "difc-commercial-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "dubai-vara",
+    "name": "Dubai virtual asset service provider licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "AE-DU"
+    ],
+    "activities": [
+      "L"
+    ],
+    "crossSector": false,
+    "authority": "Virtual Assets Regulatory Authority",
+    "summary": "Virtual asset regulation in Dubai; territorial scope and activities require verification.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/dubai-vara",
+    "sourceIds": [
+      "dubai-vara-official"
+    ],
+    "applicationUrl": "https://www.vara.ae/en/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "dubai-vara-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-company",
+    "name": "UK company incorporation",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Companies House",
+    "summary": "Company incorporation is distinct from permissions to perform regulated activities.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-company",
+    "sourceIds": [
+      "uk-company-official"
+    ],
+    "applicationUrl": "https://www.gov.uk/limited-company-formation",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-company-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "singapore-business",
+    "name": "Singapore business registration",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "SG"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Accounting and Corporate Regulatory Authority",
+    "summary": "Singapore business registration routes; entity form and exemptions require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/singapore-business",
+    "sourceIds": [
+      "singapore-business-official"
+    ],
+    "applicationUrl": "https://www.acra.gov.sg/how-to-guides/starting-sole-proprietorships",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "singapore-business-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "germany-trade",
+    "name": "Gewerbeanmeldung (German trade registration)",
+    "aliases": [
+      "German trade registration"
+    ],
+    "type": "registration",
+    "jurisdictions": [
+      "DE"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Relevant municipal trade office / federal service portal",
+    "summary": "German trade registration research entry; competent local office and exemptions require confirmation.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/germany-trade",
+    "sourceIds": [
+      "germany-trade-official"
+    ],
+    "applicationUrl": "https://verwaltung.bund.de/leistungsverzeichnis/de/leistung/99050012104000",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-27",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "germany-trade-official"
+        ]
+      },
+      {
+        "date": "2026-09-27",
+        "summary": "Official source URL refreshed after availability review; substantive verification remains pending.",
+        "sourceIds": [
+          "germany-trade-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "california-contractor",
+    "name": "California contractor license",
+    "aliases": [],
+    "type": "professional-authorization",
+    "jurisdictions": [
+      "US-CA"
+    ],
+    "activities": [
+      "F"
+    ],
+    "crossSector": false,
+    "authority": "Contractors State License Board",
+    "summary": "California contractor licensing; trade classification and qualification requirements require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/california-contractor",
+    "sourceIds": [
+      "california-contractor-official"
+    ],
+    "applicationUrl": "https://www.cslb.ca.gov/Contractors/Applicants/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "california-contractor-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-doctor",
+    "name": "UK medical registration and licence to practise",
+    "aliases": [],
+    "type": "professional-authorization",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [
+      "R"
+    ],
+    "crossSector": false,
+    "authority": "General Medical Council",
+    "summary": "Professional registration and licensing for doctors in the United Kingdom.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-doctor",
+    "sourceIds": [
+      "uk-doctor-official"
+    ],
+    "applicationUrl": "https://www.gmc-uk.org/registration-and-licensing",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-doctor-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-solicitor",
+    "name": "Solicitors' practising certificate (England and Wales)",
+    "aliases": [],
+    "type": "professional-authorization",
+    "jurisdictions": [
+      "GB-ENG",
+      "GB-WLS"
+    ],
+    "activities": [
+      "N"
+    ],
+    "crossSector": false,
+    "authority": "Solicitors Regulation Authority",
+    "summary": "Professional authorization for solicitors; practising and firm requirements need separate review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-solicitor",
+    "sourceIds": [
+      "uk-solicitor-official"
+    ],
+    "applicationUrl": "https://www.sra.org.uk/solicitors/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-solicitor-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-export-controls",
+    "name": "US export licensing under the Export Administration Regulations",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "C",
+      "G",
+      "K"
+    ],
+    "crossSector": false,
+    "authority": "Bureau of Industry and Security",
+    "summary": "US export controls; classification, destination, end user and end use require assessment.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-export-controls",
+    "sourceIds": [
+      "us-export-controls-official"
+    ],
+    "applicationUrl": "https://www.bis.gov/licensing",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-export-controls-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-npdes",
+    "name": "National Pollutant Discharge Elimination System permit",
+    "aliases": [],
+    "type": "permit",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "crossSector": false,
+    "authority": "US Environmental Protection Agency / authorized state agencies",
+    "summary": "US water discharge permitting under NPDES; delegated authority and permit type require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-npdes",
+    "sourceIds": [
+      "us-npdes-official"
+    ],
+    "applicationUrl": "https://www.epa.gov/npdes",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-npdes-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-environment-permit",
+    "name": "Environmental permitting in England",
+    "aliases": [],
+    "type": "permit",
+    "jurisdictions": [
+      "GB-ENG"
+    ],
+    "activities": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "crossSector": false,
+    "authority": "Environment Agency / relevant local authority",
+    "summary": "Environmental permits in England; activity and site determine the relevant regulator.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-environment-permit",
+    "sourceIds": [
+      "uk-environment-permit-official"
+    ],
+    "applicationUrl": "https://www.gov.uk/guidance/check-if-you-need-an-environmental-permit",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-environment-permit-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "brazil-environment",
+    "name": "Licenciamento ambiental federal (Brazil)",
+    "aliases": [],
+    "type": "permit",
+    "jurisdictions": [
+      "BR"
+    ],
+    "activities": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "H"
+    ],
+    "crossSector": false,
+    "authority": "Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis",
+    "summary": "Brazilian federal environmental licensing; state and municipal competence require separate review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/brazil-environment",
+    "sourceIds": [
+      "brazil-environment-official"
+    ],
+    "applicationUrl": "https://www.gov.br/ibama/pt-br/assuntos/laf",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "brazil-environment-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-motor-carrier",
+    "name": "US interstate motor carrier operating authority",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "H"
+    ],
+    "crossSector": false,
+    "authority": "Federal Motor Carrier Safety Administration",
+    "summary": "US interstate commercial transport authority; operating model determines registration requirements.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-motor-carrier",
+    "sourceIds": [
+      "us-motor-carrier-official"
+    ],
+    "applicationUrl": "https://www.fmcsa.dot.gov/registration/get-mc-number-authority-operate",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-motor-carrier-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-goods-operator",
+    "name": "Goods vehicle operator's licence (Great Britain)",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "GB-ENG",
+      "GB-WLS",
+      "GB-SCT"
+    ],
+    "activities": [
+      "H"
+    ],
+    "crossSector": false,
+    "authority": "Traffic Commissioners for Great Britain",
+    "summary": "Commercial goods vehicle operator licensing in Great Britain.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-goods-operator",
+    "sourceIds": [
+      "uk-goods-operator-official"
+    ],
+    "applicationUrl": "https://www.gov.uk/being-a-goods-vehicle-operator",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-goods-operator-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-fcc",
+    "name": "FCC wireless radio authorization",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "K",
+      "H"
+    ],
+    "crossSector": false,
+    "authority": "Federal Communications Commission",
+    "summary": "US wireless licensing; service and spectrum authorization depend on intended operation.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-fcc",
+    "sourceIds": [
+      "us-fcc-official"
+    ],
+    "applicationUrl": "https://www.fcc.gov/wireless/systems-utilities/universal-licensing-system",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-fcc-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-ofcom",
+    "name": "Ofcom business radio licensing",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "GB"
+    ],
+    "activities": [
+      "K"
+    ],
+    "crossSector": false,
+    "authority": "Ofcom",
+    "summary": "UK business radio spectrum licensing information.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-ofcom",
+    "sourceIds": [
+      "uk-ofcom-official"
+    ],
+    "applicationUrl": "https://www.ofcom.org.uk/spectrum/radio-equipment/business-radio/",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-ofcom-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-energy",
+    "name": "Gas and electricity licensing (Great Britain)",
+    "aliases": [],
+    "type": "license",
+    "jurisdictions": [
+      "GB-ENG",
+      "GB-WLS",
+      "GB-SCT"
+    ],
+    "activities": [
+      "D"
+    ],
+    "crossSector": false,
+    "authority": "Ofgem",
+    "summary": "Great Britain gas and electricity licensing; activity-specific exemptions require checking.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-energy",
+    "sourceIds": [
+      "uk-energy-official"
+    ],
+    "applicationUrl": "https://www.ofgem.gov.uk/energy-policy-and-regulation/industry-licensing",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-energy-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-usda-plant-import",
+    "name": "US plant and plant product import permits",
+    "aliases": [],
+    "type": "permit",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [
+      "A",
+      "G"
+    ],
+    "crossSector": false,
+    "authority": "USDA Animal and Plant Health Inspection Service",
+    "summary": "US plant import permissions; commodity and origin-specific requirements need verification.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-usda-plant-import",
+    "sourceIds": [
+      "us-usda-plant-import-official"
+    ],
+    "applicationUrl": "https://www.aphis.usda.gov/plant-imports",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-usda-plant-import-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-childcare",
+    "name": "Childcare provider registration (England)",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "GB-ENG"
+    ],
+    "activities": [
+      "Q",
+      "R"
+    ],
+    "crossSector": false,
+    "authority": "Ofsted",
+    "summary": "England childcare registration; age ranges, setting and exemptions require review.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-childcare",
+    "sourceIds": [
+      "uk-childcare-official"
+    ],
+    "applicationUrl": "https://www.gov.uk/government/organisations/ofsted",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-childcare-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "uk-healthcare",
+    "name": "Care Quality Commission provider registration",
+    "aliases": [],
+    "type": "registration",
+    "jurisdictions": [
+      "GB-ENG"
+    ],
+    "activities": [
+      "R"
+    ],
+    "crossSector": false,
+    "authority": "Care Quality Commission",
+    "summary": "Registration for regulated health and adult social care activities in England.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/uk-healthcare",
+    "sourceIds": [
+      "uk-healthcare-official"
+    ],
+    "applicationUrl": "https://www.cqc.org.uk/guidance-providers/registration",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "uk-healthcare-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "us-osha",
+    "name": "US workplace safety compliance",
+    "aliases": [],
+    "type": "regulation",
+    "jurisdictions": [
+      "US"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "Occupational Safety and Health Administration / state plans",
+    "summary": "US occupational safety obligations; industry-specific rules and state plans require assessment.",
+    "status": "draft",
+    "currentStatus": "Not yet verified",
+    "canonicalPath": "/compliance-directory/requirements/us-osha",
+    "sourceIds": [
+      "us-osha-official"
+    ],
+    "applicationUrl": "https://www.osha.gov/laws-regs",
+    "applicability": null,
+    "exemptions": null,
+    "application": null,
+    "renewal": null,
+    "fees": null,
+    "documents": [],
+    "version": null,
+    "effectiveDate": null,
+    "reviewedAt": null,
+    "nextReviewAt": "2026-10-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-26",
+        "summary": "Research record created from an identified official source; detailed requirements pending review.",
+        "sourceIds": [
+          "us-osha-official"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "publishedAt": "2026-09-26"
+  },
+  {
+    "id": "iso-9001-2015",
+    "name": "ISO 9001:2015 — superseded edition",
+    "aliases": [],
+    "type": "certification",
+    "jurisdictions": [
+      "WORLD"
+    ],
+    "activities": [],
+    "crossSector": true,
+    "authority": "International Organization for Standardization",
+    "summary": "Historical edition record. ISO lists ISO 9001:2026 as the replacement; certificate transition arrangements require separate confirmation.",
+    "status": "superseded",
+    "currentStatus": "ISO lists the 2026 edition as published and the 2015 edition as withdrawn.",
+    "canonicalPath": "/compliance-directory/requirements/iso-9001-2015",
+    "sourceIds": [
+      "iso-9001-2015-source"
+    ],
+    "applicationUrl": "https://www.iso.org/standard/62085.html",
+    "applicability": "Historical edition reference only. Use the replacement record for current overview information and confirm any existing certificate transition with its certification body.",
+    "exemptions": "No universal business license is created by ISO 9001. Establish the intended QMS scope and assess any exclusions against the applicable edition.",
+    "application": "Define the quality management system scope, implement it, and select an independent certification body if certification is needed. ISO does not issue certificates.",
+    "renewal": "Confirm surveillance, recertification and the 2015-to-2026 transition arrangements with the certification body. No universal transition deadline is asserted here.",
+    "fees": "Certification costs require a scope-specific quote from the certification body; buying the standard is a separate cost.",
+    "documents": [],
+    "version": "ISO 9001:2015",
+    "effectiveDate": "2015-09-22",
+    "reviewedAt": null,
+    "nextReviewAt": "2026-12-26",
+    "updatedAt": "2026-09-26",
+    "review": null,
+    "quickTrustSupport": "educational",
+    "servicePath": null,
+    "changes": [
+      {
+        "date": "2026-09-16",
+        "summary": "ISO published the 2026 edition and withdrew the 2015 edition. Certificate holders should confirm transition arrangements with their certification body.",
+        "sourceIds": [
+          "iso-9001-official",
+          "iso-9001-2015-source"
+        ]
+      },
+      {
+        "date": "2026-09-26",
+        "summary": "Official sources reviewed for the overview, authority, current status and preparation checklist.",
+        "sourceIds": [
+          "iso-9001-official",
+          "iso-certification",
+          "iso-9001-2015-source"
+        ]
+      }
+    ],
+    "upcoming": [],
+    "replacementId": "iso-9001",
+    "publishedAt": "2026-09-26"
+  }
+]

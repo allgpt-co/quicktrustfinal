@@ -55,5 +55,6 @@ export function canonicalMarketingHref(href: string | undefined, articlePath = '
 
 export function isMarketingPath(pathname: string): boolean {
   return MARKETING_PATHS.some((path) => path === pathname) || pathname.startsWith('/blog/')
+    || pathname === '/compliance-directory' || pathname.startsWith('/compliance-directory/')
     || RESOURCE_SLUGS.some((slug) => pathname === `/resources/${slug}`);
 }

@@ -1,0 +1,767 @@
+[
+  {
+    "id": "soc-2-official",
+    "name": "SOC 2 examination — official information",
+    "publisher": "American Institute of Certified Public Accountants",
+    "url": "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-27001-official",
+    "name": "ISO/IEC 27001 certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/standard/27001",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "hipaa-official",
+    "name": "HIPAA compliance — official information",
+    "publisher": "US Department of Health and Human Services",
+    "url": "https://www.hhs.gov/hipaa/for-professionals/index.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "pci-dss-official",
+    "name": "PCI DSS compliance — official information",
+    "publisher": "PCI Security Standards Council",
+    "url": "https://www.pcisecuritystandards.org/standards/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "hitrust-official",
+    "name": "HITRUST assessment and certification — official information",
+    "publisher": "HITRUST",
+    "url": "https://hitrustalliance.net/assessments-and-certifications",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-42001-official",
+    "name": "ISO/IEC 42001 certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/standard/42001",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-9001-official",
+    "name": "ISO 9001 quality management certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/standard/9001",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "iso-14001-official",
+    "name": "ISO 14001 environmental management certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/iso-14001-environmental-management.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-45001-official",
+    "name": "ISO 45001 occupational health and safety certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/iso-45001-occupational-health-and-safety.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-13485-official",
+    "name": "ISO 13485 medical device quality management certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/iso-13485-medical-devices.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-22000-official",
+    "name": "ISO 22000 food safety management certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/iso-22000-food-safety-management.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-22301-official",
+    "name": "ISO 22301 business continuity certification — official information",
+    "publisher": "International Organization for Standardization",
+    "url": "https://www.iso.org/standard/75106.html",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "cmmc-official",
+    "name": "Cybersecurity Maturity Model Certification (CMMC) — official information",
+    "publisher": "US Department of Defense",
+    "url": "https://dodcio.defense.gov/CMMC/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "fedramp-official",
+    "name": "Federal Risk and Authorization Management Program (FedRAMP) — official information",
+    "publisher": "FedRAMP",
+    "url": "https://www.fedramp.gov/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "nist-800-171-official",
+    "name": "NIST SP 800-171 controlled unclassified information protection — official information",
+    "publisher": "National Institute of Standards and Technology",
+    "url": "https://csrc.nist.gov/pubs/sp/800/171/r3/final",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "nist-csf-official",
+    "name": "NIST Cybersecurity Framework 2.0 — official information",
+    "publisher": "National Institute of Standards and Technology",
+    "url": "https://www.nist.gov/cyberframework",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "cyber-essentials-official",
+    "name": "Cyber Essentials certification — official information",
+    "publisher": "National Cyber Security Centre / IASME",
+    "url": "https://www.ncsc.gov.uk/cyberessentials/overview",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "gdpr-official",
+    "name": "General Data Protection Regulation (GDPR) — official information",
+    "publisher": "European Union / national supervisory authorities",
+    "url": "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-gdpr-official",
+    "name": "UK GDPR and Data Protection Act compliance — official information",
+    "publisher": "Information Commissioner's Office",
+    "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "ccpa-cpra-official",
+    "name": "California Consumer Privacy Act, as amended by CPRA — official information",
+    "publisher": "California Privacy Protection Agency",
+    "url": "https://cppa.ca.gov/regulations/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "lgpd-official",
+    "name": "Lei Geral de Proteção de Dados Pessoais (LGPD) — official information",
+    "publisher": "Autoridade Nacional de Proteção de Dados",
+    "url": "https://www.gov.br/anpd/pt-br",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "india-dpdp-official",
+    "name": "Digital Personal Data Protection Act compliance — official information",
+    "publisher": "Ministry of Electronics and Information Technology",
+    "url": "https://www.meity.gov.in/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "singapore-pdpa-official",
+    "name": "Personal Data Protection Act (Singapore) — official information",
+    "publisher": "Personal Data Protection Commission",
+    "url": "https://www.pdpc.gov.sg/overview-of-pdpa/the-legislation/personal-data-protection-act",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uae-data-protection-official",
+    "name": "UAE federal personal data protection law — official information",
+    "publisher": "UAE Government / UAE Data Office",
+    "url": "https://u.ae/en/about-the-uae/digital-uae/data/data-protection-laws",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "australia-privacy-official",
+    "name": "Australian Privacy Act compliance — official information",
+    "publisher": "Office of the Australian Information Commissioner",
+    "url": "https://www.oaic.gov.au/privacy/privacy-legislation/the-privacy-act",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "canada-pipeda-official",
+    "name": "Personal Information Protection and Electronic Documents Act (PIPEDA) — official information",
+    "publisher": "Office of the Privacy Commissioner of Canada",
+    "url": "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "eu-ai-act-official",
+    "name": "EU Artificial Intelligence Act — official information",
+    "publisher": "European Union / European AI Office",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "nis2-official",
+    "name": "NIS2 Directive — official information",
+    "publisher": "European Union / national competent authorities",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/nis2-directive",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "dora-official",
+    "name": "Digital Operational Resilience Act (DORA) — official information",
+    "publisher": "European Union / European Supervisory Authorities",
+    "url": "https://www.eba.europa.eu/activities/direct-supervision-and-oversight/digital-operational-resilience-act",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "sox-official",
+    "name": "Sarbanes–Oxley Act internal control obligations — official information",
+    "publisher": "US Securities and Exchange Commission",
+    "url": "https://www.sec.gov/spotlight/sarbanes-oxley.htm",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "glba-official",
+    "name": "Gramm–Leach–Bliley Act Safeguards Rule — official information",
+    "publisher": "US Federal Trade Commission",
+    "url": "https://www.ftc.gov/business-guidance/resources/ftc-safeguards-rule-what-your-business-needs-know",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "fca-authorisation-official",
+    "name": "FCA firm authorisation or registration — official information",
+    "publisher": "Financial Conduct Authority",
+    "url": "https://www.fca.org.uk/firms/authorisation/apply",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "mas-payment-services-official",
+    "name": "Payment services licensing in Singapore — official information",
+    "publisher": "Monetary Authority of Singapore",
+    "url": "https://www.mas.gov.sg/regulation/payments",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-money-transmitter-official",
+    "name": "US state money transmitter licensing — official information",
+    "publisher": "State financial regulators; NMLS State Resource Center",
+    "url": "https://mortgage.nationwidelicensingsystem.org/slr/Pages/default.aspx",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "apra-cps234-official",
+    "name": "APRA CPS 234 information security — official information",
+    "publisher": "Australian Prudential Regulation Authority",
+    "url": "https://www.apra.gov.au/standards/cps-234",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": null
+  },
+  {
+    "id": "essential-eight-official",
+    "name": "Essential Eight mitigation strategies — official information",
+    "publisher": "Australian Signals Directorate",
+    "url": "https://www.cyber.gov.au/business-government/asds-cyber-security-frameworks/essential-eight",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": null
+  },
+  {
+    "id": "fssai-official",
+    "name": "FSSAI food business licensing and registration — official information",
+    "publisher": "Food Safety and Standards Authority of India",
+    "url": "https://foscos.fssai.gov.in/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "india-gst-official",
+    "name": "Goods and Services Tax registration (India) — official information",
+    "publisher": "Goods and Services Tax authorities",
+    "url": "https://www.gst.gov.in/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "india-iec-official",
+    "name": "Importer Exporter Code (India) — official information",
+    "publisher": "Directorate General of Foreign Trade",
+    "url": "https://www.dgft.gov.in/CP/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "india-bis-official",
+    "name": "BIS product certification — official information",
+    "publisher": "Bureau of Indian Standards",
+    "url": "https://www.bis.gov.in/product-certification/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-fda-device-registration-official",
+    "name": "FDA medical device establishment registration and listing — official information",
+    "publisher": "US Food and Drug Administration",
+    "url": "https://www.fda.gov/medical-devices/how-study-and-market-your-device/device-registration-and-listing",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "eu-ce-marking-official",
+    "name": "CE marking and EU product conformity — official information",
+    "publisher": "European Commission / relevant market surveillance authorities",
+    "url": "https://single-market-economy.ec.europa.eu/single-market/ce-marking_en",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-food-registration-official",
+    "name": "Food business registration in England, Wales and Northern Ireland — official information",
+    "publisher": "Food Standards Agency / relevant local authority",
+    "url": "https://register.food.gov.uk/new",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": null
+  },
+  {
+    "id": "singapore-food-shop-official",
+    "name": "Food Shop Licence (Singapore) — official information",
+    "publisher": "Singapore Food Agency",
+    "url": "https://www.sfa.gov.sg/food-retail/licensing-permits/food-shop-licence",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "nyc-food-service-official",
+    "name": "New York City food service establishment permit — official information",
+    "publisher": "New York City Department of Health and Mental Hygiene",
+    "url": "https://www.nyc.gov/site/doh/business/permits-and-licenses/restaurants.page",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": null
+  },
+  {
+    "id": "california-alcohol-official",
+    "name": "California alcoholic beverage license — official information",
+    "publisher": "California Department of Alcoholic Beverage Control",
+    "url": "https://www.abc.ca.gov/licensing/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-premises-alcohol-official",
+    "name": "Premises licence (England and Wales) — official information",
+    "publisher": "Relevant licensing authority / Home Office guidance",
+    "url": "https://www.gov.uk/premises-licence",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "singapore-hotel-official",
+    "name": "Singapore hotel registration and licensing — official information",
+    "publisher": "Hotels Licensing Board",
+    "url": "https://www.hlb.gov.sg/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "dubai-trade-official",
+    "name": "Dubai mainland business licensing — official information",
+    "publisher": "Dubai Department of Economy and Tourism",
+    "url": "https://www.investindubai.gov.ae/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "difc-commercial-official",
+    "name": "DIFC commercial licensing — official information",
+    "publisher": "Dubai International Financial Centre Registrar of Companies",
+    "url": "https://www.difc.com/business/starting-business",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "dubai-vara-official",
+    "name": "Dubai virtual asset service provider licensing — official information",
+    "publisher": "Virtual Assets Regulatory Authority",
+    "url": "https://www.vara.ae/en/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-company-official",
+    "name": "UK company incorporation — official information",
+    "publisher": "Companies House",
+    "url": "https://www.gov.uk/limited-company-formation",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "singapore-business-official",
+    "name": "Singapore business registration — official information",
+    "publisher": "Accounting and Corporate Regulatory Authority",
+    "url": "https://www.acra.gov.sg/how-to-guides/starting-sole-proprietorships",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "germany-trade-official",
+    "name": "Gewerbeanmeldung (German trade registration) — official information",
+    "publisher": "Relevant municipal trade office / federal service portal",
+    "url": "https://verwaltung.bund.de/leistungsverzeichnis/de/leistung/99050012104000",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": null
+  },
+  {
+    "id": "california-contractor-official",
+    "name": "California contractor license — official information",
+    "publisher": "Contractors State License Board",
+    "url": "https://www.cslb.ca.gov/Contractors/Applicants/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-doctor-official",
+    "name": "UK medical registration and licence to practise — official information",
+    "publisher": "General Medical Council",
+    "url": "https://www.gmc-uk.org/registration-and-licensing",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-solicitor-official",
+    "name": "Solicitors' practising certificate (England and Wales) — official information",
+    "publisher": "Solicitors Regulation Authority",
+    "url": "https://www.sra.org.uk/solicitors/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-export-controls-official",
+    "name": "US export licensing under the Export Administration Regulations — official information",
+    "publisher": "Bureau of Industry and Security",
+    "url": "https://www.bis.gov/licensing",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-npdes-official",
+    "name": "National Pollutant Discharge Elimination System permit — official information",
+    "publisher": "US Environmental Protection Agency / authorized state agencies",
+    "url": "https://www.epa.gov/npdes",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-environment-permit-official",
+    "name": "Environmental permitting in England — official information",
+    "publisher": "Environment Agency / relevant local authority",
+    "url": "https://www.gov.uk/guidance/check-if-you-need-an-environmental-permit",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "brazil-environment-official",
+    "name": "Licenciamento ambiental federal (Brazil) — official information",
+    "publisher": "Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis",
+    "url": "https://www.gov.br/ibama/pt-br/assuntos/laf",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-motor-carrier-official",
+    "name": "US interstate motor carrier operating authority — official information",
+    "publisher": "Federal Motor Carrier Safety Administration",
+    "url": "https://www.fmcsa.dot.gov/registration/get-mc-number-authority-operate",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-goods-operator-official",
+    "name": "Goods vehicle operator's licence (Great Britain) — official information",
+    "publisher": "Traffic Commissioners for Great Britain",
+    "url": "https://www.gov.uk/being-a-goods-vehicle-operator",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-fcc-official",
+    "name": "FCC wireless radio authorization — official information",
+    "publisher": "Federal Communications Commission",
+    "url": "https://www.fcc.gov/wireless/systems-utilities/universal-licensing-system",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-ofcom-official",
+    "name": "Ofcom business radio licensing — official information",
+    "publisher": "Ofcom",
+    "url": "https://www.ofcom.org.uk/spectrum/radio-equipment/business-radio/",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-energy-official",
+    "name": "Gas and electricity licensing (Great Britain) — official information",
+    "publisher": "Ofgem",
+    "url": "https://www.ofgem.gov.uk/energy-policy-and-regulation/industry-licensing",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-usda-plant-import-official",
+    "name": "US plant and plant product import permits — official information",
+    "publisher": "USDA Animal and Plant Health Inspection Service",
+    "url": "https://www.aphis.usda.gov/plant-imports",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-childcare-official",
+    "name": "Childcare provider registration (England) — official information",
+    "publisher": "Ofsted",
+    "url": "https://www.gov.uk/government/organisations/ofsted",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-healthcare-official",
+    "name": "Care Quality Commission provider registration — official information",
+    "publisher": "Care Quality Commission",
+    "url": "https://www.cqc.org.uk/guidance-providers/registration",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "us-osha-official",
+    "name": "US workplace safety compliance — official information",
+    "publisher": "Occupational Safety and Health Administration / state plans",
+    "url": "https://www.osha.gov/laws-regs",
+    "kind": "official",
+    "checkedAt": null,
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-geography",
+    "name": "ISO country and subdivision codes",
+    "publisher": "ISO",
+    "url": "https://www.iso.org/iso-3166-country-codes.html",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "un-isic",
+    "name": "ISIC Revision 5",
+    "publisher": "United Nations Statistics Division",
+    "url": "https://unstats.un.org/unsd/classifications/Econ/isic",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "uk-licences",
+    "name": "Find a licence",
+    "publisher": "UK Department for Business and Trade",
+    "url": "https://www.gov.uk/find-licences",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "india-nsws",
+    "name": "National Single Window System",
+    "publisher": "Government of India",
+    "url": "https://www.nsws.gov.in/",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "australia-ablis",
+    "name": "Australian Business Licence and Information Service",
+    "publisher": "Australian Government",
+    "url": "https://ablis.business.gov.au/",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "canada-bizpal",
+    "name": "BizPaL",
+    "publisher": "Innovation, Science and Economic Development Canada",
+    "url": "https://ised-isde.canada.ca/site/bizpal/en",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "singapore-gobusiness",
+    "name": "GoBusiness licences",
+    "publisher": "Singapore Government",
+    "url": "https://www.gobusiness.gov.sg/licences/",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "us-sba",
+    "name": "Business licenses and permits",
+    "publisher": "US Small Business Administration",
+    "url": "https://www.sba.gov/business-guide/launch-your-business/apply-licenses-permits",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "eu-your-europe",
+    "name": "Your Europe business portal",
+    "publisher": "European Union",
+    "url": "https://europa.eu/youreurope/business/",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "uae-business",
+    "name": "Starting a business in the UAE",
+    "publisher": "UAE Government",
+    "url": "https://u.ae/en/information-and-services/business",
+    "kind": "official",
+    "checkedAt": "2026-09-26",
+    "reviewedAt": null
+  },
+  {
+    "id": "iso-certification",
+    "name": "ISO certification explained",
+    "publisher": "ISO",
+    "url": "https://www.iso.org/certification.html",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "iso-9001-2015-source",
+    "name": "ISO 9001:2015 withdrawal",
+    "publisher": "ISO",
+    "url": "https://www.iso.org/standard/62085.html",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "iasme-cyber-essentials",
+    "name": "Cyber Essentials scheme delivery",
+    "publisher": "IASME",
+    "url": "https://iasme.co.uk/cyber-essentials/",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "nist-csf-faq",
+    "name": "Cybersecurity Framework FAQs",
+    "publisher": "NIST",
+    "url": "https://www.nist.gov/cyberframework/faqs",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  },
+  {
+    "id": "nist-csf-guides",
+    "name": "CSF 2.0 quick-start guides",
+    "publisher": "NIST",
+    "url": "https://www.nist.gov/cyberframework/quick-start-guides",
+    "kind": "official",
+    "checkedAt": "2026-09-27",
+    "reviewedAt": "2026-09-27"
+  }
+]

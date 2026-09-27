@@ -10,6 +10,7 @@ import MarketingAnalytics from "@/components/marketing/MarketingAnalytics";
 import MarketingConsent from "@/components/marketing/MarketingConsent";
 import { MARKETING_PATHS } from "@/lib/marketing-routes";
 import { getAllSlugs } from "@/lib/blog";
+import { directoryAnalyticsManifest } from "@/lib/compliance-directory";
 import "./marketing.css";
 
 const bodyFont = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--marketing-font-body", display: "swap" });
@@ -18,6 +19,7 @@ const displayFont = Space_Grotesk({ subsets: ["latin"], variable: "--marketing-f
 // file scan out of each layout render while passing only route strings to the
 // client analytics boundary.
 const analyticsPaths = [...MARKETING_PATHS, ...getAllSlugs().map((slug) => `/blog/${slug}`)];
+const directoryRoutes = directoryAnalyticsManifest();
 export const metadata: Metadata = {
   metadataBase: new URL("https://quicktrustapp.com"),
   // Page titles provide the descriptive portion; this template owns the brand
@@ -52,7 +54,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             tjs.parentNode.insertBefore(js, tjs);
           }(document, 'script', 'ti-js'));`}
       </Script>
-      <MarketingAnalytics allowedPaths={analyticsPaths} />
+      <MarketingAnalytics allowedPaths={analyticsPaths} directoryRoutes={directoryRoutes} />
       <MarketingConsent />
       <ModalProvider>
         <Navigation />

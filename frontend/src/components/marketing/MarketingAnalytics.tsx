@@ -10,10 +10,11 @@ import {
   isAllowedAnalyticsPath,
   registerAnalyticsPaths,
   trackMarketingPageView,
+  type DirectoryAnalyticsManifest,
 } from "@/lib/marketing-analytics";
 
 const ga4ScriptId = "quicktrust-ga4-script";
-type Props = { allowedPaths?: readonly string[] };
+type Props = { allowedPaths?: readonly string[]; directoryRoutes?: DirectoryAnalyticsManifest };
 
 function analyticsDisableKey(measurementId: string): string { return `ga-disable-${measurementId}`; }
 
@@ -89,7 +90,7 @@ function disableGa4(measurementId: string | null): void {
   }
 }
 
-export default function MarketingAnalytics({ allowedPaths }: Props) {
+export default function MarketingAnalytics({ allowedPaths, directoryRoutes }: Props) {
   const pathname = usePathname() || "/";
   // Next normally returns a pathname without search/hash, but canonicalize the
   // value here as a defense against shallow/query-only history changes.
@@ -97,9 +98,9 @@ export default function MarketingAnalytics({ allowedPaths }: Props) {
   const trackedPath = useRef<string | null>(null);
 
   useEffect(() => {
-    if (allowedPaths) registerAnalyticsPaths(allowedPaths);
+    if (allowedPaths) registerAnalyticsPaths(allowedPaths, directoryRoutes);
     return () => clearAnalyticsPaths();
-  }, [allowedPaths]);
+  }, [allowedPaths, directoryRoutes]);
 
   useEffect(() => {
     const emitForCurrentPath = () => {

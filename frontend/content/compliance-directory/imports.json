@@ -1,0 +1,34 @@
+[
+  {
+    "dataset": "ISO 3166-1 codes via Debian/pycountry",
+    "url": "https://raw.githubusercontent.com/pycountry/pycountry/4c6a69927a25326a69bf753671fb571bb437cd7d/src/pycountry/databases/iso3166-1.json",
+    "retrievedAt": "2026-09-26",
+    "sha256": "f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f",
+    "count": 249,
+    "verification": "Upstream snapshot; reconciliation against ISO OBP pending."
+  },
+  {
+    "dataset": "ISO 3166-2 codes via Debian/pycountry",
+    "url": "https://raw.githubusercontent.com/pycountry/pycountry/4c6a69927a25326a69bf753671fb571bb437cd7d/src/pycountry/databases/iso3166-2.json",
+    "retrievedAt": "2026-09-26",
+    "sha256": "78c90ef7fc25b5c2631aac5f089bc9ff6ec22c025c05b6ddbc087a1f1be2e46a",
+    "count": 5046,
+    "verification": "Upstream snapshot; reconciliation against ISO OBP pending."
+  },
+  {
+    "dataset": "UN ISIC Rev.5 structure",
+    "url": "https://unstats.un.org/unsd/classifications/Econ/Download/In%20Text/ISIC_Rev_5_english_structure.csv",
+    "retrievedAt": "2026-09-26",
+    "sha256": "fc408f57bd3a4f33c35a4f384ec0010283dd72774892c8d48ae1330a8caeb57f",
+    "count": 830,
+    "verification": "Full official CSV structure imported; activity-to-requirement mapping is separately reviewed."
+  },
+  {
+    "dataset": "GOV.UK Find a licence catalogue",
+    "url": "https://www.gov.uk/api/search.json?filter_format=licence_transaction&count=1000&fields=title,link,licence_transaction_location,licence_transaction_industry",
+    "retrievedAt": "2026-09-26",
+    "sha256": "5aca29939c063c11e1177bea17291f20b4dd872c19a1d3760d64784e6bda431c",
+    "count": 452,
+    "verification": "Complete source catalogue snapshot, not a complete UK obligations list. Includes personal permits pending scope triage."
+  }
+]
