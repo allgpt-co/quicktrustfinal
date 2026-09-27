@@ -5,6 +5,7 @@ Run from any directory; review the resulting diff before committing.
 No credentials, application database or runtime network dependencies.
 """
 import csv
+from datetime import datetime, timezone
 import hashlib
 import io
 import json
@@ -13,7 +14,7 @@ import urllib.request
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1] / 'content' / 'compliance-directory'
-DATE = '2026-09-26'
+DATE = datetime.now(timezone.utc).date().isoformat()
 PYCOUNTRY_COMMIT = '4c6a69927a25326a69bf753671fb571bb437cd7d'
 
 
@@ -68,7 +69,13 @@ def main():
     raw = fetch(url)
     result = json.loads(raw)
     assert len(result['results']) == result['total'], 'Catalogue pagination required; do not silently truncate'
-    inventory = [{'name': r['title'], 'url': 'https://www.gov.uk' + r['link'], 'locations': r.get('licence_transaction_location', []), 'activities': r.get('licence_transaction_industry', []), 'status': 'unreviewed', 'note': 'Triage business/professional scope, issuing authority, duplicates and current status before creating a requirement record.'} for r in result['results']]
+    previous_path = ROOT / 'uk-catalogue.json'
+    previous = {r['url']: r for r in json.loads(previous_path.read_text())} if previous_path.exists() else {}
+    inventory = []
+    for row in result['results']:
+        official_url = 'https://www.gov.uk' + row['link']
+        decision = previous.get(official_url, {})
+        inventory.append({'name': row['title'], 'url': official_url, 'locations': row.get('licence_transaction_location', []), 'activities': row.get('licence_transaction_industry', []), 'status': decision.get('status', 'unreviewed'), 'note': decision.get('note', 'Triage business/professional scope, issuing authority, duplicates and current status before creating a requirement record.')})
     write('uk-catalogue.json', sorted(inventory, key=lambda x: x['name']))
     receipts.append({'dataset': 'GOV.UK Find a licence catalogue', 'url': url, 'retrievedAt': DATE, 'sha256': hashlib.sha256(raw).hexdigest(), 'count': len(inventory), 'verification': 'Complete source catalogue snapshot, not a complete UK obligations list. Includes personal permits pending scope triage.'})
     write('imports.json', receipts)

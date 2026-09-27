@@ -209,16 +209,15 @@ export function validateDirectory(input: Directory): Directory {
   for (const r of d.requirements) {
     references(r.jurisdictions, geoIds, r.id);
     references(r.activities, industryIds, r.id);
-    references(
-      [
+    const citedSources = [
+      ...new Set([
         ...r.sourceIds,
         ...r.documents.map((x) => x.sourceId),
         ...r.changes.flatMap((x) => x.sourceIds),
         ...r.upcoming.map((x) => x.sourceId),
-      ],
-      sourceIds,
-      r.id,
-    );
+      ]),
+    ];
+    references(citedSources, sourceIds, r.id);
     assert(!canonical.has(r.canonicalPath), `duplicate canonical ${r.canonicalPath}`);
     canonical.add(r.canonicalPath);
     assert(
@@ -263,7 +262,7 @@ export function validateDirectory(input: Directory): Directory {
         `substantive fields missing ${r.id}`,
       );
       assert(
-        r.sourceIds.every((sid) => {
+        citedSources.every((sid) => {
           const s = d.sources.find((x) => x.id === sid)!;
           return s.reviewedAt && s.reviewedAt <= r.reviewedAt! && s.checkedAt;
         }),

@@ -120,6 +120,10 @@ describe('global directory publication controls', () => {
     const y = fixture();
     y.sources.find((s) => s.id === 'iso-9001-official')!.reviewedAt = null;
     expect(() => validateDirectory(y)).toThrow(/unreviewed source/);
+    const checklistSource = fixture();
+    checklistSource.requirements.find((r) => r.id === 'iso-9001')!.documents[0].sourceId =
+      'fssai-official';
+    expect(() => validateDirectory(checklistSource)).toThrow(/unreviewed source/);
     const z = fixture();
     delete z.content['iso-9001'];
     expect(() => validateDirectory(z)).toThrow(/substantive article/);

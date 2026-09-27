@@ -26,7 +26,7 @@ export function getDirectory(): Directory {
   if (fs.existsSync(articles))
     for (const file of fs.readdirSync(articles).filter((name) => /^[a-z0-9-]+\.md$/.test(name)))
       content[file.slice(0, -3)] = fs.readFileSync(path.join(articles, file), 'utf8');
-  registry = validateDirectory({
+  const parsed = validateDirectory({
     requirements: json('requirements'),
     sources: json('sources'),
     jurisdictions: [...json('geography'), ...json('jurisdictions-extra')],
@@ -38,13 +38,14 @@ export function getDirectory(): Directory {
     ...MARKETING_PATHS,
     ...getAllSlugs().map((slug) => `/blog/${slug}`),
   ]);
-  for (const record of registry.requirements)
+  for (const record of parsed.requirements)
     if (
       CONTENT_REDIRECTS[record.canonicalPath] ||
       (!record.canonicalPath.startsWith(DIRECTORY_PATH + '/') &&
         !publishedPaths.has(record.canonicalPath))
     )
       throw new Error(`Unreviewed or redirected canonical ${record.canonicalPath}`);
+  registry = parsed;
   return registry;
 }
 
