@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState, useRef } from 'react';
 import { trackMarketingLead } from '@/lib/marketing-analytics';
+import { DEMO_BOOKING_URL } from '@/lib/marketing-booking';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -163,6 +164,13 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             <p className="text-xs sm:text-sm text-slate-400">
               Let&apos;s talk about your compliance needs
             </p>
+            <a
+              href={DEMO_BOOKING_URL}
+              className="mt-4 inline-flex items-center justify-center rounded-xl bg-gradient-primary px-6 py-3 text-sm font-semibold text-slate-950 no-underline hover:-translate-y-0.5 transition-transform"
+            >
+              Book a demo
+            </a>
+            <p className="mt-4 text-xs sm:text-sm text-slate-400">Or send us a message below.</p>
           </div>
           <form ref={formRef} onSubmit={handleSubmit} suppressHydrationWarning className="flex flex-col gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">

@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useModal } from './ModalProvider';
+import { DEMO_BOOKING_URL } from '@/lib/marketing-booking';
 
 export default function Navigation() {
-  const { openModal } = useModal();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -58,7 +57,7 @@ export default function Navigation() {
                 QuickTrust
               </span>
             </Link>
-            <ul className="hidden md:flex items-center gap-4 lg:gap-8 list-none m-0 p-0">
+            <ul className="hidden lg:flex items-center gap-4 lg:gap-8 list-none m-0 p-0">
               <li className="relative group">
                 <span className="text-slate-400 font-medium text-[0.95rem] transition-colors hover:text-slate-50 cursor-pointer">
                   Frameworks
@@ -113,21 +112,20 @@ export default function Navigation() {
             <div className="flex items-center gap-2 sm:gap-3">
               <a
                 href="/login"
-                className="hidden md:inline-flex items-center justify-center gap-2.5 px-6 lg:px-8 py-3 lg:py-4 font-display text-sm lg:text-base font-semibold no-underline rounded-xl transition-all bg-white/5 text-slate-200 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5"
+                className="hidden lg:inline-flex items-center justify-center gap-2.5 px-6 lg:px-8 py-3 lg:py-4 font-display text-sm lg:text-base font-semibold no-underline rounded-xl transition-all bg-white/5 text-slate-200 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5"
               >
                 Sign In
               </a>
               <a
-                href="/login?mode=register"
-                className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 font-display text-sm sm:text-base font-semibold no-underline rounded-xl transition-all bg-gradient-primary text-slate-950 shadow-[0_4px_20px_rgba(45,212,191,0.4)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(45,212,191,0.5)] relative overflow-hidden"
+                href={DEMO_BOOKING_URL}
+                className="inline-flex items-center justify-center gap-2 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 font-display text-xs sm:text-base font-semibold no-underline rounded-xl transition-all bg-gradient-primary text-slate-950 shadow-[0_4px_20px_rgba(45,212,191,0.4)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(45,212,191,0.5)] relative overflow-hidden"
               >
-                <span className="relative z-10 hidden sm:inline">Get Started</span>
-                <span className="relative z-10 sm:hidden">Start</span>
+                <span className="relative z-10 whitespace-nowrap">Book a demo</span>
                 <span className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity"></span>
               </a>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden flex flex-col gap-1.5 bg-transparent border-none cursor-pointer p-2 touch-manipulation"
+                className="lg:hidden flex flex-col gap-1.5 bg-transparent border-none cursor-pointer p-2 touch-manipulation"
                 aria-label="Toggle menu"
                 suppressHydrationWarning
               >
@@ -141,7 +139,7 @@ export default function Navigation() {
       </nav>
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-[60px] md:hidden z-[999] bg-slate-950/95 backdrop-blur-xl">
+        <div className="fixed inset-0 top-[60px] lg:hidden z-[999] bg-slate-950/95 backdrop-blur-xl">
           <div className="flex flex-col px-6 py-8 space-y-4">
             <p className="text-xs uppercase tracking-wider text-slate-600 font-semibold">Frameworks</p>
             <Link href="/soc-2-compliance" onClick={() => setMobileMenuOpen(false)} className="text-slate-300 no-underline font-medium text-base py-2 transition-colors hover:text-teal-400 pl-2">SOC 2 Compliance</Link>

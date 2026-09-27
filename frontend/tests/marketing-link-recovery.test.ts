@@ -20,7 +20,7 @@ describe('public content link recovery', () => {
   });
   test('rendered links go directly to the canonical path and keep attribution and anchors', () => {
     expect(canonicalMarketingHref('/blog/soc2-complete-guide?utm_source=guide#cost')).toBe('/blog/pillar-soc2-complete-guide?utm_source=guide#cost');
-    expect(canonicalMarketingHref('https://quicktrustapp.com/demo')).toBe('/contact');
+    expect(canonicalMarketingHref('https://quicktrustapp.com/demo')).toBe('https://tidycal.com/team/quicktrustapp/quicktrust-demo');
     expect(canonicalMarketingHref('https://www.quicktrust.ai/blog/what-is-soc-2')).toBe('/blog/what-is-soc2');
     expect(canonicalMarketingHref('pci-dss-audit-cost-guide.md', '/blog/pillar-pci-dss-complete-guide')).toBe('/blog/pci-dss-audit-cost-guide');
     expect(canonicalMarketingHref('../evergreen/iso-27001-vs-soc2-guide.md', '/blog/multi-framework-compliance-strategy')).toBe('/blog/iso27001-vs-soc2-comparison');

@@ -1,9 +1,8 @@
 'use client';
 
-import { useModal } from './ModalProvider';
+import { DEMO_BOOKING_URL } from '@/lib/marketing-booking';
 
 export default function Hero() {
-  const { openModal } = useModal();
   return (
     <section className="min-h-screen flex items-center relative pt-[80px] sm:pt-[100px] overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -68,9 +67,8 @@ export default function Hero() {
               ))}
             </ul>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12">
-              <button
-                onClick={openModal}
-                suppressHydrationWarning
+              <a
+                href={DEMO_BOOKING_URL}
                 className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 font-display text-sm sm:text-base font-semibold no-underline rounded-xl transition-all bg-gradient-primary text-slate-950 shadow-[0_4px_20px_rgba(45,212,191,0.4)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(45,212,191,0.5)] relative overflow-hidden touch-manipulation"
               >
                 <svg
@@ -85,8 +83,8 @@ export default function Hero() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                <span className="whitespace-nowrap">Contact Us</span>
-              </button>
+                <span className="whitespace-nowrap">Book a demo</span>
+              </a>
               <a
                 href="#lead-form"
                 className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 font-display text-sm sm:text-base font-semibold no-underline rounded-xl transition-all bg-white/5 text-slate-200 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5 touch-manipulation"
