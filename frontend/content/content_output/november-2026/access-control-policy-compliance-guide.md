@@ -1,14 +1,18 @@
 ---
-meta_description: "Build an access control policy for SOC 2, ISO 27001, HIPAA, and PCI DSS compliance. Covers RBAC, least privilege, MFA, access reviews, and audit-ready documentation templates."
+meta_description: "Access Control Models and Compliance Evidence. Practical guidance for comparing access models and organizing assessment evidence."
 target_keyword: "access control policy"
 secondary_keywords: "access control policy template, RBAC policy, least privilege access, access management policy, logical access controls"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Access Control Models and Compliance Evidence"
 ---
 
-# Access Control Policy: The Complete Guide to Logical Access Controls for SOC 2, ISO 27001, HIPAA, and PCI DSS Compliance
+
+# Access Control Models and Compliance Evidence
+
+This guide focuses on comparing access models and organizing assessment evidence. For defining role-based access, approval and recurring reviews, see [Access Control Policy: Roles and Review Procedures](/blog/access-control-policy-guide).
 
 Access control is the most-tested domain in every compliance audit. It is the area where auditors spend the most time, where the highest volume of evidence requests are generated, and where the most common findings are issued. Whether your auditor is evaluating SOC 2 Common Criteria, ISO 27001 Annex A controls, HIPAA Security Rule safeguards, or PCI DSS requirements, the conversation will always return to the same fundamental question: who has access to what, why do they have it, and can you prove it?
 

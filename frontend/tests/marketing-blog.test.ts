@@ -5,6 +5,7 @@ import path from 'path';
 import { getAllArticles, getAllSlugs, getArticleBySlug } from '@/lib/blog';
 import sitemap from '@/app/sitemap';
 import config from '../next.config';
+import { RESOURCE_SLUGS } from '@/lib/marketing-routes';
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -35,11 +36,11 @@ describe('migrated marketing content', () => {
   });
   test('sitemap contains only public canonical URLs and valid dates', async () => {
     const entries = sitemap();
-    expect(entries.length).toBe(179);
+    expect(entries.length).toBe(197);
     expect(new Set(entries.map((entry) => entry.url)).size).toBe(entries.length);
     expect(entries.every((entry) => entry.url.startsWith('https://quicktrustapp.com'))).toBe(true);
     expect(entries.some((entry) => /\/login|\/dashboard|\/blog\/quicktrust-vs-(vanta|drata)$/.test(entry.url))).toBe(false);
-    expect(entries.some((entry) => new URL(entry.url).pathname.startsWith('/resources/'))).toBe(false);
+    expect(entries.some((entry) => RESOURCE_SLUGS.some((slug) => new URL(entry.url).pathname === '/resources/' + slug))).toBe(false);
     expect(entries.every((entry) => !entry.lastModified || !Number.isNaN(new Date(entry.lastModified).getTime()))).toBe(true);
     expect(await config.redirects?.()).toEqual(expect.arrayContaining([
       expect.objectContaining({ source: '/signup', destination: '/login?mode=register' }),

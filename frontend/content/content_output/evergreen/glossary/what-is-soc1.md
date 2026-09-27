@@ -1,14 +1,18 @@
 ---
-meta_description: "SOC 1 is an auditing standard that evaluates a service organization's internal controls over financial reporting (ICFR)."
+meta_description: "Do You Need a SOC 1 Report? A Buyer Request Guide. Practical guidance for deciding how to respond to a customer request for financial-control assurance."
 target_keyword: "what is soc 1, soc 1 report, soc 1 vs soc 2"
 secondary_keywords: "soc 1 definition, soc 1 type 1 vs type 2, soc 1 audit, SSAE 18, internal controls over financial reporting"
 word_count_target: "1000"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Do You Need a SOC 1 Report? A Buyer Request Guide"
 ---
 
-# What Is SOC 1? The Complete Guide to SOC 1 Reports for Service Organizations
+
+# Do You Need a SOC 1 Report? A Buyer Request Guide
+
+This guide focuses on deciding how to respond to a customer request for financial-control assurance. For understanding report structure and the examination process, see [SOC 1 Reports: Types, Contents and Audit Process](/blog/what-is-soc-1).
 
 SOC 1 (System and Organization Controls 1) is an auditing standard developed by the American Institute of Certified Public Accountants (AICPA) that evaluates a service organization's internal controls relevant to its clients' financial reporting. If your company processes, handles, or has any impact on your customers' financial data -- payroll, billing, transaction processing, revenue calculations, or financial record keeping -- your customers' auditors may require a SOC 1 report as evidence that your controls are effective.
 

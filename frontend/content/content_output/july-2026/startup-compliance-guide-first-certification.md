@@ -1,13 +1,17 @@
 ---
-meta_description: "The complete guide for startups going from zero security posture to their first compliance certification."
+meta_description: "Startup Compliance: Choosing Your First Framework. Practical guidance for choosing a framework and defining an achievable first scope."
 target_keyword: "startup compliance, first compliance certification, startup security"
 secondary_keywords: "compliance for startups, startup soc 2, early stage compliance, compliance no security team"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "Startup Compliance: Choosing Your First Framework"
 ---
 
-# The Startup Compliance Guide: From Zero Security Posture to Your First Certification in 90 Days
+
+# Startup Compliance: Choosing Your First Framework
+
+This guide focuses on choosing a framework and defining an achievable first scope. For sequencing control work, ownership and evidence collection, see [Startup Compliance: Building an Implementation Roadmap](/blog/startup-compliance-guide-zero-to-certification).
 
 You know the moment. You are three weeks from closing the biggest deal in your company's history and the prospect's procurement team sends over a vendor security questionnaire. 180 questions. "Please attach your SOC 2 report." "Describe your access control policy." "Provide evidence of your vulnerability management program."
 

@@ -86,6 +86,12 @@ describe("trackMarketingLead", () => {
   });
 
   test("allows only public marketing paths", () => {
+    for (const pathname of ["/integrations", "/trust-center", "/resources/guides", "/resources/templates", "/resources/case-studies", "/resources/webinars"]) {
+      expect(isAllowedAnalyticsPath(pathname), pathname).toBe(true);
+    }
+    for (const pathname of ["/settings/integrations", "/settings/trust-center", "/integrations/123"]) {
+      expect(isAllowedAnalyticsPath(pathname), pathname).toBe(false);
+    }
     expect(isAllowedAnalyticsPath("/contact")).toBe(true);
     expect(isAllowedAnalyticsPath("/blog")).toBe(true);
     expect(isAllowedAnalyticsPath("/blog/security-guide")).toBe(false);

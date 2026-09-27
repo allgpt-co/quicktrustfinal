@@ -1,15 +1,18 @@
 ---
-title: "Business Continuity Plan: How to Build a BCP That Passes SOC 2, ISO 27001, and HIPAA Audits"
-meta_description: "Build a business continuity plan that passes SOC 2, ISO 27001, and HIPAA audits. Covers BIA, RTO/RPO, testing, tabletop exercises, and documentation."
+title: "Business Continuity: Impact Analysis and Recovery Goals"
+meta_description: "Business Continuity: Impact Analysis and Recovery Goals. Practical guidance for connecting business impact analysis to recovery priorities."
 target_keyword: "business continuity plan compliance"
 secondary_keywords: "BCP SOC 2, disaster recovery plan ISO 27001, HIPAA business continuity, RTO RPO compliance, tabletop exercise compliance, BIA business impact analysis"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
 ---
 
-# Business Continuity Plan: How to Build a BCP That Passes SOC 2, ISO 27001, and HIPAA Audits
+
+# Business Continuity: Impact Analysis and Recovery Goals
+
+This guide focuses on connecting business impact analysis to recovery priorities. For building a maintained program and its review records, see [Business Continuity Programs for Compliance Reviews](/blog/business-continuity-plan-compliance-guide).
 
 Business continuity planning is a mandatory control across SOC 2, ISO 27001, and HIPAA. Despite this, it is one of the controls most frequently found deficient during audits. The pattern is predictable: an organization creates a business continuity plan document during initial certification, files it away, and never tests it. When the auditor asks for test results, tabletop exercise records, or evidence that the plan was reviewed in the past twelve months, the organization has nothing to show.
 

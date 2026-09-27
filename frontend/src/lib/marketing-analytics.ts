@@ -56,8 +56,7 @@ declare global {
 const validMeasurementId = /^G-[A-Z0-9]+$/;
 const analyticsConsentCookie = "qt_analytics_consent";
 const excludedMarketingPaths = new Set([
-  "/privacy-policy", "/terms-of-service", "/integrations", "/trust-center",
-  "/resources/case-studies", "/resources/guides", "/resources/templates", "/resources/webinars",
+  "/privacy-policy", "/terms-of-service",
   ...RESOURCE_SLUGS.map((slug) => `/resources/${slug}`),
 ]);
 const staticAnalyticsPaths = new Set<string>(MARKETING_PATHS.filter((path) => !excludedMarketingPaths.has(path)));

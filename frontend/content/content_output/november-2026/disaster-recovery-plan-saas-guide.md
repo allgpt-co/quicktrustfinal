@@ -1,14 +1,18 @@
 ---
-meta_description: "Build a disaster recovery plan for SaaS companies that meets SOC 2, ISO 27001, and HIPAA requirements. Covers RPO/RTO, cloud DR strategies, failover architecture, and testing procedures."
+meta_description: "SaaS Disaster Recovery Plans and Exercise Evidence. Practical guidance for building a service-specific plan and retaining exercise records."
 target_keyword: "disaster recovery plan"
 secondary_keywords: "disaster recovery plan template, DR plan, disaster recovery strategy, RPO RTO, cloud disaster recovery"
 word_count_target: 4500+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "SaaS Disaster Recovery Plans and Exercise Evidence"
 ---
 
-# Disaster Recovery Plan for SaaS Companies: How to Build a DR Strategy That Passes Compliance Audits
+
+# SaaS Disaster Recovery Plans and Exercise Evidence
+
+This guide focuses on building a service-specific plan and retaining exercise records. For setting recovery objectives and evaluating technical approaches, see [Disaster Recovery: RTO, RPO and Cloud Strategies](/blog/disaster-recovery-plan-guide).
 
 In November 2024, a misconfigured database migration at a mid-market SaaS company brought down its production environment for 38 hours. The engineering team had backups -- daily snapshots stored in the same AWS region as the production database. But when the entire availability zone experienced degraded performance during the recovery attempt, those backups were unreachable for 14 hours. The company had no documented recovery procedures, no predefined failover target, and no tested process for restoring from cross-region replicas that, it turned out, had never been configured.
 

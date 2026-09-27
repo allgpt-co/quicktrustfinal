@@ -27,9 +27,9 @@ export default function Hero() {
             </h1>
             <p className="text-xl text-slate-400 mb-10 max-w-[540px]">
               QuickTrust is a compliance platform <em>plus</em> an implementation
-              team. We map every framework and customer security question to your
-              policies and controls, instantly surface gaps, and then our engineers
-              close them—so you get certified faster with minimal internal lift.
+              team. We connect agreed framework requirements and customer security
+              questions to your policies and controls, identify gaps, and help
+              implement the changes needed to prepare evidence for review.
             </p>
             <ul className="list-none p-0 m-0 mb-8 flex flex-col gap-3">
               {[
@@ -114,7 +114,7 @@ export default function Hero() {
                 ))}
               </div>
               <p className="text-sm text-slate-400">
-                <strong className="text-slate-200">Audit-ready in weeks</strong> —
+                <strong className="text-slate-200">Plan your readiness work</strong> —
                 Measurable control coverage, cleaner evidence, fewer surprises.
               </p>
             </div>
@@ -128,7 +128,7 @@ export default function Hero() {
                 </span>
                 <div className="flex items-center gap-1.5 text-xs text-teal-400 font-semibold">
                   <span className="w-1.5 h-1.5 bg-teal-400 rounded-full"></span>
-                  <span>Live</span>
+                  <span>Example data</span>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">

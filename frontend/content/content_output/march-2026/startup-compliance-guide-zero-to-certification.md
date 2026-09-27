@@ -1,14 +1,18 @@
 ---
-meta_description: "A tactical 90-day guide for startups to go from zero compliance to first certification. Covers timing, budgets, frameworks, and common mistakes."
+meta_description: "Startup Compliance: Building an Implementation Roadmap. Practical guidance for sequencing control work, ownership and evidence collection."
 target_keyword: "startup compliance guide"
 secondary_keywords: "startup compliance certification, first soc 2 certification, compliance for startups, startup security certification, zero to soc 2, startup compliance roadmap"
 word_count_target: "2000"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "Startup Compliance: Building an Implementation Roadmap"
 ---
 
-# The Startup Compliance Guide: From Zero Security Posture to Your First Certification in 90 Days
+
+# Startup Compliance: Building an Implementation Roadmap
+
+This guide focuses on sequencing control work, ownership and evidence collection. For choosing a framework and defining an achievable first scope, see [Startup Compliance: Choosing Your First Framework](/blog/startup-compliance-guide-first-certification).
 
 You have a great product, a growing customer base, and enterprise prospects starting to show interest. Then it happens -- your first enterprise prospect sends over a security questionnaire, and you realize you have almost nothing to show. No formal policies. No documented controls. No certification. The prospect's timeline is "we need this resolved before contract signature," and you are starting from zero.
 

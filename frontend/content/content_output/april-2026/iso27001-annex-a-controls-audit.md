@@ -1,12 +1,16 @@
 ---
-meta_description: "Which ISO 27001 Annex A controls actually get tested during audits? A practical guide from audit veterans covering the controls auditors focus on most."
+meta_description: "ISO 27001 Annex A: Preparing Control Evidence. Practical guidance for preparing control records and answering assessment questions."
 target_keyword: "iso 27001 annex a controls, iso 27001 certification, iso audit"
 secondary_keywords: "iso 27001 2022, annex a controls, iso 27001 implementation"
 word_count_target: "2500"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "ISO 27001 Annex A: Preparing Control Evidence"
 ---
 
-# ISO 27001 Annex A Controls: Which Ones Actually Get Tested in Audits
+
+# ISO 27001 Annex A: Preparing Control Evidence
+
+This guide focuses on preparing control records and answering assessment questions. For understanding control categories and the statement of applicability, see [ISO 27001 Annex A: Structure and Applicability](/blog/iso27001-annex-a-controls).
 
 There are 93 controls in ISO 27001:2022 Annex A. Your auditor is not going to test all 93 with equal depth. That is not how ISO audits work, and if you prepare as though every control will receive identical scrutiny, you will waste engineering time on low-risk controls while leaving gaps in the ones that actually generate nonconformities.
 

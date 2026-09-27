@@ -1,14 +1,18 @@
 ---
-meta_description: "Build a CI/CD pipeline that passes SOC 2 and ISO 27001 audits. SAST, DAST, secret scanning, change management, and evidence collection for DevSecOps."
+meta_description: "DevSecOps Evidence for Compliance Reviews. Practical guidance for organizing reviewable evidence from the software-delivery process."
 target_keyword: "DevSecOps compliance"
 secondary_keywords: "CI/CD SOC 2, DevSecOps audit, SAST DAST compliance, change management CI/CD, ISO 27001 DevOps, secure CI/CD pipeline"
 word_count_target: "2000"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "DevSecOps Evidence for Compliance Reviews"
 ---
 
-# DevSecOps for Compliance: How to Build a CI/CD Pipeline That Passes SOC 2 and ISO 27001 Audits
+
+# DevSecOps Evidence for Compliance Reviews
+
+This guide focuses on organizing reviewable evidence from the software-delivery process. For mapping control work to individual delivery stages, see [CI/CD Compliance: Controls Across the Delivery Pipeline](/blog/devsecops-compliance-cicd-guide).
 
 Your CI/CD pipeline is not just a deployment tool. To an auditor, it is the primary evidence of how your organization manages changes to production systems. Every commit, every pull request, every deployment, and every test result tells a story about your change management controls, your code quality practices, and your security posture.
 

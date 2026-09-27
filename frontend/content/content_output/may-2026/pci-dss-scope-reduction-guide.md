@@ -222,7 +222,7 @@ No. Logical network segmentation using cloud-native controls (VPCs, security gro
 - [PCI DSS Compliance: The Complete Guide](./pillar-pci-dss-complete-guide.md)
 - [PCI DSS 4.0: What Changed](./pci-dss-4-requirements-changes.md)
 - [PCI DSS Audit Costs in 2026](./pci-dss-audit-cost-guide.md)
-- [Case Study: Fintech Startup Achieves PCI DSS in 10 Weeks](./case-study-fintech-pci-dss.md)
+- [Illustrative Scenario: Fintech Payment-Scope Readiness](./case-study-fintech-pci-dss.md)
 
 ---
 

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
+import { homepageFAQs } from '@/lib/homepage-faqs';
 import Hero from '@/components/marketing/homepage/Hero';
 import Platform from '@/components/marketing/homepage/Platform';
 import SocialProof from '@/components/marketing/homepage/SocialProof';
-import CustomersSection from '@/components/marketing/homepage/CustomersSection';
 import Problem from '@/components/marketing/homepage/Problem';
 import Differentiator from '@/components/marketing/homepage/Differentiator';
 import Certifications from '@/components/marketing/homepage/Certifications';
@@ -23,8 +23,8 @@ import { serializeJsonLd } from '@/components/marketing/schema/jsonLd';
 const howToSchema = serializeJsonLd({
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: 'How to Get Compliance Certified with QuickTrust',
-  description: 'Get audit-ready and certified for SOC 2, ISO 27001, or HIPAA in three steps with QuickTrust platform and implementation engineers.',
+  name: 'How to Prepare for a Compliance Assessment with QuickTrust',
+  description: 'Scope requirements, implement controls and prepare evidence with QuickTrust. Audit opinions and certifications are determined independently.',
   step: [
     {
       '@type': 'HowToStep',
@@ -41,8 +41,8 @@ const howToSchema = serializeJsonLd({
     {
       '@type': 'HowToStep',
       position: 3,
-      name: 'Certify & Maintain',
-      text: 'We coordinate with auditors, maintain your evidence portal, and track changes to keep you compliant. Deliverables: auditor-ready portal, ongoing monitoring, change tracking.',
+      name: 'Review & Maintain',
+      text: 'We coordinate with auditors, maintain your evidence portal, and track changes for review. Deliverables: auditor-ready portal, ongoing monitoring, change tracking.',
     },
   ],
 });
@@ -71,48 +71,7 @@ export const metadata: Metadata = {
   },
 };
 
-const homepageFAQs = [
-  {
-    question: 'How fast can we get SOC 2 Type II?',
-    answer:
-      'Depends on scope and current maturity. We compress timelines by implementing controls and evidence workflows in parallel — not sequentially. Most teams see audit readiness in 6-12 weeks.',
-  },
-  {
-    question: 'Do you guarantee we pass?',
-    answer:
-      'No one can guarantee an audit outcome, but we drastically improve readiness by aligning controls and evidence to audit expectations before the audit begins. Our track record speaks for itself.',
-  },
-  {
-    question: 'Will this drain our engineering time?',
-    answer:
-      'We minimize load by doing the implementation work and asking your team only for approvals, access, and validation. Most customers report less than 2 hours/week of eng involvement.',
-  },
-  {
-    question: 'Do you work with our auditor?',
-    answer:
-      "Yes — we coordinate audit timelines, evidence requests, and remediation closures with your chosen auditor. We can also recommend auditors if you don't have one yet.",
-  },
-  {
-    question: "We're on AWS/GCP/Azure — can you handle it?",
-    answer:
-      "Absolutely. We're built for cloud-first, modern SaaS environments. Our team has deep expertise across all major cloud providers and can work with your existing infrastructure.",
-  },
-  {
-    question: 'How does the platform map questionnaires to our policies?',
-    answer:
-      "We map questions to control IDs + exact policy sections; you get a reusable response library with audit trails. Upload any SOC2/ISO/HIPAA questionnaire, and we'll show you which policies and controls answer each question—so responses are consistent and auditable.",
-  },
-  {
-    question: 'What do you mean by "policy gaps"—and how do you find them?',
-    answer:
-      'We compare framework requirements vs. your policy language + implemented controls; we flag missing/weak areas and generate a prioritized remediation plan. For example, if SOC2 requires "quarterly access reviews" but your policy says "annual," we flag it. If a control is documented but not implemented, we surface that too.',
-  },
-  {
-    question: 'Do you actually implement the fixes?',
-    answer:
-      "Yes—our security/DevOps engineers handle the changes (IAM, logging, encryption, backups, SDLC controls, etc.). Your team reviews/approves; we execute and attach evidence. We don't just tell you what to fix—we fix it, validate it, and document it for audit.",
-  },
-];
+
 
 export default function HomePage() {
   return (
@@ -135,7 +94,6 @@ export default function HomePage() {
         <Hero />
         <Platform />
         <SocialProof />
-        <CustomersSection />
         <Problem />
         <Differentiator />
         <Certifications />

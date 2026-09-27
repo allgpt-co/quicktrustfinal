@@ -1,14 +1,18 @@
 ---
-meta_description: "ISO 27001 Annex A controls explained: all 93 controls across 4 categories, which ones auditors test most, common failures, and implementation guidance."
+meta_description: "ISO 27001 Annex A: Structure and Applicability. Practical guidance for understanding control categories and the statement of applicability."
 target_keyword: "iso 27001 annex a controls"
 secondary_keywords: "annex a controls, iso 27001 2022 controls, iso 27001 audit controls, annex a categories"
 word_count_target: "1800"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
+title: "ISO 27001 Annex A: Structure and Applicability"
 ---
 
-# ISO 27001 Annex A Controls: Which Ones Actually Get Tested in Audits
+
+# ISO 27001 Annex A: Structure and Applicability
+
+This guide focuses on understanding control categories and the statement of applicability. For preparing control records and answering assessment questions, see [ISO 27001 Annex A: Preparing Control Evidence](/blog/iso27001-annex-a-controls-audit).
 
 If you have started preparing for ISO 27001 certification, you have probably opened the standard's Annex A and been confronted with 93 individual controls spread across four categories. The immediate question most teams ask: do we really need to implement all of these?
 

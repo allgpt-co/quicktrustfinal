@@ -43,7 +43,7 @@ export default function SEOPageShell({
         </Link>
       </section>
 
-      <section className="border-t border-white/5 py-16 sm:py-24">
+      {bullets.length > 0 && <section className="border-t border-white/5 py-16 sm:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-2">
           {bullets.map((bullet) => (
             <div key={bullet} className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
@@ -51,7 +51,7 @@ export default function SEOPageShell({
             </div>
           ))}
         </div>
-      </section>
+      </section>}
 
       {children && <section className="border-t border-white/5 py-16 sm:py-24">{children}</section>}
     </main>

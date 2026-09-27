@@ -1,14 +1,18 @@
 ---
-meta_description: "Master supply chain risk management for compliance. Learn how NIST, SOC 2, and ISO 27001 requirements for SCRM protect your business from third-party breaches and supply chain attacks."
+meta_description: "Software Supply Chain Security and Compliance Evidence. Practical guidance for reviewing software dependencies, component records and program evidence."
 target_keyword: "supply chain risk management"
 secondary_keywords: "supply chain security, supply chain risk assessment, SCRM compliance, third party supply chain risk, software supply chain security"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Software Supply Chain Security and Compliance Evidence"
 ---
 
-# Supply Chain Risk Management: How to Build a Compliance-Ready SCRM Program That Protects Your Business
+
+# Software Supply Chain Security and Compliance Evidence
+
+This guide focuses on reviewing software dependencies, component records and program evidence. For organizing vendor assessment, monitoring and incident follow-up, see [Supply Chain Risk: Supplier Reviews and Response](/blog/supply-chain-risk-management-guide).
 
 Software supply chain attacks have increased by 742% since 2019. That is not a typo. It is the single fastest-growing attack vector in cybersecurity, and it has produced some of the most devastating breaches of the past five years.
 

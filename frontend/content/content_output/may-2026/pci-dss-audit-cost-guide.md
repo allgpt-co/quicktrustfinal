@@ -186,7 +186,7 @@ Manual evidence collection for quarterly ASV scans, monthly patch reports, daily
 - [PCI DSS Compliance: The Complete Guide](./pillar-pci-dss-complete-guide.md)
 - [PCI DSS 4.0 Requirements: What Changed](./pci-dss-4-requirements-changes.md)
 - [How to Reduce Your PCI DSS Scope by 70%](./pci-dss-scope-reduction-guide.md)
-- [Case Study: Fintech Startup Achieves PCI DSS in 10 Weeks](./case-study-fintech-pci-dss.md)
+- [Illustrative Scenario: Fintech Payment-Scope Readiness](./case-study-fintech-pci-dss.md)
 
 ---
 

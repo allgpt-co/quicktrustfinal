@@ -1,14 +1,18 @@
 ---
-meta_description: "Complete guide to encryption at rest and in transit for SOC 2, ISO 27001, HIPAA, and PCI DSS compliance. Covers AES-256, TLS 1.3, key management, and cloud encryption strategies."
+meta_description: "Encryption at Rest and in Transit: Implementation Guide. Practical guidance for distinguishing protection boundaries and practical implementation choices."
 target_keyword: "encryption at rest"
 secondary_keywords: "encryption in transit, encryption compliance, data encryption requirements, AES 256 encryption, TLS encryption, encryption key management"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Encryption at Rest and in Transit: Implementation Guide"
 ---
 
-# Encryption at Rest and In Transit: The Complete Compliance Guide for SOC 2, ISO 27001, HIPAA, and PCI DSS
+
+# Encryption at Rest and in Transit: Implementation Guide
+
+This guide focuses on distinguishing protection boundaries and practical implementation choices. For reviewing key-management operations and evidence needs, see [Encryption Compliance: Key Management and Evidence](/blog/encryption-compliance-guide).
 
 In 2024, a mid-stage SaaS company lost a seven-figure enterprise deal in the final week of procurement review. The reason was not a missing feature, a pricing disagreement, or a competitor swooping in. The buyer's security team discovered that the company's PostgreSQL databases were running without encryption at rest. Customer data -- names, email addresses, API tokens, billing records -- sat on disk in plaintext. The company had TLS on its public endpoints, a SOC 2 Type II report on its website, and a security page that promised "enterprise-grade encryption." But when the buyer's team asked to see the actual encryption configuration, the gap was immediately visible.
 

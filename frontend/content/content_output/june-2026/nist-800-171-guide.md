@@ -1,15 +1,18 @@
 ---
-title: "NIST 800-171: The Complete Guide to Protecting CUI and Achieving DFARS Compliance"
-meta_description: "Complete guide to NIST 800-171 compliance. Covers CUI protection, 14 control families, CMMC relationship, self-assessment, and SOC 2 mapping."
+title: "NIST 800-171: CUI Scope and Readiness Questions"
+meta_description: "NIST 800-171: CUI Scope and Readiness Questions. Practical guidance for identifying controlled information and the applicable requirement set."
 target_keyword: "NIST 800-171"
 secondary_keywords: "NIST 800-171 compliance, controlled unclassified information, CUI protection, DFARS compliance, CMMC requirements, NIST 800-171 controls"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-03-22"
+last_updated: "2026-09-26"
 ---
 
-# NIST 800-171: The Complete Guide to Protecting CUI and Achieving DFARS Compliance
+
+# NIST 800-171: CUI Scope and Readiness Questions
+
+This guide focuses on identifying controlled information and the applicable requirement set. For organizing a scoped implementation program and supporting records, see [NIST 800-171 Implementation and Evidence Planning](/blog/nist-800-171-compliance-guide).
 
 If your organization handles Controlled Unclassified Information (CUI) for the U.S. federal government -- or if you are part of a defense supply chain -- NIST Special Publication 800-171 is not optional. It defines the minimum security requirements for protecting CUI in nonfederal systems, and compliance is a contractual obligation embedded in Department of Defense (DoD) contracts through the Defense Federal Acquisition Regulation Supplement (DFARS) clause 252.204-7012.
 

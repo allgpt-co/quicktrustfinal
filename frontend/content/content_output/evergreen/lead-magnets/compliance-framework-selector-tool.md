@@ -1,11 +1,15 @@
 ---
-meta_description: "Not sure which compliance certification to pursue first? Use this interactive decision guide to find the right framework."
+meta_description: "Compliance Framework Selection: A Guided Worksheet. Practical guidance for working through industry, customer and geography questions."
 target_keyword: "regulatory compliance, compliance framework, which compliance certification"
 secondary_keywords: "soc 2 vs iso 27001, hipaa vs hitrust, compliance certification comparison"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "Compliance Framework Selection: A Guided Worksheet"
 ---
 
-# Compliance Framework Selector: Which Certification Should Your Company Pursue First?
+
+# Compliance Framework Selection: A Guided Worksheet
+
+This guide focuses on working through industry, customer and geography questions. For sequencing framework choices into a practical roadmap, see [Compliance Frameworks: A Decision Tree and Roadmap](/blog/compliance-framework-selector).
 
 **Prepared by QuickTrust | trust.quickintell.com**
 *AI-Powered GRC Platform + Expert Engineering Implementation*

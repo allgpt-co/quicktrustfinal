@@ -528,5 +528,5 @@ Children's privacy is not a risk to manage. It is a standard to meet. The compan
 - [Data Retention Policy: How to Build Retention Schedules](/content/november-2026/data-retention-policy-guide)
 - [The Complete SOC 2 Compliance Guide for SaaS Startups](/content/march-2026/pillar-soc2-complete-guide)
 - [Incident Response Plan: The Complete Compliance Guide](/content/november-2026/incident-response-plan-compliance-guide)
-- [Case Study: How an EdTech Startup Got SOC 2 Certified and FERPA/COPPA Compliant](/content/august-2026/case-study-edtech-soc2-student-privacy)
+- [Illustrative Scenario: School Procurement Evidence Review](/content/august-2026/case-study-edtech-soc2-student-privacy)
 - [Regulatory Compliance for Tech Companies: The Complete Guide](/content/november-2026/regulatory-compliance-tech-companies-guide)

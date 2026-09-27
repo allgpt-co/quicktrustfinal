@@ -1,13 +1,17 @@
 ---
-meta_description: "Learn how SOC 2 and ISO 27001 certifications reduce cyber insurance premiums by up to 30% and dramatically improve your application approval odds."
+meta_description: "Cyber Insurance Questionnaires: Control Evidence. Practical guidance for preparing evidence for specific insurance control questions."
 target_keyword: "cyber insurance compliance, cyber insurance requirements, cyber insurance security controls"
 secondary_keywords: "cyber insurance application, cyber insurance audit, insurability security"
 word_count_target: "2500"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "Cyber Insurance Questionnaires: Control Evidence"
 ---
 
-# Cyber Insurance and Compliance: How SOC 2 and ISO 27001 Lower Your Premiums (And Get You Approved)
+
+# Cyber Insurance Questionnaires: Control Evidence
+
+This guide focuses on preparing evidence for specific insurance control questions. For understanding how to evaluate insurance and assurance requirements together, see [Cyber Insurance and Compliance: Evaluation Questions](/blog/cyber-insurance-compliance).
 
 Cyber insurance premiums have increased by over 50% since 2020. Underwriting requirements have gone from a two-page questionnaire to a full security audit. And a growing number of applicants — particularly SaaS companies and mid-market tech firms — are being denied coverage outright because they cannot demonstrate baseline security controls.
 

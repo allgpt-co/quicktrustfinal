@@ -463,7 +463,7 @@ Costs vary widely based on merchant level and environment complexity. See our de
 - [PCI DSS Audit Cost in 2026](./pci-dss-audit-cost-guide.md)
 - [How to Reduce Your PCI DSS Scope by 70%](./pci-dss-scope-reduction-guide.md)
 - [Information Security Certifications: Which Ones Open Enterprise Deals](./information-security-certifications-guide.md)
-- [Case Study: Fintech Startup Achieves PCI DSS in 10 Weeks](./case-study-fintech-pci-dss.md)
+- [Illustrative Scenario: Fintech Payment-Scope Readiness](./case-study-fintech-pci-dss.md)
 
 ---
 

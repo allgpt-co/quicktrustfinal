@@ -1,13 +1,17 @@
 ---
-meta_description: "You don't need separate compliance projects for SOC 2, ISO 27001, and HIPAA. Learn how to map overlapping controls, implement once."
+meta_description: "Multi-Framework Compliance: Scope and Sequencing. Practical guidance for planning framework-specific obligations and implementation order."
 target_keyword: "multiple compliance frameworks, soc 2 and iso 27001, dual certification"
 secondary_keywords: "compliance framework overlap, unified compliance, multi-framework audit, compliance fatigue"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-02-28"
+last_updated: "2026-09-26"
+title: "Multi-Framework Compliance: Scope and Sequencing"
 ---
 
-# How to Get SOC 2, ISO 27001, and HIPAA Certified at the Same Time (Without Tripling the Work)
+
+# Multi-Framework Compliance: Scope and Sequencing
+
+This guide focuses on planning framework-specific obligations and implementation order. For organizing shared controls and reviewing whether evidence can be reused, see [Multi-Framework Controls: Mapping and Evidence Reuse](/blog/multi-framework-certification).
 
 There is a recurring thread on r/compliance, r/netsec, and every SaaS founder Slack channel that follows the same pattern: "We need SOC 2 for our US enterprise deals, ISO 27001 for our European prospects, and HIPAA because we handle PHI. Our consultant says that is three separate projects. Is there a way to do this without tripling the budget and burning out the engineering team?"
 

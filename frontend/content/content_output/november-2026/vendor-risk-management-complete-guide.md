@@ -1,14 +1,18 @@
 ---
-meta_description: "Build a vendor risk management program that satisfies SOC 2, ISO 27001, and HIPAA auditors. Includes assessment templates, scoring frameworks, and real-world examples."
+meta_description: "Vendor Risk Management: Program Design and Scoring. Practical guidance for designing supplier tiers, assessment methods and program ownership."
 target_keyword: "vendor risk management"
 secondary_keywords: "vendor risk management program, vendor risk assessment, third party risk management, vendor risk management software, vendor due diligence"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: 2026-03-19
+last_updated: "2026-09-26"
+title: "Vendor Risk Management: Program Design and Scoring"
 ---
 
-# Vendor Risk Management: The Complete Program Guide for SaaS Companies in 2026
+
+# Vendor Risk Management: Program Design and Scoring
+
+This guide focuses on designing supplier tiers, assessment methods and program ownership. For running supplier reviews and tracking ongoing responsibilities, see [Vendor Risk Reviews: Due Diligence and Monitoring](/blog/vendor-risk-management-guide).
 
 In December 2020, the SolarWinds breach gave attackers access to the internal systems of 18,000 organizations -- including the U.S. Treasury, the Department of Homeland Security, and dozens of Fortune 500 companies. The attackers did not break through a firewall or exploit a zero-day vulnerability in any of those organizations. They compromised a single vendor's software update mechanism, and every downstream customer inherited the risk.
 

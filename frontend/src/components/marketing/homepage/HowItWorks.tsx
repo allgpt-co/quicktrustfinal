@@ -18,9 +18,9 @@ export default function HowItWorks() {
     },
     {
       number: '3',
-      title: 'Certify & Maintain',
+      title: 'Review & Maintain',
       subtitle: 'Audit coordination + continuous compliance',
-      desc: 'We coordinate with auditors, maintain your evidence portal, and track changes to keep you compliant.',
+      desc: 'We coordinate with auditors, maintain your evidence portal, and track changes for review.',
       deliverables: ['Auditor-ready portal', 'Ongoing monitoring', 'Change tracking'],
     },
   ];
@@ -43,7 +43,7 @@ export default function HowItWorks() {
             How It Works
           </span>
           <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.02em] text-slate-50 mb-4">
-            From call to certified in{' '}
+            Prepare for your assessment in{' '}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               three steps
             </span>
