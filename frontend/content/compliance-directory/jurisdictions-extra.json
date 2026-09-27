@@ -1,0 +1,59 @@
+[
+  {
+    "id": "WORLD",
+    "name": "International standards and frameworks",
+    "kind": "international",
+    "parent": null,
+    "sourceId": "iso-geography"
+  },
+  {
+    "id": "EU",
+    "name": "European Union",
+    "kind": "supranational",
+    "parent": null,
+    "sourceId": "eu-your-europe",
+    "members": [
+      "AT",
+      "BE",
+      "BG",
+      "HR",
+      "CY",
+      "CZ",
+      "DK",
+      "EE",
+      "FI",
+      "FR",
+      "DE",
+      "GR",
+      "HU",
+      "IE",
+      "IT",
+      "LV",
+      "LT",
+      "LU",
+      "MT",
+      "NL",
+      "PL",
+      "PT",
+      "RO",
+      "SK",
+      "SI",
+      "ES",
+      "SE"
+    ]
+  },
+  {
+    "id": "US-NY-NYC",
+    "name": "New York City",
+    "kind": "municipality",
+    "parent": "US-NY",
+    "sourceId": "nyc-food-service-official"
+  },
+  {
+    "id": "AE-DU-DIFC",
+    "name": "Dubai International Financial Centre",
+    "kind": "special-zone",
+    "parent": "AE-DU",
+    "sourceId": "difc-commercial-official"
+  }
+]

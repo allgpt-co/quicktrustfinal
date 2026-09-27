@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "*", allow: "/", disallow: ["/api/", "/dashboard", "/login", "/signup", "/reset-password", "/invite/", "/portal"] },
       { userAgent: "Bytespider", disallow: "/" },
     ],
-    sitemap: "https://quicktrustapp.com/sitemap.xml",
+    sitemap: ["https://quicktrustapp.com/sitemap.xml", "https://quicktrustapp.com/compliance-directory/sitemap.xml"],
   };
 }

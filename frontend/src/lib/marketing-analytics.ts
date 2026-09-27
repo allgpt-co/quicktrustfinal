@@ -19,7 +19,11 @@ type Gtag = {
   (command: "set", parameters: AnalyticsContext): void;
   (command: "event", eventName: "generate_lead", parameters: { form_type: MarketingLeadForm } & AnalyticsContext): void;
   (command: "event", eventName: "page_view", parameters: MarketingPageView): void;
+  (command: "event", eventName: DirectoryEvent, parameters: { content_group: "compliance_directory" } & AnalyticsContext): void;
 };
+
+export type DirectoryEvent = 'directory_search' | 'directory_compare' | 'directory_source_click' | 'directory_checklist_download';
+export type DirectoryAnalyticsManifest = { jurisdictions: string[]; industries: string[]; requirements: string[] };
 
 type ConfigParameters = {
   send_page_view: false;
@@ -69,8 +73,12 @@ function normalizePathname(pathname: string): string {
   return withoutQuery.replace(/\/+$/, "");
 }
 
-export function registerAnalyticsPaths(paths: readonly string[]): void {
-  registeredAnalyticsPaths = new Set(paths.map(normalizePathname).filter((path) => !excludedMarketingPaths.has(path)));
+export function registerAnalyticsPaths(paths: readonly string[], directory?: DirectoryAnalyticsManifest): void {
+  const root = '/compliance-directory';
+  const directoryPaths = directory ? [root, ...['coverage', 'finder', 'compare', 'updates', 'sources', 'countries', 'industries'].map((p) => `${root}/${p}`),
+    ...directory.jurisdictions.map((id) => `${root}/jurisdictions/${id}`), ...directory.industries.map((id) => `${root}/industries/${id}`),
+    ...directory.requirements.map((id) => `${root}/requirements/${id}`)] : [];
+  registeredAnalyticsPaths = new Set([...paths, ...directoryPaths].map(normalizePathname).filter((path) => !excludedMarketingPaths.has(path)));
 }
 
 export function clearAnalyticsPaths(): void {
@@ -173,5 +181,16 @@ export function trackMarketingLead(form: MarketingLeadForm): boolean {
   const pathname = typeof window === "undefined" ? "/" : window.location.pathname;
   if (!measurementId || !validLeadForm(form) || typeof window === "undefined" || typeof window.gtag !== "function" || !hasAnalyticsConsent() || !isAllowedAnalyticsPath(pathname)) return false;
   window.gtag("event", "generate_lead", { form_type: form, ...safeContext(pathname) });
+  return true;
+}
+
+/** Bounded interactions only: never send search terms, selected places or form data. */
+export function trackDirectoryEvent(event: DirectoryEvent): boolean {
+  const pathname = typeof window === 'undefined' ? '' : window.location.pathname;
+  if (!['directory_search', 'directory_compare', 'directory_source_click', 'directory_checklist_download'].includes(event)
+    || !getGa4MeasurementId() || typeof window === 'undefined' || typeof window.gtag !== 'function'
+    || !hasAnalyticsConsent() || !isAllowedAnalyticsPath(pathname)
+    || !(pathname === '/compliance-directory' || pathname.startsWith('/compliance-directory/'))) return false;
+  window.gtag('event', event, { content_group: 'compliance_directory', ...safeContext(pathname) });
   return true;
 }

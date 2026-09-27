@@ -69,7 +69,7 @@ const cspDirectives = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  outputFileTracingIncludes: { "/*": ["./content/content_output/**/*.md", "./content/marketing-pages/*.md"] },
+  outputFileTracingIncludes: { "/*": ["./content/content_output/**/*.md", "./content/marketing-pages/*.md", "./content/compliance-directory/*.json", "./content/compliance-directory/articles/*.md"] },
   async redirects() {
     return [
       { source: "/signup", destination: "/login?mode=register", permanent: true },

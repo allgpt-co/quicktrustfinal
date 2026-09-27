@@ -1,0 +1,40 @@
+name: Directory source monitoring
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 7 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  source-review-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore previous public source hashes
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/directory-previous
+          key: directory-sources-${{ github.run_id }}
+          restore-keys: directory-sources-
+      - name: Check official source availability and due reviews
+        run: |
+          if [ -f "${RUNNER_TEMP}/directory-previous/latest.json" ]; then
+            python3 frontend/scripts/check-directory-sources.py --output "${RUNNER_TEMP}/directory-sources.json" --previous "${RUNNER_TEMP}/directory-previous/latest.json"
+          else
+            python3 frontend/scripts/check-directory-sources.py --output "${RUNNER_TEMP}/directory-sources.json"
+          fi
+          mkdir -p "${RUNNER_TEMP}/directory-previous"
+          cp "${RUNNER_TEMP}/directory-sources.json" "${RUNNER_TEMP}/directory-previous/latest.json"
+      - name: Retain editorial review queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: directory-source-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/directory-sources.json
+          retention-days: 90

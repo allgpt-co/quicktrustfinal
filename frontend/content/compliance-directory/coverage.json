@@ -1,0 +1,95 @@
+[
+  {
+    "jurisdiction": "WORLD",
+    "activity": null,
+    "status": "partial",
+    "sourceIds": [
+      "iso-9001-official",
+      "nist-csf-official",
+      "iso-geography",
+      "un-isic"
+    ],
+    "reviewedAt": null,
+    "note": "Three source-reviewed overview records are published across the directory. The global requirement inventory and activity mappings remain incomplete; ISO and UN reference inventories organize the research."
+  },
+  {
+    "jurisdiction": "GB",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "uk-licences"
+    ],
+    "reviewedAt": null,
+    "note": "452 catalogue entries captured; business/professional scope, authority and duplicates await triage. The official catalogue itself is not exhaustive."
+  },
+  {
+    "jurisdiction": "IN",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "india-nsws"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "AU",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "australia-ablis"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "CA",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "canada-bizpal"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "SG",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "singapore-gobusiness"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "US",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "us-sba"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "EU",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "eu-your-europe"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  },
+  {
+    "jurisdiction": "AE",
+    "activity": null,
+    "status": "researching",
+    "sourceIds": [
+      "uae-business"
+    ],
+    "reviewedAt": null,
+    "note": "Official discovery source identified. National, regional, municipal and special-zone obligations remain to be reconciled."
+  }
+]

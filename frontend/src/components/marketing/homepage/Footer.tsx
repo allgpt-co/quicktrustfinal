@@ -80,6 +80,7 @@ export default function Footer() {
               ['/company/team', 'Implementation team'],
             ] },
             { title: 'Resources', links: [
+              ['/compliance-directory', 'Global license & compliance directory'],
               ['/resources/guides', 'Guides'], ['/resources/templates', 'Templates'],
               ['/resources/case-studies', 'Illustrative scenarios'], ['/tools/soc-2-readiness-assessment', 'Readiness self-assessment'],
               ['/tools/compliance-roi-calculator', 'Business-case calculator'],
