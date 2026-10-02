@@ -73,6 +73,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/*": ["./content/content_output/**/*.md", "./content/marketing-pages/*.md", "./content/compliance-directory/*.json", "./content/compliance-directory/articles/*.md"] },
   async redirects() {
     return [
+      // The apex domain is canonical; www must resolve in DNS (see docs/seo) and then land here in one hop.
+      { source: "/:path*", has: [{ type: "host", value: "www.quicktrustapp.com" }], destination: "https://quicktrustapp.com/:path*", permanent: true },
       { source: "/signup", destination: "/login?mode=register", permanent: true },
       { source: "/demo", destination: DEMO_BOOKING_URL, permanent: false },
       ...Object.entries(CONTENT_REDIRECTS).map(([source, destination]) => ({

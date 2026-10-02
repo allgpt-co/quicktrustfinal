@@ -1,0 +1,32 @@
+name: Public site monitor
+
+# The July 2026 outage (marketing URLs returning 404 or redirecting to login for about
+# two months) was only noticed from Search Console impressions. This daily run repeats
+# the release gate against production and fails, which notifies the repository owners,
+# whenever any sitemap URL, alias, download or crawler asset stops answering correctly.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check every public URL on quicktrustapp.com
+        run: python3 frontend/scripts/verify-marketing-recovery.py --report "${RUNNER_TEMP}/public-site-${{ github.run_id }}.json"
+      - name: Retain the check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-site-monitor-${{ github.run_id }}
+          path: ${{ runner.temp }}/public-site-${{ github.run_id }}.json
+          retention-days: 30
