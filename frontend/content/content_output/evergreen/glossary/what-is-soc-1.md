@@ -1,34 +1,34 @@
 ---
 meta_description: "SOC 1 Reports: Types, Contents and Audit Process. Practical guidance for understanding report structure and the examination process."
 target_keyword: "what is soc 1"
-secondary_keywords: "soc 1 report, soc 1 audit, soc 1 type 1, soc 1 type 2, what is a soc 1 report, soc 1 meaning"
+secondary_keywords: "soc 1 report, soc 1 audit, soc 1 type 1, soc 1 type 2, what is a soc 1 report, soc 1 meaning, what is soc 1, soc 1 vs soc 2"
 word_count_target: 3000+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "SOC 1 Reports: Types, Contents and Audit Process"
 ---
 
 
 # SOC 1 Reports: Types, Contents and Audit Process
 
-This guide focuses on understanding report structure and the examination process. For deciding how to respond to a customer request for financial-control assurance, see [Do You Need a SOC 1 Report? A Buyer Request Guide](/blog/what-is-soc-1).
+This guide covers what a SOC 1 report is, how to decide whether a customer request actually calls for one, what the report contains, and how the examination process works.
 
-A SOC 1 report (System and Organization Controls 1) is an independent audit report that evaluates a service organization's internal controls relevant to its clients' financial reporting. Issued by a licensed CPA firm under the SSAE 18 attestation standard, a SOC 1 report gives your clients — and their auditors — assurance that your organization will not introduce errors, misstatements, or fraud risks into their financial statements.
+A SOC 1 report (System and Organization Controls 1) is an independent audit report that evaluates a service organization's internal controls relevant to its clients' financial reporting. Issued by a licensed CPA firm under the SSAE 18 attestation standard, a SOC 1 report gives your clients, and their auditors, assurance that your organization will not introduce errors, misstatements, or fraud risks into their financial statements.
 
-If you have heard of SOC 2 but are unclear on where SOC 1 fits, you are not alone. SOC 1 and SOC 2 are both part of the AICPA's System and Organization Controls framework, but they serve fundamentally different purposes. SOC 2 evaluates how you protect customer data across five Trust Service Criteria (Security, Availability, Processing Integrity, Confidentiality, and Privacy). SOC 1 evaluates how your service affects your clients' financial reporting — their general ledger, their revenue recognition, their payroll records, their transaction processing accuracy.
+If you have heard of SOC 2 but are unclear on where SOC 1 fits, you are not alone. SOC 1 and SOC 2 are both part of the AICPA's System and Organization Controls framework, but they serve fundamentally different purposes. SOC 2 evaluates how you protect customer data across five Trust Service Criteria (Security, Availability, Processing Integrity, Confidentiality, and Privacy). SOC 1 evaluates how your service affects your clients' financial reporting: their general ledger, their revenue recognition, their payroll records, their transaction processing accuracy.
 
-The distinction matters because choosing the wrong report wastes time and money — and fails to satisfy the auditors who actually requested it.
+The distinction matters because choosing the wrong report wastes time and money, and fails to satisfy the auditors who actually requested it.
 
 ---
 
-## TL;DR — Key Takeaways
+## TL;DR: Key Takeaways
 
-- A SOC 1 report examines your **internal controls over financial reporting (ICFR)** — not your security posture or data protection practices
+- A SOC 1 report examines your **internal controls over financial reporting (ICFR)**, not your security posture or data protection practices
 - SOC 1 is governed by the **SSAE 18** standard in the United States and **ISAE 3402** internationally
 - There are two types: **SOC 1 Type 1** (point-in-time design assessment) and **SOC 1 Type 2** (period-of-time operating effectiveness evaluation)
 - Companies that process transactions, handle payroll, manage funds, or perform accounting functions on behalf of clients almost always need a SOC 1
-- SOC 1 is **not** interchangeable with SOC 2 — enterprise procurement teams, financial auditors, and regulators know the difference
+- SOC 1 is **not** interchangeable with SOC 2; enterprise procurement teams, financial auditors, and regulators know the difference
 - A SOC 1 audit typically costs between **$20,000 and $100,000+**, depending on scope, organization size, and report type
 
 ---
@@ -37,7 +37,7 @@ The distinction matters because choosing the wrong report wastes time and money 
 
 A SOC 1 report is a formal attestation report issued by an independent CPA firm that evaluates the design and, in the case of a Type 2 report, the operating effectiveness of a service organization's controls that are relevant to user entities' internal control over financial reporting (ICFR).
 
-In plain English: if your company provides a service that touches your clients' financial data — processing their payments, running their payroll, reconciling their accounts, managing their benefits — your clients' auditors need assurance that your systems and processes will not introduce errors into their financial statements. A SOC 1 report is how you provide that assurance.
+In plain English: if your company provides a service that touches your clients' financial data (processing their payments, running their payroll, reconciling their accounts, managing their benefits), your clients' auditors need assurance that your systems and processes will not introduce errors into their financial statements. A SOC 1 report is how you provide that assurance.
 
 ### The Standards Behind SOC 1
 
@@ -49,9 +49,9 @@ Internationally, the equivalent standard is **ISAE 3402** (International Standar
 
 SOC 1 reports are restricted-use documents. Unlike a SOC 3 report (which is a general-use summary), a SOC 1 report is intended for:
 
-- **User entities** — your clients whose financial reporting depends on your service
-- **User entity auditors** — the CPA firms auditing your clients' financial statements
-- **Management of the service organization** — your own leadership team
+- **User entities**: your clients whose financial reporting depends on your service
+- **User entity auditors**: the CPA firms auditing your clients' financial statements
+- **Management of the service organization**: your own leadership team
 
 SOC 1 reports are not designed for public distribution. Clients typically receive them under NDA, and their auditors use them as part of their own audit procedures.
 
@@ -63,9 +63,9 @@ SOC stands for **System and Organization Controls**. This is the current termino
 
 The "1" designates this as the first of three SOC report types:
 
-- **SOC 1** — Controls relevant to user entities' financial reporting
-- **SOC 2** — Controls relevant to security, availability, processing integrity, confidentiality, and privacy ([learn more about SOC 2](/glossary/what-is-soc2))
-- **SOC 3** — A general-use summary of a SOC 2 report, designed for public distribution
+- **SOC 1**: Controls relevant to user entities' financial reporting
+- **SOC 2**: Controls relevant to security, availability, processing integrity, confidentiality, and privacy ([learn more about SOC 2](/glossary/what-is-soc2))
+- **SOC 3**: A general-use summary of a SOC 2 report, designed for public distribution
 
 ### The SAS 70 Connection
 
@@ -77,7 +77,7 @@ If you encounter references to SAS 70 in vendor questionnaires or legacy procure
 
 ## What Does a SOC 1 Report Cover?
 
-A SOC 1 report covers **internal controls over financial reporting (ICFR)** — specifically, the controls within a service organization that could affect the accuracy, completeness, and validity of financial transactions processed on behalf of client organizations.
+A SOC 1 report covers **internal controls over financial reporting (ICFR)**: specifically, the controls within a service organization that could affect the accuracy, completeness, and validity of financial transactions processed on behalf of client organizations.
 
 ### Control Objectives in a SOC 1
 
@@ -169,16 +169,16 @@ If you authorize, settle, or reconcile payment transactions for merchants or bus
 Companies that administer health insurance, retirement plans (401(k)), flexible spending accounts, or other employee benefit programs. Errors in contribution calculations, eligibility determinations, or benefit distributions affect plan sponsors' financial reporting.
 
 **Loan Servicers and Mortgage Processors**
-Organizations that service loans — collecting payments, managing escrow accounts, calculating interest, and reporting to borrowers and investors. The accuracy of loan accounting directly affects the financial statements of the institutions that own those loans.
+Organizations that service loans: collecting payments, managing escrow accounts, calculating interest, and reporting to borrowers and investors. The accuracy of loan accounting directly affects the financial statements of the institutions that own those loans.
 
 **Trust Companies and Custodians**
 Entities that hold assets in custody, process trust transactions, or manage fiduciary accounts. Asset valuations, income allocations, and distribution calculations must be accurate for the trust or fund's financial reporting.
 
 **Financial SaaS and Accounting Platforms**
-If your software processes, calculates, or stores financial transactions that your clients use for their financial reporting — general ledger systems, accounts payable/receivable platforms, billing systems, revenue recognition tools — your clients' auditors may request a SOC 1.
+If your software processes, calculates, or stores financial transactions that your clients use for their financial reporting (general ledger systems, accounts payable/receivable platforms, billing systems, revenue recognition tools), your clients' auditors may request a SOC 1.
 
 **Data Centers and Cloud Infrastructure Providers (When Financial Processing Is Involved)**
-If you host or manage infrastructure specifically for financial processing applications — not general-purpose cloud hosting — a SOC 1 may be appropriate for those specific services.
+If you host or manage infrastructure specifically for financial processing applications (not general-purpose cloud hosting), a SOC 1 may be appropriate for those specific services.
 
 **Claims Processors**
 Insurance claims administrators, healthcare claims processors, and similar organizations whose processing accuracy affects the financial reporting of insurers or self-insured employers.
@@ -193,6 +193,19 @@ A simple framework:
 
 Many payment processors, financial SaaS providers, and benefits administrators need both SOC 1 (for their clients' auditors) and SOC 2 (for their clients' security teams). The two reports address different audiences and different risk domains.
 
+### Responding to a Customer Request for a SOC 1
+
+Requests for a SOC 1 usually arrive through one of two doors: a client's external auditor asks for it during their year-end financial statement audit, or a client's procurement or vendor management team lists it on a due diligence questionnaire. The second case deserves a closer look before you commit, because procurement teams sometimes write "SOC 1" when they mean "a SOC report."
+
+Work through these questions before you respond:
+
+- **Who is asking, and on whose behalf?** If the request originates with the client's financial auditors or their internal SOX team, it is a genuine SOC 1 need. If it comes from a security reviewer who is really asking about data protection, clarify whether a SOC 2 would satisfy them.
+- **Does your service touch the numbers in their financial statements?** If your output flows into their general ledger, payroll records, revenue figures, reserves or account balances, the answer is yes and a SOC 1 is the right report.
+- **Which type do they need, and by when?** Ask whether a Type 1 is acceptable as an interim step or whether they require a Type 2 covering a specific period. Their auditors will usually want the observation period to line up with their fiscal year.
+- **Which control objectives matter to them?** Ask the client's auditor which processes they intend to rely on. This shapes your control objectives and prevents an over-scoped engagement.
+
+Answering these questions in writing, before engaging a CPA firm, is the single cheapest step in the whole process.
+
 ---
 
 ## The SOC 1 Audit Process: What to Expect
@@ -203,12 +216,12 @@ A SOC 1 audit follows a structured process. Understanding it upfront helps you p
 
 Work with your CPA firm to define the scope of the engagement:
 
-- **Services in scope** — Which services affect client financial reporting?
-- **Control objectives** — What should the controls achieve? (These are custom, not predefined.)
-- **System boundaries** — Which applications, databases, infrastructure, and processes are included?
-- **Subservice organizations** — Do you rely on third parties (e.g., cloud hosting, payment networks) that are part of the service delivery? You must decide whether to use the **inclusive method** (include their controls in your report) or the **carve-out method** (exclude them and note the dependency).
-- **Report type** — Type 1 or Type 2?
-- **Observation period** (for Type 2) — Typically aligned with a calendar year or a client's fiscal year.
+- **Services in scope**: Which services affect client financial reporting?
+- **Control objectives**: What should the controls achieve? (These are custom, not predefined.)
+- **System boundaries**: Which applications, databases, infrastructure, and processes are included?
+- **Subservice organizations**: Do you rely on third parties (e.g., cloud hosting, payment networks) that are part of the service delivery? You must decide whether to use the **inclusive method** (include their controls in your report) or the **carve-out method** (exclude them and note the dependency).
+- **Report type**: Type 1 or Type 2?
+- **Observation period** (for Type 2): typically aligned with a calendar year or a client's fiscal year.
 
 ### Phase 2: System Description Preparation (2-4 Weeks)
 
@@ -218,8 +231,8 @@ You prepare a detailed description of your system, including:
 - The components of the system (infrastructure, software, people, data, procedures)
 - The boundaries of the system
 - Control objectives and related controls
-- Complementary User Entity Controls (CUECs) — controls that your clients must have in place for the overall control environment to work
-- Complementary Subservice Organization Controls (CSOCs) — controls that your subservice organizations must have in place
+- Complementary User Entity Controls (CUECs): controls that your clients must have in place for the overall control environment to work
+- Complementary Subservice Organization Controls (CSOCs): controls that your subservice organizations must have in place
 
 This system description becomes Section III of your SOC 1 report.
 
@@ -235,7 +248,7 @@ For a Type 2 report, you collect evidence throughout the observation period demo
 - Incident reports and resolution documentation
 - Backup and recovery test results
 
-For a Type 1 report, evidence requirements are lighter — auditors focus on walkthroughs and documentation of control design rather than operational evidence.
+For a Type 1 report, evidence requirements are lighter; auditors focus on walkthroughs and documentation of control design rather than operational evidence.
 
 ### Phase 4: Auditor Fieldwork (2-6 Weeks)
 
@@ -271,7 +284,7 @@ This is the most important section. Written entirely by the CPA firm, it contain
 - The scope of the engagement
 - The auditor's responsibilities
 - Management's responsibilities
-- **The auditor's opinion** — either unqualified (clean) or qualified (exceptions noted that affect the opinion)
+- **The auditor's opinion**: either unqualified (clean) or qualified (exceptions noted that affect the opinion)
 
 An **unqualified opinion** means the auditor concluded that, in all material respects, the controls were suitably designed (Type 1) or suitably designed and operating effectively (Type 2). This is what you want.
 
@@ -287,7 +300,7 @@ A formal statement from your management asserting that:
 
 ### Section III: Description of the Service Organization's System
 
-The most detailed section — often 30-100+ pages. It describes:
+The most detailed section, often 30-100+ pages. It describes:
 
 - The services provided and the service commitments
 - The components of the system (infrastructure, software, people, procedures, data)
@@ -305,11 +318,11 @@ This is the section user entity auditors spend the most time reading. For each c
 - The tests the auditor performed
 - The results of those tests, **including any exceptions identified**
 
-Exceptions do not automatically mean a qualified opinion. A few isolated exceptions in a large sample may be noted without affecting the overall opinion. However, pervasive or systemic exceptions — such as an access review that was never performed during the observation period — can lead to a qualification.
+Exceptions do not automatically mean a qualified opinion. A few isolated exceptions in a large sample may be noted without affecting the overall opinion. However, pervasive or systemic exceptions, such as an access review that was never performed during the observation period, can lead to a qualification.
 
 ### Section V: Other Information Provided by the Service Organization (Optional)
 
-Some organizations include supplementary information — typically management's response to exceptions, future remediation plans, or additional context about the control environment. This section is **not covered by the auditor's opinion**.
+Some organizations include supplementary information, typically management's response to exceptions, future remediation plans, or additional context about the control environment. This section is **not covered by the auditor's opinion**.
 
 ---
 
@@ -353,21 +366,21 @@ SOC 1 audit costs vary significantly based on the complexity of your service, th
 
 ### Factors That Increase Cost
 
-- **Number of control objectives** — More control objectives means more testing, which increases audit hours
-- **Number of locations or systems** — Multi-site or multi-application environments require broader testing
-- **Subservice organizations** — Using the inclusive method (including subservice organizations in your report) significantly increases scope and cost
-- **Organization size** — Larger organizations with more employees, more transactions, and more complex processes require larger audit samples
-- **First-time audit** — The initial SOC 1 engagement requires more effort from both the auditor and your team to establish the system description and control framework
-- **Exceptions from prior year** — If the previous year's report had exceptions, auditors will likely increase sample sizes, which increases cost
-- **CPA firm tier** — Big 4 firms (Deloitte, PwC, EY, KPMG) charge significantly more than regional or mid-tier firms. The choice of firm should match your clients' expectations and industry norms.
+- **Number of control objectives**: More control objectives means more testing, which increases audit hours
+- **Number of locations or systems**: Multi-site or multi-application environments require broader testing
+- **Subservice organizations**: Using the inclusive method (including subservice organizations in your report) significantly increases scope and cost
+- **Organization size**: Larger organizations with more employees, more transactions, and more complex processes require larger audit samples
+- **First-time audit**: The initial SOC 1 engagement requires more effort from both the auditor and your team to establish the system description and control framework
+- **Exceptions from prior year**: If the previous year's report had exceptions, auditors will likely increase sample sizes, which increases cost
+- **CPA firm tier**: Big 4 firms (Deloitte, PwC, EY, KPMG) charge significantly more than regional or mid-tier firms. The choice of firm should match your clients' expectations and industry norms.
 
 ### How to Reduce SOC 1 Costs
 
-- **Narrow the scope** — Only include services and systems that actually affect client financial reporting
+- **Narrow the scope**: Only include services and systems that actually affect client financial reporting
 - **Use the carve-out method** for subservice organizations when appropriate
-- **Maintain clean controls year-over-year** — Fewer exceptions mean smaller audit samples in subsequent years
-- **Prepare thoroughly** — Organized evidence and responsive control owners reduce audit fieldwork hours
-- **Align your SOC 1 and SOC 2 audits** if you need both — some CPA firms offer efficiencies when performing both engagements concurrently
+- **Maintain clean controls year-over-year**: Fewer exceptions mean smaller audit samples in subsequent years
+- **Prepare thoroughly**: Organized evidence and responsive control owners reduce audit fieldwork hours
+- **Align your SOC 1 and SOC 2 audits** if you need both; some CPA firms offer efficiencies when performing both engagements concurrently
 
 ---
 
@@ -381,15 +394,15 @@ Document every service you provide that could affect your clients' financial rep
 
 ### Step 2: Define Control Objectives
 
-Work with your CPA firm (or an experienced compliance advisor) to draft control objectives that are specific, testable, and aligned with the risks inherent in your service. Avoid vague objectives — auditors need to be able to design tests that definitively determine whether the objective has been met.
+Work with your CPA firm (or an experienced compliance advisor) to draft control objectives that are specific, testable, and aligned with the risks inherent in your service. Avoid vague objectives; auditors need to be able to design tests that definitively determine whether the objective has been met.
 
 ### Step 3: Map Controls to Objectives
 
 For each control objective, identify the specific controls that address it. A single control objective may have multiple controls. Each control should be:
 
-- **Clearly documented** — A written description of what the control does, who performs it, how often, and what evidence it produces
-- **Assigned to a control owner** — A specific person responsible for execution
-- **Testable** — An auditor should be able to verify its operation through inspection, observation, inquiry, or re-performance
+- **Clearly documented**: A written description of what the control does, who performs it, how often, and what evidence it produces
+- **Assigned to a control owner**: A specific person responsible for execution
+- **Testable**: An auditor should be able to verify its operation through inspection, observation, inquiry, or re-performance
 
 ### Step 4: Identify and Document CUECs and CSOCs
 
@@ -397,7 +410,7 @@ Complementary User Entity Controls (CUECs) are controls your clients must implem
 
 Complementary Subservice Organization Controls (CSOCs) are controls at your third-party providers (cloud hosting, payment networks, etc.) that your control environment depends on.
 
-Document these clearly — they appear in your SOC 1 report and set appropriate expectations.
+Document these clearly; they appear in your SOC 1 report and set appropriate expectations.
 
 ### Step 5: Perform a Readiness Assessment
 
@@ -408,7 +421,7 @@ Before your auditor begins fieldwork, conduct an internal assessment:
 - Is evidence being generated and retained?
 - Are there any known gaps that would result in exceptions?
 
-Fix issues before the audit starts — it is far less expensive and disruptive to remediate proactively than to have exceptions in your report.
+Fix issues before the audit starts; it is far less expensive and disruptive to remediate proactively than to have exceptions in your report.
 
 ### Step 6: Establish Evidence Collection Processes
 
@@ -477,7 +490,7 @@ Finding: Reconciliations were performed, but identified discrepancies were not i
 Control: Complementary User Entity Controls are clearly communicated to clients.
 Finding: CUECs were mentioned in the report but not communicated to clients in a way that enables them to implement the controls.
 
-**How to prevent it:** Include CUECs in client-facing documentation — service agreements, implementation guides, or a dedicated controls communication.
+**How to prevent it:** Include CUECs in client-facing documentation: service agreements, implementation guides, or a dedicated controls communication.
 
 ### 6. Terminated Employee Access Not Revoked Promptly
 
@@ -495,6 +508,16 @@ Finding: Backups were performed, but restoration testing was not conducted or do
 
 ---
 
+## Common Misconceptions About SOC 1
+
+**"SOC 1 is just an older version of SOC 2."** The numbering implies a sequence that does not exist. SOC 1 and SOC 2 are parallel report types under the same AICPA framework. SOC 1 addresses financial reporting controls; SOC 2 addresses security and operational controls. Neither replaces or supersedes the other.
+
+**"SOC 1 is only for financial institutions."** SOC 1 applies to any service organization whose work affects its clients' financial reporting. Payroll companies, billing platforms, transaction processors, benefits administrators and claims processors across every industry obtain SOC 1 reports, and many of them are technology companies rather than banks.
+
+**"We can define whatever control objectives we want."** SOC 1 control objectives are customized, but they are not arbitrary. They must address the financial reporting risks your service creates for clients, and your auditor will evaluate whether the objectives are appropriate and complete. Objectives that are too narrow leave your clients' auditors without the assurance they need; objectives that are too broad inflate the engagement.
+
+**"A SOC 1 Type 1 is enough."** A Type 1 can serve as a bridge while you build the operating history needed for a Type 2, but most user entity auditors will not place year-end reliance on a Type 1. Plan for the Type 2 from the start.
+
 ## SOC 1 Frequently Asked Questions
 
 ### Is SOC 1 the same as SOC 2?
@@ -503,7 +526,7 @@ No. SOC 1 and SOC 2 are fundamentally different reports that serve different aud
 
 ### What is the difference between SOC 1 and SAS 70?
 
-SOC 1 is the modern replacement for SAS 70. The AICPA retired SAS 70 in 2011 and introduced the SOC framework (SOC 1, SOC 2, SOC 3). The underlying purpose is similar — evaluating a service organization's controls relevant to financial reporting — but SOC 1 operates under updated attestation standards (SSAE 18 vs. the older SAS 70 standard) and includes stricter requirements around risk assessment, subservice organizations, and management assertions.
+SOC 1 is the modern replacement for SAS 70. The AICPA retired SAS 70 in 2011 and introduced the SOC framework (SOC 1, SOC 2, SOC 3). The underlying purpose is similar, evaluating a service organization's controls relevant to financial reporting, but SOC 1 operates under updated attestation standards (SSAE 18 vs. the older SAS 70 standard) and includes stricter requirements around risk assessment, subservice organizations, and management assertions.
 
 ### How long does a SOC 1 audit take?
 
@@ -515,33 +538,37 @@ Only a licensed **CPA firm** can issue a SOC 1 report. The engagement must be co
 
 ### Can a SOC 1 report replace a SOC 2 report?
 
-No. They evaluate entirely different control domains. A SOC 1 report does not evaluate your security posture, data protection practices, or privacy controls — which is what SOC 2 covers. If a client's security team asks for a SOC 2, giving them a SOC 1 will not satisfy their requirements (and may raise questions about your organization's compliance maturity).
+No. They evaluate entirely different control domains. A SOC 1 report does not evaluate your security posture, data protection practices, or privacy controls, which is what SOC 2 covers. If a client's security team asks for a SOC 2, giving them a SOC 1 will not satisfy their requirements (and may raise questions about your organization's compliance maturity).
 
 ### How often do I need a SOC 1 audit?
 
-SOC 1 reports are typically issued annually. For a Type 2 report, the observation period usually covers a 12-month period (often aligned with a calendar year). User entity auditors expect a current SOC 1 report each year — a report that is more than 12 months old is generally considered stale.
+SOC 1 reports are typically issued annually. For a Type 2 report, the observation period usually covers a 12-month period (often aligned with a calendar year). User entity auditors expect a current SOC 1 report each year; a report that is more than 12 months old is generally considered stale.
 
 ### What happens if my SOC 1 report has exceptions?
 
 Exceptions do not necessarily mean a qualified opinion. Isolated exceptions (e.g., one missed access review out of four quarterly reviews) may be noted in the report without affecting the overall opinion. However, pervasive or systemic exceptions can lead to a qualified opinion, which may cause your clients' auditors to perform additional testing or, in some cases, decline to rely on your controls entirely.
 
+### Can we get SOC 1 and SOC 2 at the same time?
+
+Yes, and many service organizations do. The general IT controls that support both reports, such as access management, change management and system monitoring, can be designed once and tested for both engagements. Running the two in parallel with the same CPA firm, over the same observation period, reduces duplicate walkthroughs and evidence requests.
+
 ### Do startups need a SOC 1?
 
-It depends on what the startup does. If your startup processes financial transactions, runs payroll, manages payments, or performs any service that touches your clients' financial reporting, you may need a SOC 1 report even at an early stage — especially if your clients are publicly traded companies or financial institutions whose auditors require it. For startups that are primarily SaaS or technology companies focused on data handling, [SOC 2](/glossary/what-is-soc2) is typically the first priority.
+It depends on what the startup does. If your startup processes financial transactions, runs payroll, manages payments, or performs any service that touches your clients' financial reporting, you may need a SOC 1 report even at an early stage, especially if your clients are publicly traded companies or financial institutions whose auditors require it. For startups that are primarily SaaS or technology companies focused on data handling, [SOC 2](/glossary/what-is-soc2) is typically the first priority.
 
 ---
 
 ## Ready to Prepare for a SOC 1 Audit?
 
-Whether you need a SOC 1 report, a SOC 2 report, or both, the preparation process follows the same principle: define your controls, implement them systematically, collect evidence continuously, and engage with an auditor when you are ready — not when you are scrambling.
+Whether you need a SOC 1 report, a SOC 2 report, or both, the preparation process follows the same principle: define your controls, implement them systematically, collect evidence continuously, and engage with an auditor when you are ready, not when you are scrambling.
 
-QuickTrust helps service organizations prepare for SOC 1 and SOC 2 audits with hands-on engineering and compliance expertise. Our team of Big 4-experienced security professionals and DevOps engineers do not just tell you what to fix — they implement the controls, configure the systems, build the evidence collection processes, and coordinate with your auditor so your team can stay focused on running the business.
+QuickTrust helps service organizations prepare for SOC 1 and SOC 2 audits with hands-on engineering and compliance expertise. Our team of Big 4-experienced security professionals and DevOps engineers do not just tell you what to fix; they implement the controls, configure the systems, build the evidence collection processes, and coordinate with your auditor so your team can stay focused on running the business.
 
-- **Gap assessment** — Identify control gaps and remediation priorities before your audit engagement begins
-- **Control implementation** — Engineers configure access management, change management workflows, monitoring, and reconciliation processes
-- **Evidence management** — Automated collection and organization of audit evidence tied to your actual systems
-- **Auditor coordination** — Manage the engagement, respond to auditor requests, and prepare your team for interviews
-- **Multi-framework efficiency** — If you need both SOC 1 and [SOC 2](/glossary/what-is-soc2), QuickTrust maps overlapping controls to reduce duplicate effort and cost
+- **Gap assessment**: Identify control gaps and remediation priorities before your audit engagement begins
+- **Control implementation**: Engineers configure access management, change management workflows, monitoring, and reconciliation processes
+- **Evidence management**: Automated collection and organization of audit evidence tied to your actual systems
+- **Auditor coordination**: Manage the engagement, respond to auditor requests, and prepare your team for interviews
+- **Multi-framework efficiency**: If you need both SOC 1 and [SOC 2](/glossary/what-is-soc2), QuickTrust maps overlapping controls to reduce duplicate effort and cost
 
 **Get your compliance gap assessment at [trust.quickintell.com](https://trust.quickintell.com)**
 

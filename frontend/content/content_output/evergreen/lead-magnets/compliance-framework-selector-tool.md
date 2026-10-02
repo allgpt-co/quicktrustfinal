@@ -1,15 +1,15 @@
 ---
 meta_description: "Compliance Framework Selection: A Guided Worksheet. Practical guidance for working through industry, customer and geography questions."
 target_keyword: "regulatory compliance, compliance framework, which compliance certification"
-secondary_keywords: "soc 2 vs iso 27001, hipaa vs hitrust, compliance certification comparison"
-last_updated: "2026-09-26"
+secondary_keywords: "soc 2 vs iso 27001, hipaa vs hitrust, compliance certification comparison, compliance framework selector"
+last_updated: "2026-10-02"
 title: "Compliance Framework Selection: A Guided Worksheet"
 ---
 
 
 # Compliance Framework Selection: A Guided Worksheet
 
-This guide focuses on working through industry, customer and geography questions. For sequencing framework choices into a practical roadmap, see [Compliance Frameworks: A Decision Tree and Roadmap](/blog/compliance-framework-selector-tool).
+This guide works through the industry, customer, geography and timing questions that determine your first framework, then sequences the choices that follow into a practical roadmap.
 
 **Prepared by QuickTrust | trust.quickintell.com**
 *AI-Powered GRC Platform + Expert Engineering Implementation*
@@ -18,11 +18,11 @@ This guide focuses on working through industry, customer and geography questions
 
 You know you need a compliance certification. Your sales team is losing deals to security questionnaires. A prospect just asked for your SOC 2 report. Your investor sent you a list of "operational maturity" requirements. Or maybe a new regulation just hit your industry and the clock is ticking.
 
-The question is not whether you need regulatory compliance. The question is which compliance framework you should pursue first — and in what order you should stack additional certifications after that.
+The question is not whether you need regulatory compliance. The question is which compliance framework you should pursue first, and in what order you should stack additional certifications after that.
 
 This is the decision most founders, CTOs, and heads of compliance get wrong. They pick a framework because a competitor has it, because a single prospect asked for it, or because it is the one they have heard of most often. The result: months of effort and tens of thousands of dollars spent on a certification that does not unlock the revenue or market access they actually need.
 
-This guide fixes that. Below, you will find a structured decision framework — complete with decision trees, comparison tables, and industry-specific recommendations — that maps your specific situation to the compliance certification you should pursue first. No email gate. No PDF download. Just the answer.
+This guide fixes that. Below, you will find a structured decision framework, complete with decision trees, comparison tables, and industry-specific recommendations, that maps your specific situation to the compliance certification you should pursue first. No email gate. No PDF download. Just the answer.
 
 ---
 
@@ -38,29 +38,35 @@ Before we get into the decision logic, here is a brief overview of the five comp
 | **[PCI DSS](/blog/what-is-pci-dss)** | You meet the Payment Card Industry standard for protecting cardholder data | PCI SSC | 4-12 weeks (SAQ); 3-6 months (ROC) | $10,000-$200,000+ |
 | **[HITRUST](/blog/what-is-hitrust)** | You meet a unified, certifiable framework that incorporates HIPAA, NIST, ISO, and other standards | HITRUST Alliance | 6-12 months | $50,000-$200,000+ |
 
-> **Important distinction:** SOC 2 and ISO 27001 are general-purpose security frameworks. HIPAA and PCI DSS are industry-specific regulatory requirements. HITRUST is a meta-framework that consolidates multiple standards into a single certifiable assessment. Your first framework will almost always be either a general-purpose framework or the regulatory framework mandated by your industry — rarely both at once.
+> **Important distinction:** SOC 2 and ISO 27001 are general-purpose security frameworks. HIPAA and PCI DSS are industry-specific regulatory requirements. HITRUST is a meta-framework that consolidates multiple standards into a single certifiable assessment. Your first framework will almost always be either a general-purpose framework or the regulatory framework mandated by your industry, rarely both at once.
 
 ---
 
 ## Step 1: Identify Your Industry Trigger
 
-The single strongest signal for which compliance framework to pursue first is whether your industry has a regulatory mandate. If a law or regulation requires a specific standard, that standard comes first — regardless of what your sales team is hearing from prospects.
+The single strongest signal for which compliance framework to pursue first is whether your industry has a regulatory mandate. If a law or regulation requires a specific standard, that standard comes first, regardless of what your sales team is hearing from prospects.
 
 **Answer this question: Does your company store, process, or transmit any of the following data types?**
 
 | If You Handle This Data... | The Regulation Is... | Your First Framework Is Likely... |
 |---------------------------|---------------------|----------------------------------|
-| Protected Health Information (PHI) — patient records, diagnoses, treatment data, insurance claims | HIPAA (US federal law) | **HIPAA** compliance first, then SOC 2 or HITRUST |
+| Protected Health Information (PHI): patient records, diagnoses, treatment data, insurance claims | HIPAA (US federal law) | **HIPAA** compliance first, then SOC 2 or HITRUST |
 | Credit card numbers, cardholder data, payment account numbers | PCI DSS (contractual obligation via card brands) | **PCI DSS** compliance first, then SOC 2 |
-| General business data, SaaS customer data, employee data (no PHI, no cardholder data) | No industry-specific regulation mandating a framework | **SOC 2** or **ISO 27001** — proceed to Step 2 |
+| General business data, SaaS customer data, employee data (no PHI, no cardholder data) | No industry-specific regulation mandating a framework | **SOC 2** or **ISO 27001**: proceed to Step 2 |
 | Combination: PHI + general SaaS data | HIPAA + customer contractual requirements | **HIPAA** first, then **SOC 2** or **HITRUST** |
 | Combination: Payment data + general SaaS data | PCI DSS + customer contractual requirements | **PCI DSS** first (scope it tightly), then **SOC 2** |
 
-**If you hit a regulatory trigger, your decision is largely made.** HIPAA compliance is not optional if you handle PHI. PCI DSS is not optional if you process, store, or transmit cardholder data. These are legal and contractual obligations — not competitive differentiators.
+**If you hit a regulatory trigger, your decision is largely made.** HIPAA compliance is not optional if you handle PHI. PCI DSS is not optional if you process, store, or transmit cardholder data. These are legal and contractual obligations, not competitive differentiators.
 
 If you did not hit a regulatory trigger, proceed to Step 2.
 
 ---
+
+### Two more triggers that the table above does not capture
+
+**Personal data of EU or EEA residents.** If you process personal data of people in the EU, GDPR applies regardless of where your company is incorporated. GDPR is a legal obligation rather than a certification: there is no formal GDPR certificate to earn. You demonstrate compliance through documented data protection practices, data processing agreements with customers and vendors, privacy impact assessments where required, and, for many organizations, a designated Data Protection Officer. GDPR does not replace a security framework, which is why companies in this position usually pair it with ISO 27001 (see Step 4 below).
+
+**Controlled Unclassified Information (CUI) for the U.S. government.** If you handle CUI under a defense or federal contract, NIST 800-171 compliance is a contractual requirement embedded through DFARS clauses, and you should prepare for CMMC certification. This is a separate track from the five frameworks in this guide. Like HIPAA and PCI DSS, it is mandated, so it comes first for the contracts that require it. FedRAMP applies instead when you are selling cloud services directly to federal agencies.
 
 ## Step 2: Map Your Customer Base and Geography
 
@@ -125,14 +131,24 @@ Compliance is a business decision, not just a security decision. The framework y
 
 | Your Situation | Recommended First Framework | Why |
 |---------------|---------------------------|-----|
-| Enterprise deal stuck in security review — prospect asked for SOC 2 | **SOC 2 Type I** | Fastest path to unblocking the deal (4-8 weeks with QuickTrust) |
-| Enterprise deal stuck — prospect asked for ISO 27001 | **ISO 27001** | Do what the customer is asking for |
+| Enterprise deal stuck in security review; prospect asked for SOC 2 | **SOC 2 Type I** | Fastest path to unblocking the deal (4-8 weeks with QuickTrust) |
+| Enterprise deal stuck; prospect asked for ISO 27001 | **ISO 27001** | Do what the customer is asking for |
 | No specific deal, but moving upmarket and expect security reviews soon | **SOC 2 Type I** (US) or **ISO 27001** (global) | Get ahead of the ask; having a report ready before the question comes is a competitive advantage |
-| Fundraising — investors asking about security posture | **SOC 2 Type I** | Investors understand SOC 2; it signals operational maturity to boards and LPs |
-| Entering healthcare vertical | **HIPAA** | Regulatory requirement — non-negotiable |
-| Entering payments or fintech vertical | **PCI DSS** | Regulatory and contractual requirement — non-negotiable |
+| Fundraising; investors asking about security posture | **SOC 2 Type I** | Investors understand SOC 2; it signals operational maturity to boards and LPs |
+| Entering healthcare vertical | **HIPAA** | Regulatory requirement, non-negotiable |
+| Entering payments or fintech vertical | **PCI DSS** | Regulatory and contractual requirement, non-negotiable |
 | Large health system or payer requiring HITRUST | **HITRUST** (but consider HIPAA + SOC 2 first) | HITRUST is expensive and slow; see the HITRUST section below for guidance on whether to go direct |
 | Planning to sell to US federal government | **FedRAMP** (outside scope of this guide) | Federal procurement requires FedRAMP authorization; contact QuickTrust for federal compliance engagements |
+
+### Factor in how much time you actually have
+
+Framework selection is not only about what you need. It is about when you need it, and the answer changes the recommendation.
+
+**Deals are stalling now.** SOC 2 Type I is typically the fastest route to a document that enterprise buyers will accept, because it evaluates control design at a point in time rather than operation over a period. Use it to unblock the pipeline, and start the Type II observation period immediately afterward.
+
+**You have a few months before a critical deadline.** Both SOC 2 Type II (with a short observation period) and ISO 27001 become realistic. Type II is what most enterprise buyers ultimately want. ISO 27001 involves a two-stage audit, so it needs the longer runway.
+
+**You are building for the long term with no immediate deal pressure.** Start with whichever framework best matches your strategic market, and build the security program comprehensively rather than optimizing for speed. This is the one situation where choosing ISO 27001 first for a mostly U.S. customer base can be defensible, because its ISMS structure gives you a foundation that SOC 2 can later reuse.
 
 ---
 
@@ -145,12 +161,12 @@ Compliance is a business decision, not just a security decision. The framework y
 SaaS companies selling to other businesses will encounter the SOC 2 question earlier and more frequently than any other compliance ask. Enterprise procurement teams, especially in financial services, legal, and technology, have standardized on requesting SOC 2 Type II reports during vendor security reviews.
 
 **Recommended certification sequence:**
-1. **SOC 2 Type I** — Unblock enterprise deals immediately (4-8 weeks)
-2. **SOC 2 Type II** — Start observation period as soon as Type I is complete (6-12 months)
-3. **ISO 27001** — Add when international expansion begins or when a specific customer requires it
+1. **SOC 2 Type I**: Unblock enterprise deals immediately (4-8 weeks)
+2. **SOC 2 Type II**: Start observation period as soon as Type I is complete (6-12 months)
+3. **ISO 27001**: Add when international expansion begins or when a specific customer requires it
 4. **Additional frameworks** as customer verticals demand (HIPAA if selling to healthcare, PCI DSS if handling payments)
 
-**QuickTrust resource:** [SOC 2 Readiness Scorecard](/blog/soc2-readiness-scorecard) — assess your current state in 10 minutes.
+**QuickTrust resource:** [SOC 2 Readiness Scorecard](/blog/soc2-readiness-scorecard): assess your current state in 10 minutes.
 
 ---
 
@@ -158,15 +174,15 @@ SaaS companies selling to other businesses will encounter the SOC 2 question ear
 
 **Most common first framework:** HIPAA
 
-If your product touches Protected Health Information in any form — patient records, lab results, insurance data, clinical notes, telehealth sessions — HIPAA compliance is your starting point. This is not a competitive differentiator. It is a legal obligation under the Health Insurance Portability and Accountability Act.
+If your product touches Protected Health Information in any form (patient records, lab results, insurance data, clinical notes, telehealth sessions), HIPAA compliance is your starting point. This is not a competitive differentiator. It is a legal obligation under the Health Insurance Portability and Accountability Act.
 
 **Recommended certification sequence:**
-1. **HIPAA** — Complete a HIPAA risk assessment and implement required administrative, physical, and technical safeguards
-2. **SOC 2 Type I** — Many healthcare enterprises require SOC 2 in addition to HIPAA (they are complementary, not redundant)
-3. **HITRUST** — Pursue if your largest customers or payers specifically require HITRUST CSF certification (see HITRUST section below)
+1. **HIPAA**: Complete a HIPAA risk assessment and implement required administrative, physical, and technical safeguards
+2. **SOC 2 Type I**: Many healthcare enterprises require SOC 2 in addition to HIPAA (they are complementary, not redundant)
+3. **HITRUST**: Pursue if your largest customers or payers specifically require HITRUST CSF certification (see HITRUST section below)
 
 **The HIPAA vs. HITRUST question:**
-HIPAA does not have a formal "certification" — it is a regulatory standard enforced by HHS/OCR. HITRUST CSF, on the other hand, is a certifiable framework that incorporates HIPAA along with dozens of other standards. Many large health systems and payers now require HITRUST as proof of HIPAA compliance because it provides a standardized, auditable benchmark.
+HIPAA does not have a formal "certification"; it is a regulatory standard enforced by HHS/OCR. HITRUST CSF, on the other hand, is a certifiable framework that incorporates HIPAA along with dozens of other standards. Many large health systems and payers now require HITRUST as proof of HIPAA compliance because it provides a standardized, auditable benchmark.
 
 **When to go straight to HITRUST:**
 - Your top 3 target customers all require HITRUST by name
@@ -178,7 +194,7 @@ HIPAA does not have a formal "certification" — it is a regulatory standard enf
 - Your customers accept HIPAA attestation + SOC 2 report as sufficient evidence
 - Budget is constrained and you need to prioritize speed to revenue
 
-**QuickTrust resource:** [HIPAA Risk Assessment Template](/blog/hipaa-risk-assessment-template) — the structured template for your required HIPAA risk analysis.
+**QuickTrust resource:** [HIPAA Risk Assessment Template](/blog/hipaa-risk-assessment-template): the structured template for your required HIPAA risk analysis.
 
 ---
 
@@ -189,18 +205,18 @@ HIPAA does not have a formal "certification" — it is a regulatory standard enf
 The fintech landscape has a critical fork: if your product processes, stores, or transmits credit card numbers or cardholder data, PCI DSS is mandatory. If your product handles financial data but not cardholder data directly (e.g., account aggregation, lending platforms, financial planning tools), SOC 2 is typically the first ask.
 
 **Recommended certification sequence (handling cardholder data):**
-1. **PCI DSS** — Determine your merchant or service provider level; complete SAQ or ROC accordingly
-2. **SOC 2 Type I** — Enterprise financial institutions require both PCI DSS and SOC 2
-3. **SOC 2 Type II** — Begin observation period immediately after Type I
-4. **ISO 27001** — Add for international expansion or if required by banking partners
+1. **PCI DSS**: Determine your merchant or service provider level; complete SAQ or ROC accordingly
+2. **SOC 2 Type I**: Enterprise financial institutions require both PCI DSS and SOC 2
+3. **SOC 2 Type II**: Begin observation period immediately after Type I
+4. **ISO 27001**: Add for international expansion or if required by banking partners
 
 **Recommended certification sequence (not handling cardholder data directly):**
-1. **SOC 2 Type I** — The standard ask from banks, insurance companies, and financial services enterprises
-2. **SOC 2 Type II** — Start observation period immediately
-3. **ISO 27001** — Many non-US financial regulators reference ISO 27001
-4. **PCI DSS** — Add only if your product scope expands to include cardholder data
+1. **SOC 2 Type I**: The standard ask from banks, insurance companies, and financial services enterprises
+2. **SOC 2 Type II**: Start observation period immediately
+3. **ISO 27001**: Many non-US financial regulators reference ISO 27001
+4. **PCI DSS**: Add only if your product scope expands to include cardholder data
 
-**QuickTrust resource:** [PCI DSS overview](/blog/what-is-pci-dss) — understand the standard, merchant levels, and SAQ types.
+**QuickTrust resource:** [PCI DSS overview](/blog/what-is-pci-dss): understand the standard, merchant levels, and SAQ types.
 
 ---
 
@@ -211,11 +227,11 @@ The fintech landscape has a critical fork: if your product processes, stores, or
 If you are processing data of EU residents, GDPR applies to you regardless of where your company is incorporated. While GDPR itself is a regulation (not a certifiable framework in this guide's scope), ISO 27001 is the most commonly referenced security standard in GDPR compliance guidance and by EU Data Protection Authorities.
 
 **Recommended certification sequence:**
-1. **ISO 27001** — Demonstrates a certified ISMS; strongly aligned with GDPR Article 32 requirements
-2. **SOC 2 Type I** — Add if US enterprise customers also require it
+1. **ISO 27001**: Demonstrates a certified ISMS; strongly aligned with GDPR Article 32 requirements
+2. **SOC 2 Type I**: Add if US enterprise customers also require it
 3. **Additional frameworks** based on vertical (HIPAA if healthcare, PCI DSS if payments)
 
-**QuickTrust resource:** [ISO 27001 Gap Assessment Checklist](/blog/iso27001-gap-assessment-checklist) — 150 controls across 14 domains.
+**QuickTrust resource:** [ISO 27001 Gap Assessment Checklist](/blog/iso27001-gap-assessment-checklist): 150 controls across 14 domains.
 
 ---
 
@@ -232,7 +248,7 @@ Use this table as a reference when comparing frameworks across dimensions that m
 | **Recurring effort** | Annual audit | Annual surveillance; recertification every 3 years | Ongoing; annual risk assessment recommended | Annual assessment (SAQ or ROC) | Annual interim assessment; recertification every 2 years |
 | **Cost range** | $20K-$80K+ | $25K-$100K+ | $15K-$60K+ | $10K-$200K+ (varies by level) | $50K-$200K+ |
 | **Overlap with others** | Moderate overlap with ISO 27001 (~60% control overlap) | Moderate overlap with SOC 2; strong GDPR alignment | Partial overlap with SOC 2 and ISO 27001 | Minimal overlap with others (highly specialized) | High overlap by design (incorporates HIPAA, NIST, ISO) |
-| **Best "bang for buck" if pursued first** | High — unblocks US enterprise deals fast | High — globally recognized, long-lived certificate | Required if handling PHI — not optional | Required if handling cardholder data — not optional | High if customers require it; expensive if they do not |
+| **Best "bang for buck" if pursued first** | High: unblocks US enterprise deals fast | High: globally recognized, long-lived certificate | Required if handling PHI, not optional | Required if handling cardholder data, not optional | High if customers require it; expensive if they do not |
 
 ---
 
@@ -245,13 +261,13 @@ HITRUST is the most comprehensive and most expensive option. Unless your top cus
 ISO 27001 is a respected framework, but if 90% of your revenue comes from US enterprise customers, SOC 2 is what their procurement teams are asking for. You will spend more time and money getting ISO 27001, and then still need to get SOC 2 to close deals.
 
 **Mistake 3: Getting SOC 2 Type I and stopping there.**
-SOC 2 Type I is a point-in-time snapshot. It gets your foot in the door, but sophisticated buyers — especially in financial services and large enterprise — will ask for Type II within 12 months. Begin your Type II observation period immediately after completing Type I.
+SOC 2 Type I is a point-in-time snapshot. It gets your foot in the door, but sophisticated buyers, especially in financial services and large enterprise, will ask for Type II within 12 months. Begin your Type II observation period immediately after completing Type I.
 
 **Mistake 4: Scoping PCI DSS too broadly.**
 PCI DSS cost and complexity scale directly with the size of your cardholder data environment. Before you begin, work with a QSA (Qualified Security Assessor) to reduce scope through network segmentation, tokenization, and outsourcing payment processing. A well-scoped PCI DSS assessment is a fraction of the cost of an unscoped one.
 
 **Mistake 5: Treating compliance as a one-time project.**
-Every framework in this guide requires ongoing maintenance — annual audits, surveillance assessments, risk reassessments, evidence collection, and control monitoring. If you do not invest in continuous compliance after certification, you will spend as much time and money preparing for your renewal as you did for your initial certification.
+Every framework in this guide requires ongoing maintenance: annual audits, surveillance assessments, risk reassessments, evidence collection, and control monitoring. If you do not invest in continuous compliance after certification, you will spend as much time and money preparing for your renewal as you did for your initial certification.
 
 ---
 
@@ -266,6 +282,14 @@ Q1: Do you handle Protected Health Information (PHI)?
 
 Q2: Do you process, store, or transmit credit card / cardholder data?
     YES --> Start with PCI DSS. Then add SOC 2.
+    NO  --> Go to Q2a.
+
+Q2a: Do you handle Controlled Unclassified Information for the U.S. government?
+    YES --> Start with NIST 800-171 and prepare for CMMC.
+    NO  --> Go to Q2b.
+
+Q2b: Do you process personal data of EU or EEA residents?
+    YES --> Establish GDPR compliance. If you also sell B2B, add ISO 27001.
     NO  --> Go to Q3.
 
 Q3: Are your primary customers in the United States?
@@ -284,7 +308,7 @@ Q5: Which certification is your largest pending deal asking for?
 
 ---
 
-## How QuickTrust Helps You Get Certified — Regardless of Framework
+## How QuickTrust Helps You Get Certified, Regardless of Framework
 
 QuickTrust is not a compliance automation dashboard that leaves you to figure out implementation on your own. It is an open-source GRC platform paired with in-house Security and DevOps engineers who build your compliance controls end-to-end.
 
@@ -312,20 +336,31 @@ Once you have identified your first framework, here is how to think about sequen
 | PCI DSS | SOC 2 | ISO 27001 | PCI DSS is narrowly scoped; SOC 2 extends your security posture across the full organization |
 | HITRUST | SOC 2 (if needed) | ISO 27001 (usually already covered) | HITRUST incorporates ISO and HIPAA; SOC 2 may still be requested by non-healthcare buyers |
 
+### Build the first framework with the second one in mind
+
+The stacking table only pays off if your first implementation anticipates what comes next. A siloed compliance program, built to satisfy one auditor's checklist, has to be partly rebuilt for each new framework. A program built on a shared control set, with each control mapped to every framework it satisfies, lets the second certification reuse most of the first.
+
+In practice this means: write policies that reference control objectives rather than a single framework's clause numbers, collect evidence in a structure that can be re-mapped, and choose a GRC platform or evidence repository that supports multi-framework mapping from the start. The typical progressions look like this:
+
+- SOC 2 Type I, then SOC 2 Type II, then ISO 27001: the natural path for U.S. SaaS companies expanding internationally
+- HIPAA, then SOC 2, then HITRUST: the common path for healthcare SaaS companies moving upmarket
+- SOC 2, then PCI DSS: for SaaS companies that add payment processing features
+- ISO 27001, then SOC 2: for international companies entering the U.S. market
+
 ---
 
 ## Next Steps: Book Your Free 20-Minute Readiness Call
 
 **Still not sure? That is exactly what the readiness call is for.**
 
-In 20 minutes, a QuickTrust compliance engineer will review your specific situation — your industry, customer base, geography, deal pipeline, and current security posture — and give you a concrete recommendation: which framework to pursue first, what it will take, and how long it will take.
+In 20 minutes, a QuickTrust compliance engineer will review your specific situation, your industry, customer base, geography, deal pipeline, and current security posture, and give you a concrete recommendation: which framework to pursue first, what it will take, and how long it will take.
 
 **What you get on the call:**
 - A framework recommendation tailored to your company, not generic advice
 - An honest assessment of your current readiness level
 - A realistic timeline and scope estimate for your first certification
 - Guidance on framework stacking order for multi-certification roadmaps
-- No sales pressure — just clarity on your next step
+- No sales pressure, just clarity on your next step
 
 **Get a personalized compliance roadmap -- book a 20-minute readiness call:**
 [trust.quickintell.com](https://trust.quickintell.com)

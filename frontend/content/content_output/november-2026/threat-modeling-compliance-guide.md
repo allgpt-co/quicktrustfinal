@@ -1,18 +1,18 @@
 ---
 meta_description: "Threat Modeling for SaaS: Workflow and Review Records. Practical guidance for conducting a service-specific threat review and retaining decisions."
 target_keyword: "threat modeling"
-secondary_keywords: "threat modeling methodology, STRIDE threat model, threat modeling framework, threat modeling for compliance, threat analysis"
+secondary_keywords: "threat modeling methodology, STRIDE threat model, threat modeling framework, threat modeling for compliance, threat analysis, threat modeling guide"
 word_count_target: 4500+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "Threat Modeling for SaaS: Workflow and Review Records"
 ---
 
 
 # Threat Modeling for SaaS: Workflow and Review Records
 
-This guide focuses on conducting a service-specific threat review and retaining decisions. For comparing methods for identifying and prioritizing threats, see [Threat Modeling Methods: STRIDE, PASTA and Attack Trees](/blog/threat-modeling-compliance-guide).
+This guide covers both halves of the practice: comparing the methods used to identify and prioritize threats (STRIDE, PASTA, LINDDUN, attack trees, DREAD) and conducting a service-specific threat review whose decisions are retained as audit evidence.
 
 The most expensive vulnerability is the one you discover after it has been exploited. The second most expensive is the one you discover during a penetration test, weeks before an audit, when there is no time to redesign the system that introduced it. The least expensive -- by orders of magnitude -- is the one you identify during design, before a single line of code has been written.
 
@@ -69,7 +69,7 @@ Compliance frameworks have shifted from prescribing specific controls to requiri
 
 ### SOC 2 -- Common Criteria CC3.2
 
-SOC 2 Trust Services Criteria CC3.2 requires organizations to "identify risks to the achievement of its objectives" and to consider "the potential for fraud" and "changes in the external environment." A threat model is one of the strongest forms of evidence for CC3.2 because it documents the specific threats the organization identified, the analysis performed, and the controls selected in response.
+SOC 2 Trust Services Criteria CC3.2 requires organizations to identify risks to the achievement of their objectives and analyze them as a basis for deciding how each risk should be managed. The surrounding criteria CC3.1 through CC3.4 cover specifying objectives clearly enough that risks can be identified, considering the potential for fraud, and identifying changes that could affect the control environment, and the artifacts a threat model produces (DFDs, threat lists, risk scores, and mitigation plans) serve as direct evidence across that set. A threat model is one of the strongest forms of evidence for CC3.2 because it documents the specific threats the organization identified, the analysis performed, and the controls selected in response.
 
 SOC 2 auditors evaluating CC3.2 will ask: How did you determine that your current controls are sufficient? What threats did you consider? A threat model provides a traceable answer.
 
@@ -81,6 +81,7 @@ ISO 27001:2022 includes two requirements directly served by threat modeling:
 
 - **Annex A Control A.5.7 (Threat Intelligence)** requires organizations to collect and analyze information relating to information security threats. Threat modeling is a primary mechanism for doing this at the application and system architecture level.
 - **Clause 6.1.2** requires a documented information security risk assessment process that identifies risks "associated with the loss of confidentiality, integrity, and availability." Threat modeling feeds directly into this risk assessment by identifying the specific threat scenarios that the risk assessment must evaluate.
+- **Clause 8.2** requires that the risk assessment actually be performed at planned intervals and when significant changes occur. A threat model that is refreshed when architecture changes gives you a defensible record that this happened, and the threats it surfaces are what you select Annex A controls against.
 
 ISO 27001 certification auditors will evaluate whether your risk assessment is connected to identified threats. A threat model provides that connection.
 
@@ -103,6 +104,8 @@ For the complete NIST CSF guide, see our [NIST Cybersecurity Framework Implement
 
 PCI DSS v4.0 Requirement 6.3 requires organizations to identify security vulnerabilities and protect system components from known vulnerabilities. More significantly, Requirement 6.2.2 requires that software development personnel working on bespoke and custom software are trained in techniques relevant to their role, including "secure software design" and "threat modeling." PCI DSS 4.0 explicitly names threat modeling as a required competency.
 
+Requirement 12.3 also expects a targeted risk analysis to be performed and repeated on a defined cadence. Threat modeling supports both requirements by identifying application-level vulnerabilities through systematic analysis rather than relying solely on automated scanning.
+
 For organizations handling payment card data, threat modeling is no longer a best practice -- it is a stated requirement.
 
 ### CMMC -- Level 2 and Above
@@ -110,6 +113,12 @@ For organizations handling payment card data, threat modeling is no longer a bes
 The Cybersecurity Maturity Model Certification (CMMC) requires organizations at Level 2 and above to implement NIST SP 800-171 controls. Practice RA.L2-3.11.1 requires organizations to "periodically assess the risk to organizational operations, organizational assets, and individuals, resulting from the operation of organizational systems and the associated processing, storage, or transmission of CUI." Threat modeling provides the structured methodology for identifying the threats that this risk assessment must address.
 
 For CMMC implementation details, see our [CMMC Compliance Guide](/cmmc-compliance).
+
+### HIPAA -- Security Rule Risk Analysis
+
+The HIPAA Security Rule at 45 CFR 164.308(a)(1)(ii)(A) requires covered entities and business associates to conduct an accurate and thorough risk analysis of the potential risks to electronic protected health information (ePHI). A generic, organization-wide risk assessment rarely meets the "accurate and thorough" bar on its own. Threat modeling applied to the systems that create, receive, maintain, or transmit ePHI supplies the technical depth: it identifies where PHI crosses trust boundaries, which components could expose it through disclosure or tampering, and which controls mitigate each path.
+
+If you handle healthcare data, scope the threat model so that every data flow carrying ePHI is explicitly marked on the DFD, and record the threats and treatments for those flows as a distinct section. That makes the risk analysis evidence easy to produce when an auditor or regulator asks for it.
 
 ---
 
@@ -184,6 +193,21 @@ STRIDE is applied by examining each element in your Data Flow Diagram and asking
 4. **For each data flow:** Consider Tampering and Information Disclosure. Can data be modified in transit? Can data be intercepted?
 
 This systematic approach ensures you evaluate every threat category against every component, producing a comprehensive threat inventory.
+
+### Typical Controls for Each STRIDE Category
+
+STRIDE is most useful when each category is paired with the family of controls that addresses it. The table below is a starting point for the mitigation column of your threat inventory. It is not exhaustive, and the right control depends on where the threat sits on the DFD, but it keeps the team from reinventing the mapping for every threat.
+
+| STRIDE Category | What the Attacker Is Doing | Representative Controls |
+|---|---|---|
+| **Spoofing** | Forging authentication tokens, spoofing IP addresses, impersonating email senders or services | Strong authentication (OAuth 2.0, MFA), certificate validation, mutual TLS between services, SPF/DKIM/DMARC for email |
+| **Tampering** | Altering API request parameters, modifying log files, changing database records through injection | Input validation, integrity checks and signatures on data at rest and in transit, immutable or append-only logging, code signing, database access controls |
+| **Repudiation** | Denying that an action was performed when no record proves otherwise | Comprehensive audit logging with tamper-evident storage, digital signatures on critical transactions, non-repudiation steps in high-impact workflows |
+| **Information Disclosure** | Leaking tenant data, exposing sensitive data in error messages, writing credentials to logs, sending data unencrypted | Encryption in transit and at rest, data classification, output filtering and generic client-facing errors, least-privilege data access, log scrubbing |
+| **Denial of Service** | Resource exhaustion, algorithmic complexity attacks, cascading failures across services | Rate limiting, per-tenant resource quotas, circuit breakers, auto-scaling with cost controls, queue back-pressure |
+| **Elevation of Privilege** | Exploiting a vulnerability for administrative access, escaping containers, reaching another tenant's data | Role-based access control, object-level authorization checks, secure coding practices, container isolation, regular access reviews |
+
+When you record a mitigation in Step 6 below, name the specific control from this family that applies to the specific component, rather than the category label. "Encryption" is not a mitigation; "TLS 1.2 or higher enforced on the gRPC channel between the API Gateway and the Auth Service" is.
 
 ### STRIDE Strengths and Limitations
 
@@ -313,6 +337,8 @@ Root: Access customer data without authorization
 
 Each leaf node can be annotated with likelihood, difficulty, cost to the attacker, and detectability. This allows teams to identify the cheapest attack paths -- the routes an attacker is most likely to take -- and prioritize defenses accordingly.
 
+Attack trees also have a specific compliance benefit. They show, visually and in one artifact, that you considered how a threat could materialize end to end and that your controls sit on the most likely paths. For an auditor evaluating whether control selection was risk-based, an annotated attack tree is often easier to follow than a long threat inventory.
+
 ### MITRE ATT&CK
 
 MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge) is a globally accessible knowledge base of adversary tactics and techniques based on real-world observations. It catalogs how attackers actually operate, organized by:
@@ -333,6 +359,22 @@ MITRE ATT&CK enhances threat modeling by grounding it in real-world attacker beh
 This approach is particularly valuable for compliance frameworks that reference threat intelligence. ISO 27001 A.5.7 requires organizations to collect and analyze threat intelligence. NIST CSF ID.RA-02 requires receiving cyber threat intelligence from information sharing forums. ATT&CK provides the structured intelligence these controls demand.
 
 For incident response planning informed by ATT&CK, see our [Incident Response Plan Guide](/incident-response-plan).
+
+---
+
+## Choosing a Methodology
+
+The methodologies above are not mutually exclusive, and most mature programs combine two or three. Use this table to decide where to start and what to add as the program matures.
+
+| Method | Primary Question It Answers | Best Fit | Main Output | Typical Pairing |
+|---|---|---|---|---|
+| **STRIDE** | What categories of threat apply to each element? | First threat model, teams new to the practice, first compliance certification | Threat inventory per DFD element | DREAD or likelihood x impact scoring for prioritization |
+| **PASTA** | Which attack scenarios matter most to the business? | Mature security programs, high-risk data, executive-level risk justification | Prioritized attack scenarios tied to business impact | Attack trees in Stage 6, MITRE ATT&CK for threat intelligence |
+| **LINDDUN** | Which privacy properties are at risk? | Any system processing personal data, GDPR or CCPA obligations | Privacy threat inventory | STRIDE for the security dimension |
+| **Attack Trees** | How would an attacker reach a specific goal? | Deep analysis of a single high-value objective, control placement decisions | Annotated attack paths | STRIDE or PASTA as the broader inventory |
+| **MITRE ATT&CK** | What techniques do real adversaries use against systems like ours? | Detection engineering, threat intelligence requirements | Technique coverage and detection gap map | Any of the above |
+
+A practical sequence for a SaaS company is: STRIDE on a DFD for the first model, LINDDUN added for personal data flows, DREAD or likelihood x impact scoring to rank the inventory, and attack trees reserved for the two or three highest-value objectives such as cross-tenant data access or administrative takeover. PASTA becomes worthwhile when leadership needs business-risk framing to fund remediation or when the organization faces targeted adversaries.
 
 ---
 
@@ -380,6 +422,8 @@ Trust Boundaries:
   -- Internal / Third-party boundary (between Application Service and Payment Processor)
   -- Tenant isolation boundary (within Customer DB and Object Storage)
 ```
+
+For SaaS applications, two sets of flows must appear on the DFD even though teams often omit them. The first is multi-tenant data flow: show how tenant context is established at the gateway, propagated through services, and enforced at each data store, so that the tenant isolation boundary is a real line on the diagram rather than an assumption. The second is administrative access: internal admin consoles, support impersonation features, database access from operator workstations, CI/CD deploy credentials, and infrastructure control-plane access. These privileged paths are where elevation of privilege and repudiation threats concentrate, and a DFD that shows only customer-facing traffic will miss them.
 
 The DFD should represent the system at a level of abstraction appropriate for threat analysis. Too high-level and you miss threats. Too detailed and the analysis becomes unmanageable. For most SaaS applications, a DFD that shows individual services, their data stores, and external integrations is the right level.
 
@@ -432,6 +476,22 @@ For each threat, evaluate:
 Use a consistent scoring scale (e.g., 1-5 for both likelihood and impact, producing a risk score from 1-25). This aligns with the risk assessment methodology your compliance framework requires.
 
 For a detailed risk scoring methodology, see our [Risk Assessment Template Guide](/risk-assessment-template).
+
+#### DREAD as an Alternative Scoring Model
+
+Some teams prefer DREAD, a five-dimension scoring model that breaks likelihood and impact into more specific questions. It is useful when a two-factor score produces too many ties or when reviewers disagree about what "likelihood" means for a given threat.
+
+| Dimension | Question to Ask | Low End of the Scale | High End of the Scale |
+|---|---|---|---|
+| **Damage Potential** | How bad is it if the threat is realized? | Minimal, contained impact | Complete system or data compromise |
+| **Reproducibility** | How reliably can the attack be repeated? | Requires rare, specific conditions | Works every time, trivially |
+| **Exploitability** | What skill and resources does the attacker need? | Advanced expertise and custom tooling | Anyone with a browser |
+| **Affected Users** | How many users or tenants are impacted? | A single user | All users across all tenants |
+| **Discoverability** | How easy is it to find the weakness? | Requires insider knowledge | Visible from public documentation or responses |
+
+Score each dimension on the same scale (1 to 10 is common), then sum or average the five scores to produce the overall rating. Threats with the highest totals are addressed first.
+
+DREAD is often criticized because the scores are subjective, and two reviewers can rate the same threat differently. Two practices reduce that problem. First, write a one-line definition for each scale point before scoring begins so that the team shares a rubric. Second, record the rationale next to each score, not just the number. For compliance purposes, a documented scoring rubric plus per-threat rationale is more defensible than any particular numeric scale, because it shows the auditor that prioritization was systematic rather than ad hoc. Whichever model you choose, use one model consistently across the organization so that threats from different systems can be compared in the same [risk register](/risk-assessment-template).
 
 ### Step 6: Define Mitigations
 

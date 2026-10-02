@@ -2,21 +2,34 @@
 title: "Encryption Compliance: Key Management and Evidence"
 meta_description: "Encryption Compliance: Key Management and Evidence. Practical guidance for reviewing key-management operations and evidence needs."
 target_keyword: "encryption compliance requirements"
-secondary_keywords: "encryption at rest SOC 2, TLS compliance HIPAA, AES-256 compliance, key management ISO 27001, PCI DSS encryption requirements, AWS KMS compliance"
+secondary_keywords: "encryption at rest SOC 2, TLS compliance HIPAA, AES-256 compliance, key management ISO 27001, PCI DSS encryption requirements, AWS KMS compliance, encryption at rest"
 word_count_target: "1500"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 ---
 
 
 # Encryption Compliance: Key Management and Evidence
 
-This guide focuses on reviewing key-management operations and evidence needs. For distinguishing protection boundaries and practical implementation choices, see [Encryption at Rest and in Transit: Implementation Guide](/blog/encryption-compliance-guide).
+This guide covers protection boundaries, practical implementation choices, key-management operations and the evidence auditors expect.
 
 Encryption is one of the most scrutinized controls in any compliance audit. Every major framework -- SOC 2, ISO 27001, HIPAA, and PCI DSS -- requires organizations to protect sensitive data through encryption, both when it is stored (at rest) and when it moves between systems (in transit). Despite this universal requirement, encryption remains a frequent source of audit findings, not because organizations fail to encrypt, but because they encrypt inconsistently, manage keys poorly, or cannot produce evidence of their encryption posture.
 
 This guide covers what each framework requires, which encryption standards satisfy auditors, how to implement encryption correctly across cloud environments, and where organizations most commonly fail.
+
+## At Rest and In Transit Are Separate Controls
+
+Frameworks evaluate the two independently, and auditors test them independently. Implementing one without the other is insufficient.
+
+| Dimension | Encryption at Rest | Encryption in Transit |
+|---|---|---|
+| **Protects data when** | Stored on disk or persistent media | Moving across a network |
+| **Threat model** | Unauthorized physical or logical access to storage | Network eavesdropping, man-in-the-middle attacks |
+| **Primary mechanism** | AES-256 (symmetric) | TLS 1.2/1.3 (asymmetric key exchange plus symmetric session keys) |
+| **Implementation layer** | Disk, database, file system, application | Network and transport layer |
+| **Common failure** | Unencrypted backups, unencrypted database volumes | Internal service-to-service traffic in plaintext |
+| **Compliance references** | SOC 2 CC6.1, ISO A.8.24, HIPAA 164.312(a)(2)(iv), PCI DSS 3.5 | SOC 2 CC6.7, ISO A.8.24, HIPAA 164.312(e)(1), PCI DSS 4.2 |
 
 ## Encryption Requirements by Framework
 
@@ -65,6 +78,30 @@ Algorithms that are not acceptable:
 - **Certificate validity:** Certificates must be valid, not expired, issued by a trusted certificate authority, and use RSA-2048+ or ECC P-256+ keys.
 - **HSTS (HTTP Strict Transport Security):** Should be enabled for web applications to prevent protocol downgrade attacks.
 
+## Covering Every Storage Layer
+
+Audit findings rarely come from the primary production database. They come from the layers nobody inventoried.
+
+**Databases.** Enable Transparent Data Encryption on every production database. Cloud-managed services often enable it by default, but verify rather than assume. RDS encryption must be set at creation. Cloud SQL and Azure SQL default to provider-managed keys, and customer-managed keys must be configured deliberately. The same applies to managed NoSQL services such as DynamoDB, Firestore, and MongoDB Atlas.
+
+**Object and block storage.** Turn on default encryption for every bucket and volume. On AWS, the `s3-bucket-server-side-encryption-enabled` Config rule detects non-compliant buckets automatically. Use customer-managed keys for data subject to compliance requirements.
+
+**Full-disk encryption.** Enforce it on servers, including development and staging, and on every company-issued laptop through FileVault, BitLocker, or LUKS. Use MDM to verify and enforce the status, because auditors ask for fleet-wide evidence, not a policy statement.
+
+**Backups.** Production data is encrypted but the nightly dump written to an object storage bucket is not. That single gap invalidates the control for all of that data. Verify that backups, snapshots, and archives inherit or explicitly configure encryption, and test restoration from encrypted backups to confirm the keys are accessible.
+
+**Field-level encryption.** For the most sensitive elements (Social Security numbers, account numbers, health identifiers, API secrets), encrypt individual fields in the application layer so that database administrators and anyone with SELECT access see only ciphertext. Well-audited libraries include the AWS Encryption SDK, Google Tink, and libsodium. Encrypted fields cannot be searched directly; blind indexing (a keyed hash stored alongside the ciphertext) supports exact-match queries, and deterministic encryption supports equality searches at the cost of leaking frequency information.
+
+## In Transit: Certificates, HSTS, and Internal Traffic
+
+**Certificate management.** Manual renewal is a reliable source of both outages and findings. Use a CA that supports automated issuance and renewal (Let's Encrypt, AWS Certificate Manager, GCP Certificate Manager, or Azure App Service Certificates), automate renewal, and alert on certificates approaching expiration.
+
+**HSTS configuration.** Set the `Strict-Transport-Security` header with a `max-age` of at least `31536000` and the `includeSubDomains` directive. Once behavior is verified, consider submitting the domain to the HSTS preload list. Missing HSTS on a public application is one of the easiest findings for an auditor to write.
+
+**Internal service-to-service traffic.** This is where most SaaS companies have gaps. External traffic is encrypted while microservices talk over plaintext HTTP. A service mesh with mTLS (Istio, Linkerd, Consul Connect) is the most complete solution. If a mesh is not practical, issue internal certificates from an internal CA such as HashiCorp Vault, AWS Private CA, or step-ca, and enable TLS on internal load balancers.
+
+**Database connections.** Application-to-database connections frequently run unencrypted over the internal network, exposing credentials and query results. Every major engine supports TLS for client connections. Enforce it: `sslmode=verify-full` for PostgreSQL, `--require_secure_transport=ON` on the server and `ssl-mode=REQUIRED` on the client for MySQL.
+
 ## Key Management
 
 Encryption without proper key management is like locking a door and leaving the key under the mat. Every framework requires a documented key management lifecycle:
@@ -78,6 +115,25 @@ Encryption without proper key management is like locking a door and leaving the 
 **Key access control:** Limit key access to the minimum number of individuals required. PCI DSS requires split knowledge and dual control for manual key management operations.
 
 **Key retirement and destruction:** Define procedures for retiring old keys and securely destroying keys that are no longer needed. Maintain records of key lifecycle events.
+
+### Envelope Encryption
+
+The standard cloud pattern is two-tier. Data is encrypted with a data encryption key (DEK), and the DEK is encrypted with a key encryption key (KEK) held in the KMS. This is efficient because the KMS only handles the small DEK, not the data payload. It makes rotation practical because rotating the KEK means re-encrypting the DEK rather than all the underlying data. And it centralizes the audit trail, since every key operation is logged by the KMS. AWS KMS, GCP Cloud KMS, and Azure Key Vault all implement it natively.
+
+### Separation of Duties
+
+Auditors verify that the people or service accounts that manage keys are not the same ones that access encrypted data. Implement this in IAM: grant key management permissions (create, rotate, delete) to a security or infrastructure team, and grant key usage permissions (encrypt, decrypt) to the application service accounts that read and write data. Use distinct roles and least privilege. Key deletion should require multi-party approval or a waiting period.
+
+### Provider-Managed Keys, CMK, BYOK, and HYOK
+
+| Approach | Description | Compliance implication |
+|---|---|---|
+| **Provider-managed keys** | The cloud provider generates and manages keys entirely | Sufficient for a SOC 2 and ISO 27001 baseline; HIPAA and PCI DSS assessors may want more assurance |
+| **Customer-managed keys (CMK)** | You create keys in the provider's KMS and control the access policies | Preferred across all frameworks; provides a customer-controlled audit trail of key usage |
+| **Bring Your Own Key (BYOK)** | You generate keys outside the cloud and import them into the provider's KMS | Required by some financial regulators and government contracts; adds operational complexity |
+| **Hold Your Own Key (HYOK)** | You hold the key externally and the provider never has the plaintext key | Maximum control; limits some cloud service functionality |
+
+For most SaaS companies pursuing SOC 2, ISO 27001, HIPAA, or PCI DSS, customer-managed keys in the provider's KMS are the right balance of security, auditability, and operational simplicity. BYOK is rarely justified unless a specific regulatory or contractual requirement demands it.
 
 ## Cloud Provider Encryption Options
 
@@ -107,6 +163,14 @@ Encryption without proper key management is like locking a door and leaving the 
 
 **Transparent Data Encryption (TDE):** Enabled by default for Azure SQL Database and Azure Synapse Analytics. Supports service-managed keys or customer-managed keys through Key Vault.
 
+## Multi-Tenant SaaS Considerations
+
+When many customers share infrastructure, the encryption strategy has to account for tenant isolation and customer-specific key requirements.
+
+**Per-tenant keys.** Assign each tenant a unique DEK stored in the KMS and wrapped by a master KEK through envelope encryption. Use KMS key policies or IAM conditions so that a service processing Tenant A's data cannot reach Tenant B's key. Performance overhead is small because the DEK is cached after the first decryption; the KMS is not called on every operation. Per-tenant keys also enable cryptographic deletion: when a customer offboards, deleting their key renders their data unrecoverable without depending on database deletion alone. Enterprise buyers increasingly ask for this contractually.
+
+**Customer-managed keys for enterprise tenants.** Some customers require that their own KMS (AWS KMS, Cloud KMS, or Key Vault) wrap the DEK for their data, so they can revoke access at any time. Your application must handle revocation gracefully with circuit breakers and clear error messaging. Offering this is a meaningful differentiator in enterprise security reviews.
+
 ## Common Audit Failures
 
 **Unencrypted data stores discovered during audit.** The most straightforward failure: auditors find databases, object storage buckets, or disk volumes that contain in-scope data without encryption enabled. This is particularly common with legacy systems, development environments that mirror production data, and backup storage.
@@ -120,6 +184,51 @@ Encryption without proper key management is like locking a door and leaving the 
 **Inconsistent encryption policy.** Having a policy that requires AES-256 encryption for Confidential data but deploying AES-128 or no encryption on some Confidential data stores demonstrates a gap between policy and practice.
 
 **Missing encryption in non-production environments.** If test or staging environments contain copies of production data (especially PHI or cardholder data), those environments must meet the same encryption requirements. Auditors check non-production systems specifically for this gap.
+
+**Internal traffic unencrypted.** Microservices and application-to-database connections run over plaintext HTTP or non-TLS database protocols inside the network. Prioritize connections that carry sensitive data: database connections, authentication services, and anything handling PII.
+
+**No evidence that encryption is actually enabled.** The policy says encryption is used, but there are no configuration exports, screenshots, or audit logs showing it is active on specific resources. Auditors need evidence, not assertions.
+
+## Encryption Compliance Checklist
+
+**At rest**
+- [ ] All production databases, data warehouses, and analytics stores encrypted at rest
+- [ ] Default encryption enabled on every object storage bucket and block storage volume
+- [ ] All database backups and snapshots encrypted
+- [ ] Full-disk encryption enforced on servers and employee endpoints, verified through MDM
+- [ ] Development and staging environments holding customer data copies encrypted
+- [ ] Field-level encryption applied to the most sensitive data elements
+
+**In transit**
+- [ ] TLS 1.2 minimum on all external endpoints and APIs, with TLS 1.0 and 1.1 explicitly disabled
+- [ ] HSTS configured with a max-age of at least one year
+- [ ] Internal service-to-service traffic encrypted with TLS or mTLS
+- [ ] Database connections from application servers use TLS
+- [ ] VPN or encrypted tunnels for site-to-site connectivity; SSH only for administrative access
+- [ ] Certificate renewal automated with expiration monitoring
+
+**Key management**
+- [ ] Keys managed in a dedicated KMS, never in code or configuration files
+- [ ] Envelope encryption in use
+- [ ] Rotation policy documented, automatic rotation enabled where available
+- [ ] Separation of duties between key administrators and data users
+- [ ] Key access logged and auditable; key deletion gated by approval or a waiting period
+- [ ] Retired keys decommissioned and documented
+
+**Documentation and evidence**
+- [ ] Encryption policy approved by management and reviewed at least annually
+- [ ] Configuration evidence collected and mapped to specific controls (CC6.1, CC6.7, A.8.24, 164.312, Requirements 3.5 and 4.2)
+- [ ] Exceptions documented with risk assessments and compensating controls
+
+## Frequently Asked Questions
+
+### Can we rely on the cloud provider's default encryption?
+
+Default encryption such as SSE-S3 or GCP's provider-managed keys satisfies the baseline at-rest requirement for SOC 2 and ISO 27001. HIPAA and PCI DSS assessors generally prefer customer-managed keys because they give you a customer-controlled audit trail and prevent the provider from having sole control over decryption. Customer-managed keys through the provider's KMS are the recommended approach for every framework.
+
+### How do we prove encryption is enabled during an audit?
+
+Collect and keep: configuration exports or console screenshots showing encryption on databases, buckets, and volumes; Config rule evaluation results or the equivalent; SSL Labs results and `openssl s_client` output for public endpoints showing TLS version and cipher suite; KMS audit logs showing key creation, rotation, and usage; the approved encryption policy with its review date; and rotation records such as KMS logs or change tickets. Each artifact should be mapped to the control it satisfies.
 
 ## How QuickTrust Engineers Implement Encryption
 

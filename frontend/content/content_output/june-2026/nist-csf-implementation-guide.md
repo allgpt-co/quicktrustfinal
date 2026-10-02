@@ -4,15 +4,38 @@ target_keyword: "NIST cybersecurity framework"
 secondary_keywords: "NIST CSF 2.0, CSF implementation, cybersecurity framework, NIST CSF mapping, NIST CSF SOC 2"
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-27"
+last_updated: "2026-10-02"
 title: "NIST CSF 2.0: Implementation and Review Planning"
 ---
 
 # NIST CSF 2.0: Implementation and Review Planning
 
-Use a CSF implementation plan to turn desired cybersecurity outcomes into owned, evidence-backed work. For the framework's concepts and boundaries, start with [NIST Cybersecurity Framework: Functions and Profiles](/blog/nist-csf-implementation-guide). This companion guide focuses on the working process.
+Use a CSF implementation plan to turn desired cybersecurity outcomes into owned, evidence-backed work. The framework's functions, Profiles and Tiers are summarized first; the numbered steps that follow focus on the working process.
 
 [NIST's CSF 2.0 quick-start guides](https://www.nist.gov/cyberframework/quick-start-guides) explain organizational profiles, Tiers and supporting tools. The sequence below is an editorial planning approach, not a mandatory certification procedure. NIST does not issue a CSF certificate.
+
+## The six functions as planning prompts
+
+CSF 2.0 organizes outcomes under six functions: Govern, Identify, Protect, Detect, Respond and Recover. They describe outcomes rather than prescribe one technical implementation, and they are discussed together rather than worked through as a sequence that ends after recovery. The questions below are editorial prompts for a planning session, not a substitute for the framework's categories and subcategories.
+
+| Function | A useful planning question |
+|---|---|
+| Govern | Who decides how cybersecurity risk is managed and how those decisions are reviewed? |
+| Identify | Which assets, dependencies and risks matter to the organization? |
+| Protect | Which safeguards support the services and assets in scope? |
+| Detect | How will potentially adverse events be noticed and analyzed? |
+| Respond | Who acts when an incident occurs, and how are actions coordinated? |
+| Recover | How will affected services be restored and recovery communicated? |
+
+Answers should be specific enough that another person can understand the scope and the supporting evidence.
+
+## Profiles, Tiers and certification claims
+
+A Profile connects outcomes to the organization's circumstances and priorities. A Current Profile distinguishes outcomes achieved from work still in progress; a Target Profile expresses the intended destination. Comparing the two is what supports prioritization in the steps below.
+
+Tiers are different. They describe the rigor of cybersecurity risk governance and management practices, and their names are Partial, Risk Informed, Repeatable and Adaptive. Use them to support a conversation about risk management rather than as a universal target score. A Tier label does not establish SOC 2 readiness, ISO certification or legal compliance.
+
+Most organizations use CSF voluntarily, and NIST does not operate a certification program. A supplier's statement that it uses CSF should prompt questions about scope, outcomes and evidence rather than an assumption that a certificate exists. When comparing CSF with [SOC 2](/soc-2-compliance) or [ISO 27001](/iso-27001-certification), record the version, scope and evidence required for each; a mapping is a relationship to investigate, not proof that one safeguard satisfies every mapped requirement.
 
 ## 1. Agree the scope and the reason for the work
 

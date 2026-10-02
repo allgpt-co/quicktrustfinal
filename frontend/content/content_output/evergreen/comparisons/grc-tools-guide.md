@@ -24,7 +24,7 @@ Most tools fall into one of four groups. The boundaries blur, but the groups dif
 | Open-source options | Teams with engineering capacity and a preference for self-hosting | No license cost, full control over data and customization | Hosting, maintenance and framework content become your responsibility |
 | Spreadsheets and documents | Very early teams or single-framework programs | Zero tooling cost, immediate start | No automation, no audit trail, breaks down as controls and evidence multiply |
 
-Enterprise suites include those from vendors such as [ServiceNow](https://www.servicenow.com), [OneTrust](https://www.onetrust.com), [AuditBoard](https://www.auditboard.com) and [LogicGate](https://www.logicgate.com). This article does not describe their features; each vendor's site states its own capabilities. Compliance automation platforms are covered in more depth in the [compliance automation platforms comparison](/blog/compliance-automation-platforms-comparison). For the open-source route, [open-source GRC vs enterprise platforms](/blog/opensource-grc-vs-enterprise-platforms) weighs the trade-offs.
+Enterprise suites include those from vendors such as [ServiceNow](https://www.servicenow.com), [OneTrust](https://www.onetrust.com), [Optro, formerly AuditBoard](https://optro.ai) and [LogicGate](https://www.logicgate.com). This article does not describe their features; each vendor's site states its own capabilities. Compliance automation platforms are covered in more depth in the [compliance automation platforms comparison](/blog/compliance-automation-platforms-comparison). For the open-source route, [open-source GRC vs enterprise platforms](/blog/opensource-grc-vs-enterprise-platforms) weighs the trade-offs.
 
 ## Capability areas to evaluate
 
