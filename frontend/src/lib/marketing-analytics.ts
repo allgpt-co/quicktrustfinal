@@ -1,6 +1,8 @@
 import { MARKETING_PATHS, RESOURCE_SLUGS } from "@/lib/marketing-routes";
 
 export type MarketingLeadForm = "contact" | "booking" | "readiness";
+export type MarketingToolEvent = "readiness_assessment_used" | "roi_calculator_used";
+const marketingToolEvents: readonly MarketingToolEvent[] = ["readiness_assessment_used", "roi_calculator_used"];
 export type AnalyticsConsent = "granted" | "denied" | null;
 export const ANALYTICS_CONSENT_EVENT = "qt:analytics-consent";
 
@@ -20,6 +22,7 @@ type Gtag = {
   (command: "event", eventName: "generate_lead", parameters: { form_type: MarketingLeadForm } & AnalyticsContext): void;
   (command: "event", eventName: "page_view", parameters: MarketingPageView): void;
   (command: "event", eventName: DirectoryEvent, parameters: { content_group: "compliance_directory" } & AnalyticsContext): void;
+  (command: "event", eventName: MarketingToolEvent, parameters: { content_group: "marketing_tools" } & AnalyticsContext): void;
 };
 
 export type DirectoryEvent = 'directory_search' | 'directory_compare' | 'directory_source_click' | 'directory_checklist_download';
@@ -117,7 +120,11 @@ export function setAnalyticsConsent(consent: Exclude<AnalyticsConsent, null>): v
   if (typeof window !== "undefined") window.dispatchEvent(new Event(ANALYTICS_CONSENT_EVENT));
 }
 
-/** Analytics is opt-in: missing and denied decisions both block collection. */
+/**
+ * Google Consent Mode: collection runs cookieless by default, and only an explicit
+ * "granted" decision enables analytics cookies. Missing and denied decisions both
+ * keep the tag in its cookieless, denied-storage state.
+ */
 export function hasAnalyticsConsent(): boolean { return getAnalyticsConsent() === "granted"; }
 
 export function getAnalyticsConsentParameters(granted: boolean): ConsentParameters {
@@ -170,7 +177,7 @@ function validLeadForm(form: MarketingLeadForm): form is MarketingLeadForm {
 export function trackMarketingPageView(pathname: string, title?: string): boolean {
   const measurementId = getGa4MeasurementId();
   const normalizedPath = safePagePath(pathname);
-  if (!measurementId || typeof window === "undefined" || typeof window.gtag !== "function" || !hasAnalyticsConsent() || !isAllowedAnalyticsPath(normalizedPath)) return false;
+  if (!measurementId || typeof window === "undefined" || typeof window.gtag !== "function" || !isAllowedAnalyticsPath(normalizedPath)) return false;
   window.gtag("event", "page_view", { page_path: normalizedPath, ...safeContext(normalizedPath, title) });
   return true;
 }
@@ -179,8 +186,17 @@ export function trackMarketingPageView(pathname: string, title?: string): boolea
 export function trackMarketingLead(form: MarketingLeadForm): boolean {
   const measurementId = getGa4MeasurementId();
   const pathname = typeof window === "undefined" ? "/" : window.location.pathname;
-  if (!measurementId || !validLeadForm(form) || typeof window === "undefined" || typeof window.gtag !== "function" || !hasAnalyticsConsent() || !isAllowedAnalyticsPath(pathname)) return false;
+  if (!measurementId || !validLeadForm(form) || typeof window === "undefined" || typeof window.gtag !== "function" || !isAllowedAnalyticsPath(pathname)) return false;
   window.gtag("event", "generate_lead", { form_type: form, ...safeContext(pathname) });
+  return true;
+}
+
+/** Records that a public self-service tool was used; never its inputs or results. */
+export function trackMarketingTool(event: MarketingToolEvent): boolean {
+  const measurementId = getGa4MeasurementId();
+  const pathname = typeof window === "undefined" ? "/" : window.location.pathname;
+  if (!measurementId || !marketingToolEvents.includes(event) || typeof window === "undefined" || typeof window.gtag !== "function" || !isAllowedAnalyticsPath(pathname)) return false;
+  window.gtag("event", event, { content_group: "marketing_tools", ...safeContext(pathname) });
   return true;
 }
 
@@ -189,7 +205,7 @@ export function trackDirectoryEvent(event: DirectoryEvent): boolean {
   const pathname = typeof window === 'undefined' ? '' : window.location.pathname;
   if (!['directory_search', 'directory_compare', 'directory_source_click', 'directory_checklist_download'].includes(event)
     || !getGa4MeasurementId() || typeof window === 'undefined' || typeof window.gtag !== 'function'
-    || !hasAnalyticsConsent() || !isAllowedAnalyticsPath(pathname)
+    || !isAllowedAnalyticsPath(pathname)
     || !(pathname === '/compliance-directory' || pathname.startsWith('/compliance-directory/'))) return false;
   window.gtag('event', event, { content_group: 'compliance_directory', ...safeContext(pathname) });
   return true;

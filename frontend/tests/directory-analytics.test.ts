@@ -23,9 +23,8 @@ afterEach(() => {
   window.__qtAnalyticsConsent = null;
   window.history.replaceState({}, '', '/');
 });
-test('directory use is opt-in, bounded and separated from qualified leads', () => {
-  expect(trackDirectoryEvent('directory_search')).toBe(false);
-  window.__qtAnalyticsConsent = 'granted';
+test('directory use is cookieless by default, bounded and separated from qualified leads', () => {
+  // Consent Mode: events are sent before a cookie decision; only storage is gated.
   expect(trackDirectoryEvent('directory_search')).toBe(true);
   expect(window.gtag).toHaveBeenCalledWith(
     'event',
@@ -41,8 +40,8 @@ test('directory use is opt-in, bounded and separated from qualified leads', () =
   // Runtime validation also rejects a caller bypassing the TypeScript union.
   expect(trackDirectoryEvent('private@example.com' as never)).toBe(false);
   window.__qtAnalyticsConsent = 'denied';
-  expect(trackDirectoryEvent('directory_source_click')).toBe(false);
-  expect(window.gtag).toHaveBeenCalledTimes(1);
+  expect(trackDirectoryEvent('directory_source_click')).toBe(true);
+  expect(window.gtag).toHaveBeenCalledTimes(2);
 });
 test('unknown directory paths cannot send events', () => {
   window.__qtAnalyticsConsent = 'granted';

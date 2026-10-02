@@ -89,22 +89,27 @@ describe("MarketingAnalytics", () => {
     expect(gtag.mock.calls.filter(([command, name]) => command === "event" && name === "page_view")).toHaveLength(2);
   });
 
-  test("does not load or emit analytics without consent or on app routes", async () => {
+  test("runs cookieless with denied storage before consent and never on app routes", async () => {
     document.cookie = "qt_analytics_consent=; Max-Age=0; path=/";
+    document.cookie = "_ga=GA1.1.stale; path=/";
     const view = render(<MarketingAnalytics />);
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(gtag.mock.calls.filter(([command, name]) => command === "event" && name === "page_view")).toHaveLength(0);
-    expect(document.getElementById("quicktrust-ga4-script")).toBeNull();
+    await waitFor(() => expect(gtag).toHaveBeenCalledWith("event", "page_view", expect.any(Object)));
+    expect(document.getElementById("quicktrust-ga4-script")).not.toBeNull();
+    expect(gtag).toHaveBeenCalledWith("consent", "default", expect.objectContaining({ analytics_storage: "denied" }));
+    expect(gtag).toHaveBeenCalledWith("consent", "update", expect.objectContaining({ analytics_storage: "denied" }));
+    expect(gtag).not.toHaveBeenCalledWith("consent", "update", expect.objectContaining({ analytics_storage: "granted" }));
+    expect(document.cookie).not.toContain("_ga=");
+    expect((window as unknown as Record<string, boolean>)["ga-disable-G-QUICKTRUST123"]).toBe(false);
 
-    document.cookie = "qt_analytics_consent=granted; path=/";
+    gtag.mockClear();
     currentPath = "/dashboard";
     view.rerender(<MarketingAnalytics />);
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(gtag.mock.calls.filter(([command, name]) => command === "event")).toHaveLength(0);
-    expect(document.getElementById("quicktrust-ga4-script")).toBeNull();
+    expect((window as unknown as Record<string, boolean>)["ga-disable-G-QUICKTRUST123"]).toBe(true);
   });
 
-  test("uses the real gtag arguments-object queue and revocation blocks later views", async () => {
+  test("uses the real gtag arguments-object queue and revocation only withdraws storage", async () => {
     window.gtag = undefined;
     const view = render(<MarketingAnalytics />);
     await waitFor(() => expect(window.dataLayer?.length).toBeGreaterThan(0));
@@ -126,7 +131,12 @@ describe("MarketingAnalytics", () => {
 
     const pageViewsBeforeRevoke = window.dataLayer?.filter((entry) => Array.from(entry as IArguments)[1] === "page_view").length;
     setAnalyticsConsent("denied");
-    await waitFor(() => expect((window as unknown as Record<string, boolean>)["ga-disable-G-QUICKTRUST123"]).toBe(true));
+    await waitFor(() => expect(window.dataLayer?.some((entry) => {
+      const args = Array.from(entry as IArguments);
+      return args[0] === "consent" && args[1] === "update" && (args[2] as { analytics_storage: string }).analytics_storage === "denied";
+    })).toBe(true));
+    // Declining withdraws cookies but keeps cookieless measurement on; the same page is not re-counted.
+    expect((window as unknown as Record<string, boolean>)["ga-disable-G-QUICKTRUST123"]).toBe(false);
     expect(window.dataLayer?.filter((entry) => Array.from(entry as IArguments)[1] === "page_view").length).toBe(pageViewsBeforeRevoke);
 
     currentPath = "/dashboard";

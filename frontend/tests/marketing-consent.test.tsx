@@ -34,7 +34,7 @@ describe("MarketingConsent", () => {
     expect(screen.getByRole("button", { name: /allow google analytics/i })).toBeVisible();
     expect(screen.getByRole("button", { name: /decline google analytics/i })).toBeVisible();
     expect(screen.getByRole("link", { name: /privacy policy/i })).toHaveAttribute("href", "/privacy-policy");
-    expect(screen.getByText(/not enabled until you choose allow/i)).toBeVisible();
+    expect(screen.getByText(/cookieless until you choose allow/i)).toBeVisible();
   });
 
   test("persists an allow choice, closes the panel, and focuses the reopen control", () => {

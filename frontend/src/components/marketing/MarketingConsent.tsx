@@ -11,7 +11,8 @@ import {
 /**
  * A deliberately small, non-modal preference control for Google Analytics.
  * The marketing layout mounts this component only on public marketing routes;
- * app/auth routes never render it. The analytics runtime remains opt-in.
+ * app/auth routes never render it. Analytics cookies remain opt-in; measurement
+ * itself runs in Google Consent Mode's cookieless state until the visitor allows cookies.
  */
 export default function MarketingConsent() {
   // Keep the initial server/client markup stable. The persisted choice is read
@@ -61,10 +62,10 @@ export default function MarketingConsent() {
   }
 
   const status = consent === "granted"
-    ? "Google Analytics is allowed."
+    ? "Google Analytics cookies are allowed."
     : consent === "denied"
-      ? "Google Analytics is declined."
-      : "Google Analytics is not enabled until you choose Allow.";
+      ? "Google Analytics cookies are declined."
+      : "Google Analytics is cookieless until you choose Allow.";
 
   return (
     <aside
@@ -85,8 +86,9 @@ export default function MarketingConsent() {
             Choose Google Analytics preferences
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            Allow Google Analytics to help us understand visits to this public website, or decline it.
-            This choice controls Google Analytics only and does not change other services.
+            Google Analytics runs without cookies on this public website until you choose Allow.
+            Allowing it sets analytics cookies so repeat visits can be recognized; declining keeps it
+            cookieless. This choice controls Google Analytics only and does not change other services.
           </p>
           <p className="mt-3 text-sm font-medium text-teal-200" role="status" aria-live="polite">
             {status}
