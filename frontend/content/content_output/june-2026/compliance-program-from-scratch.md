@@ -12,7 +12,7 @@ title: "Your First Compliance Program: A Startup Roadmap"
 
 # Your First Compliance Program: A Startup Roadmap
 
-This guide focuses on establishing a first scope, gap review and operating cadence. For developing ownership, risk processes and continuing program oversight, see [Building a Compliance Program: Governance and Operations](/blog/compliance-program-building-guide).
+This guide focuses on establishing a first scope, gap review and operating cadence. For developing ownership, risk processes and continuing program oversight, see [Building a Compliance Program: Governance and Operations](/blog/compliance-program-from-scratch).
 
 Every compliance program starts the same way: a prospect asks for a SOC 2 report, a partner requires ISO 27001 certification, or a healthcare client sends a HIPAA BAA and a 200-question security questionnaire. The company does not have a compliance program, and it needs one.
 

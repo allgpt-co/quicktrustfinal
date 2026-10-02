@@ -12,7 +12,7 @@ title: "NIST 800-171 Implementation and Evidence Planning"
 
 # NIST 800-171 Implementation and Evidence Planning
 
-This guide focuses on organizing a scoped implementation program and supporting records. For identifying controlled information and the applicable requirement set, see [NIST 800-171: CUI Scope and Readiness Questions](/blog/nist-800-171-guide).
+This guide focuses on organizing a scoped implementation program and supporting records. For identifying controlled information and the applicable requirement set, see [NIST 800-171: CUI Scope and Readiness Questions](/blog/nist-800-171-compliance-guide).
 
 In 2017, the Department of Defense told every company in its supply chain to implement 110 cybersecurity requirements from a document called NIST Special Publication 800-171. The deadline was December 31 of that year. Almost nobody complied.
 

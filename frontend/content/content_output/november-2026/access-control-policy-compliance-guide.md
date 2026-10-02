@@ -12,7 +12,7 @@ title: "Access Control Models and Compliance Evidence"
 
 # Access Control Models and Compliance Evidence
 
-This guide focuses on comparing access models and organizing assessment evidence. For defining role-based access, approval and recurring reviews, see [Access Control Policy: Roles and Review Procedures](/blog/access-control-policy-guide).
+This guide focuses on comparing access models and organizing assessment evidence. For defining role-based access, approval and recurring reviews, see [Access Control Policy: Roles and Review Procedures](/blog/access-control-policy-compliance-guide).
 
 Access control is the most-tested domain in every compliance audit. It is the area where auditors spend the most time, where the highest volume of evidence requests are generated, and where the most common findings are issued. Whether your auditor is evaluating SOC 2 Common Criteria, ISO 27001 Annex A controls, HIPAA Security Rule safeguards, or PCI DSS requirements, the conversation will always return to the same fundamental question: who has access to what, why do they have it, and can you prove it?
 

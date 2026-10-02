@@ -2,7 +2,7 @@
 import { describe, expect, test } from 'vitest';
 import { NextRequest } from 'next/server';
 import { getAllSlugs, getArticleBySlug } from '@/lib/blog';
-import { canonicalMarketingHref, CONTENT_REDIRECTS, MARKETING_PATHS, RESOURCE_SLUGS } from '@/lib/marketing-routes';
+import { canonicalMarketingHref, CONSOLIDATED_ARTICLES, CONTENT_REDIRECTS, MARKETING_PATHS, RESOURCE_SLUGS } from '@/lib/marketing-routes';
 import { middleware } from '@/middleware';
 import { GET } from '@/app/resources/[slug]/route';
 import sitemap from '@/app/sitemap';
@@ -42,8 +42,12 @@ describe('public content link recovery', () => {
     }
   });
   test('unknown resources and lookalike prefixes do not expose protected content', async () => {
-    for (const path of ['/resources/private', '/resources/soc2-readiness-scorecard/private', '/resources-admin', '/content/private', '/dashboard', '/policies']) {
+    for (const path of ['/dashboard', '/policies']) {
       expect(middleware(new NextRequest(`https://quicktrustapp.com${path}`)).status).toBe(307);
+    }
+    // Unknown public paths continue to the router, whose catch-all answers 404.
+    for (const path of ['/resources/private', '/resources/soc2-readiness-scorecard/private', '/resources-admin', '/content/private']) {
+      expect(middleware(new NextRequest(`https://quicktrustapp.com${path}`)).status).toBe(200);
     }
     for (const slug of ['../../package.json', 'soc2-report-explained', 'unknown']) {
       expect((await GET(new Request('https://quicktrustapp.com'), { params: Promise.resolve({ slug }) })).status).toBe(404);
@@ -56,6 +60,33 @@ describe('public content link recovery', () => {
       expect(RESOURCE_SLUGS.some((slug) => pathname === '/resources/' + slug)).toBe(false);
       if (!pathname.startsWith('/blog/')) expect(entry.lastModified).toBeUndefined();
       if (entry.lastModified) expect(new Date(entry.lastModified).getTime()).toBeLessThanOrEqual(Date.now());
+    }
+  });
+});
+
+describe('consolidated article pairs', () => {
+  test('every consolidated source redirects in one hop to a listed canonical article and is never listed itself', () => {
+    const listed = new Set(getAllSlugs());
+    expect(Object.keys(CONSOLIDATED_ARTICLES).length).toBe(30);
+    for (const [source, target] of Object.entries(CONSOLIDATED_ARTICLES)) {
+      expect(listed.has(target), `${source} -> ${target}`).toBe(true);
+      expect(listed.has(source), source).toBe(false);
+      expect(CONSOLIDATED_ARTICLES[target], target).toBeUndefined();
+      expect(CONTENT_REDIRECTS[`/blog/${source}`]).toBe(`/blog/${target}`);
+      expect(getArticleBySlug(source), source).not.toBeNull();
+    }
+  });
+  test('legacy aliases never point at a consolidated source', () => {
+    for (const destination of Object.values(CONTENT_REDIRECTS)) {
+      expect(CONSOLIDATED_ARTICLES[destination.replace('/blog/', '')], destination).toBeUndefined();
+    }
+  });
+  test('rendered article content links straight to the surviving URL', () => {
+    expect(canonicalMarketingHref('/blog/what-is-soc1#types')).toBe('/blog/what-is-soc-1#types');
+    expect(canonicalMarketingHref('/blog/what-is-soc1-vs-soc2')).toBe('/blog/soc1-vs-soc2-which-audit-you-need');
+    const contents = getAllSlugs().map((slug) => getArticleBySlug(slug)?.content || '').join('\n');
+    for (const source of Object.keys(CONSOLIDATED_ARTICLES)) {
+      expect(contents, source).not.toMatch(new RegExp(`\\]\\(/blog/${source}(?=[)#?])`));
     }
   });
 });

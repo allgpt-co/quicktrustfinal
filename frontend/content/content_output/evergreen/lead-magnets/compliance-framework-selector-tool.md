@@ -9,7 +9,7 @@ title: "Compliance Framework Selection: A Guided Worksheet"
 
 # Compliance Framework Selection: A Guided Worksheet
 
-This guide focuses on working through industry, customer and geography questions. For sequencing framework choices into a practical roadmap, see [Compliance Frameworks: A Decision Tree and Roadmap](/blog/compliance-framework-selector).
+This guide focuses on working through industry, customer and geography questions. For sequencing framework choices into a practical roadmap, see [Compliance Frameworks: A Decision Tree and Roadmap](/blog/compliance-framework-selector-tool).
 
 **Prepared by QuickTrust | trust.quickintell.com**
 *AI-Powered GRC Platform + Expert Engineering Implementation*

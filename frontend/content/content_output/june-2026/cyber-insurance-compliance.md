@@ -12,7 +12,7 @@ title: "Cyber Insurance and Compliance: Evaluation Questions"
 
 # Cyber Insurance and Compliance: Evaluation Questions
 
-This guide focuses on understanding how to evaluate insurance and assurance requirements together. For preparing evidence for specific insurance control questions, see [Cyber Insurance Questionnaires: Control Evidence](/blog/cyber-insurance-compliance-requirements).
+This guide focuses on understanding how to evaluate insurance and assurance requirements together. For preparing evidence for specific insurance control questions, see [Cyber Insurance Questionnaires: Control Evidence](/blog/cyber-insurance-compliance).
 
 Cyber insurance premiums have increased by an average of 50 percent since 2021. Application questionnaires have grown from a single page to multi-section technical assessments. And a growing number of insurers are outright declining applications from companies that cannot demonstrate baseline security controls.
 

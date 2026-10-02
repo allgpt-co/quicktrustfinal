@@ -12,7 +12,7 @@ title: "Disaster Recovery: RTO, RPO and Cloud Strategies"
 
 # Disaster Recovery: RTO, RPO and Cloud Strategies
 
-This guide focuses on setting recovery objectives and evaluating technical approaches. For building a service-specific plan and retaining exercise records, see [SaaS Disaster Recovery Plans and Exercise Evidence](/blog/disaster-recovery-plan-saas-guide).
+This guide focuses on setting recovery objectives and evaluating technical approaches. For building a service-specific plan and retaining exercise records, see [SaaS Disaster Recovery Plans and Exercise Evidence](/blog/disaster-recovery-plan-guide).
 
 A disaster recovery plan that exists only as a document in a shared drive is not a plan. It is a liability. Auditors know the difference, and they will test for it.
 

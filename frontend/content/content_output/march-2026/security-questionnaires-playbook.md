@@ -12,7 +12,7 @@ title: "Security Questionnaires: A Founder’s Operating Playbook"
 
 # Security Questionnaires: A Founder’s Operating Playbook
 
-This guide focuses on assigning ownership and connecting responses to policies and evidence. For building maintained response libraries and review workflows, see [Security Questionnaire Response Libraries and Reviews](/blog/security-questionnaire-response-guide).
+This guide focuses on assigning ownership and connecting responses to policies and evidence. For building maintained response libraries and review workflows, see [Security Questionnaire Response Libraries and Reviews](/blog/security-questionnaires-playbook).
 
 You just landed a meeting with a Fortune 500 prospect. The pilot went well. The champion is excited. Then procurement sends over a 400-question security questionnaire with a two-week deadline, and suddenly your entire deal timeline is at risk.
 

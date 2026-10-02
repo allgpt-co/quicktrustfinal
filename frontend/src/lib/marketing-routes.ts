@@ -1,4 +1,5 @@
 import legacyContentRedirects from './marketing-content-redirects.json';
+import articleConsolidations from './article-consolidations.json';
 import { DEMO_BOOKING_URL } from './marketing-booking';
 
 export const MARKETING_PATHS = [
@@ -19,9 +20,17 @@ export const PUBLIC_ASSETS = [
   "/sitemap.xml", "/robots.txt", "/llms.txt", "/site.webmanifest", "/marketing-icon.svg",
 ] as const;
 
+// Consolidated article pairs (2026-10-02): each source slug was a second article on
+// the same target keyword. Google alternated between the pair and dropped one from the
+// index after the July 2026 outage, so the losing slug now redirects permanently to the
+// URL Google preferred before the outage. The source Markdown stays in the repository for
+// editorial merging; it is never listed, rendered or included in the sitemap.
+export const CONSOLIDATED_ARTICLES: Readonly<Record<string, string>> = articleConsolidations;
+
 export const ARTICLE_REDIRECTS: Record<string, string> = {
   "quicktrust-vs-vanta": "/compare/quicktrust-vs-vanta",
   "quicktrust-vs-drata": "/compare/quicktrust-vs-drata",
+  ...Object.fromEntries(Object.entries(CONSOLIDATED_ARTICLES).map(([source, target]) => [source, `/blog/${target}`])),
 };
 
 // Exact, reviewed aliases only. Never expose arbitrary content or app prefixes.
@@ -53,6 +62,21 @@ export function canonicalMarketingHref(href: string | undefined, articlePath = '
   } catch {
     return href;
   }
+}
+
+// Top-level segments of the authenticated application. Middleware redirects these to
+// login; everything else that is not public falls through to the router's 404 so a typo
+// or removed marketing URL is a real not-found response instead of a login redirect.
+export const PROTECTED_APP_PREFIXES = [
+  "/access-reviews", "/agents", "/audit-log", "/auditor-marketplace", "/audits", "/control-exceptions",
+  "/control-templates", "/control-tests", "/controls", "/dashboard", "/dashboards", "/drift-detection",
+  "/evidence", "/frameworks", "/gap-analysis", "/incidents", "/integrations", "/monitoring", "/notifications",
+  "/onboarding", "/playbooks", "/policies", "/privacy-requests", "/profile", "/prowler", "/questionnaires",
+  "/reports", "/risks", "/settings", "/training", "/vendors", "/workflows",
+] as const;
+
+export function isProtectedAppPath(pathname: string): boolean {
+  return PROTECTED_APP_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
 export function isMarketingPath(pathname: string): boolean {

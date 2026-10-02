@@ -12,7 +12,7 @@ title: "Data Residency and Cross-Border Planning Questions"
 
 # Data Residency and Cross-Border Planning Questions
 
-This guide focuses on distinguishing location, residency and transfer questions for review. For connecting regional requirements to architecture and governance decisions, see [Data Sovereignty: SaaS Architecture and Governance](/blog/data-sovereignty-compliance-guide).
+This guide focuses on distinguishing location, residency and transfer questions for review. For connecting regional requirements to architecture and governance decisions, see [Data Sovereignty: SaaS Architecture and Governance](/blog/data-sovereignty-guide).
 
 A US-based SaaS company wins a seven-figure contract with a German manufacturer. During implementation, the customer's DPO asks: "Where will our data be stored and processed?" The answer -- "AWS us-east-1, with support operations in India" -- triggers a four-month delay while the company scrambles to deploy a European instance and implement residency controls.
 

@@ -12,7 +12,7 @@ title: "Software Supply Chain Security and Compliance Evidence"
 
 # Software Supply Chain Security and Compliance Evidence
 
-This guide focuses on reviewing software dependencies, component records and program evidence. For organizing vendor assessment, monitoring and incident follow-up, see [Supply Chain Risk: Supplier Reviews and Response](/blog/supply-chain-risk-management-guide).
+This guide focuses on reviewing software dependencies, component records and program evidence. For organizing vendor assessment, monitoring and incident follow-up, see [Supply Chain Risk: Supplier Reviews and Response](/blog/supply-chain-risk-management-compliance).
 
 Software supply chain attacks have increased by 742% since 2019. That is not a typo. It is the single fastest-growing attack vector in cybersecurity, and it has produced some of the most devastating breaches of the past five years.
 

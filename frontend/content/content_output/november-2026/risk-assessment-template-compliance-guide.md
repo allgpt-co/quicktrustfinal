@@ -12,7 +12,7 @@ title: "Risk Assessment Records for Compliance Programs"
 
 # Risk Assessment Records for Compliance Programs
 
-This guide focuses on organizing assessment documentation, owners and review decisions. For choosing a method and evaluating likelihood, impact and treatment, see [Security Risk Assessment: Scoring and Prioritization](/blog/risk-assessment-guide).
+This guide focuses on organizing assessment documentation, owners and review decisions. For choosing a method and evaluating likelihood, impact and treatment, see [Security Risk Assessment: Scoring and Prioritization](/blog/risk-assessment-template-compliance-guide).
 
 Every compliance framework begins in the same place: understanding what can go wrong. Before you write a single security policy, configure a monitoring tool, or engage an auditor, you must systematically identify the threats facing your organization, evaluate how likely they are to materialize, assess the damage they would cause, and decide what to do about each one. That process is a risk assessment, and it is the foundation on which every SOC 2, ISO 27001, HIPAA, PCI DSS, and NIST-aligned compliance program is built.
 

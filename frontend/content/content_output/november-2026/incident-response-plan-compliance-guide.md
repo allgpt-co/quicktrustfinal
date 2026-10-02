@@ -12,7 +12,7 @@ title: "Incident Response Plans: Governance and Review Evidence"
 
 # Incident Response Plans: Governance and Review Evidence
 
-This guide focuses on maintaining a response program and documenting its review. For defining operational responsibilities and response steps, see [Incident Response: Roles and Response Procedures](/blog/incident-response-plan-guide).
+This guide focuses on maintaining a response program and documenting its review. For defining operational responsibilities and response steps, see [Incident Response: Roles and Response Procedures](/blog/incident-response-plan-compliance-guide).
 
 The average cost of a data breach in 2025 reached $4.88 million globally, according to IBM's annual Cost of a Data Breach Report. But buried in that same report is a statistic that should change how every security team allocates its time: organizations with a tested incident response plan saved an average of $1.49 million per breach compared to those without one.
 

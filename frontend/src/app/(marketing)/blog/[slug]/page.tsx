@@ -218,6 +218,24 @@ export default async function ArticlePage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Service, comparison and tool links so every article reaches the commercial pages */}
+      <nav aria-label="QuickTrust services and tools" className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+        <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          {[
+            { href: '/soc-2-compliance', label: 'SOC 2 readiness' },
+            { href: '/iso-27001-certification', label: 'ISO 27001 support' },
+            { href: '/hipaa-compliance', label: 'HIPAA support' },
+            { href: '/compare/quicktrust-vs-vanta', label: 'Compare with Vanta' },
+            { href: '/pricing', label: 'Pricing' },
+            { href: '/tools/soc-2-readiness-assessment', label: 'Readiness self-assessment' },
+          ].map((item) => (
+            <li key={item.href}>
+              <Link href={item.href} className="text-teal-400 hover:text-teal-300 no-underline">{item.label}</Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       {/* Related Articles */}
       {relatedArticles.length > 0 && (
         <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-16">

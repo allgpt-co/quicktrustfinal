@@ -11,7 +11,7 @@ title: "Startup Compliance: Choosing Your First Framework"
 
 # Startup Compliance: Choosing Your First Framework
 
-This guide focuses on choosing a framework and defining an achievable first scope. For sequencing control work, ownership and evidence collection, see [Startup Compliance: Building an Implementation Roadmap](/blog/startup-compliance-guide-zero-to-certification).
+This guide focuses on choosing a framework and defining an achievable first scope. For sequencing control work, ownership and evidence collection, see [Startup Compliance: Building an Implementation Roadmap](/blog/startup-compliance-guide-first-certification).
 
 You know the moment. You are three weeks from closing the biggest deal in your company's history and the prospect's procurement team sends over a vendor security questionnaire. 180 questions. "Please attach your SOC 2 report." "Describe your access control policy." "Provide evidence of your vulnerability management program."
 

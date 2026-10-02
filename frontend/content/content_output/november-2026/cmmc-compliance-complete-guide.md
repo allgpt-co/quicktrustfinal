@@ -12,7 +12,7 @@ title: "CMMC Program Planning for Technology Suppliers"
 
 # CMMC Program Planning for Technology Suppliers
 
-This guide focuses on organizing a supplier implementation program and evidence needs. For identifying the contracting scope and readiness questions to validate, see [CMMC Readiness: Scope and Assessment Planning](/blog/cmmc-compliance-guide).
+This guide focuses on organizing a supplier implementation program and evidence needs. For identifying the contracting scope and readiness questions to validate, see [CMMC Readiness: Scope and Assessment Planning](/blog/cmmc-compliance-complete-guide).
 
 The United States Department of Defense spends over $400 billion annually on contracts with private companies. That money flows through a defense industrial base (DIB) of more than 300,000 organizations -- from trillion-dollar prime contractors building fighter jets to five-person machine shops milling specialized brackets. Every one of these companies handles some form of government information. And starting with the phased rollout that began in late 2024, every one of them must prove their cybersecurity meets a defined standard before they can win or retain those contracts.
 

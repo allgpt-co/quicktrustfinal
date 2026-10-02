@@ -303,7 +303,7 @@ Some organizations use encryption as a technical complement to jurisdictional co
 
 **Important caveat:** Encryption-based approaches are a useful layer of defense, but they are not universally accepted as satisfying data localization requirements. Some regulators take the position that data localization means the data itself must be within the jurisdiction, regardless of encryption. This is an area where legal guidance specific to the jurisdiction is essential.
 
-For more on encryption controls across compliance frameworks, see our [Encryption Compliance Guide](/blog/encryption-at-rest-in-transit-compliance).
+For more on encryption controls across compliance frameworks, see our [Encryption Compliance Guide](/blog/encryption-compliance-guide).
 
 ### Sovereign cloud offerings
 
@@ -592,7 +592,7 @@ Whether you are pursuing your first compliance certification or managing a multi
 - [Data Processing Agreement (DPA): What Every SaaS Company Must Include](/blog/data-processing-agreement-guide)
 - [Privacy Impact Assessment: The Complete Guide](/blog/privacy-impact-assessment-guide)
 - [Data Security in the Cloud: Compliance Controls for AWS, GCP, and Azure](/blog/cloud-security-compliance-aws-gcp-azure)
-- [Encryption at Rest and in Transit: The Complete Compliance Guide](/blog/encryption-at-rest-in-transit-compliance)
+- [Encryption at Rest and in Transit: The Complete Compliance Guide](/blog/encryption-compliance-guide)
 - [Vendor Risk Management: The Complete Program Guide](/blog/vendor-risk-management-complete-guide)
 - [ISO 27001 Certification: The Complete Implementation Guide](/blog/pillar-iso27001-complete-guide)
 - [SOC 2 Compliance: The Complete Guide for SaaS Startups](/blog/pillar-soc2-complete-guide)

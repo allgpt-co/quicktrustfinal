@@ -11,7 +11,7 @@ title: "Multi-Framework Compliance: Scope and Sequencing"
 
 # Multi-Framework Compliance: Scope and Sequencing
 
-This guide focuses on planning framework-specific obligations and implementation order. For organizing shared controls and reviewing whether evidence can be reused, see [Multi-Framework Controls: Mapping and Evidence Reuse](/blog/multi-framework-certification).
+This guide focuses on planning framework-specific obligations and implementation order. For organizing shared controls and reviewing whether evidence can be reused, see [Multi-Framework Controls: Mapping and Evidence Reuse](/blog/multi-framework-compliance-strategy).
 
 There is a recurring thread on r/compliance, r/netsec, and every SaaS founder Slack channel that follows the same pattern: "We need SOC 2 for our US enterprise deals, ISO 27001 for our European prospects, and HIPAA because we handle PHI. Our consultant says that is three separate projects. Is there a way to do this without tripling the budget and burning out the engineering team?"
 

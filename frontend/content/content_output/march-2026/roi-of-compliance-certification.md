@@ -12,7 +12,7 @@ title: "Compliance ROI: Costs, Benefits and Assumptions"
 
 # Compliance ROI: Costs, Benefits and Assumptions
 
-This guide focuses on identifying the full cost picture and testing benefit assumptions. For evaluating procurement friction and the assumptions behind a commercial business case, see [Compliance Business Cases for Enterprise Sales](/blog/compliance-roi-enterprise-deals).
+This guide focuses on identifying the full cost picture and testing benefit assumptions. For evaluating procurement friction and the assumptions behind a commercial business case, see [Compliance Business Cases for Enterprise Sales](/blog/roi-of-compliance-certification).
 
 Every CFO asks the same question when the compliance budget request lands on their desk: "What is the return on this investment?"
 

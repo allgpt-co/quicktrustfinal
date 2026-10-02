@@ -10,7 +10,7 @@ title: "NIST CSF 2.0: Implementation and Review Planning"
 
 # NIST CSF 2.0: Implementation and Review Planning
 
-Use a CSF implementation plan to turn desired cybersecurity outcomes into owned, evidence-backed work. For the framework's concepts and boundaries, start with [NIST Cybersecurity Framework: Functions and Profiles](/blog/pillar-nist-cybersecurity-framework-guide). This companion guide focuses on the working process.
+Use a CSF implementation plan to turn desired cybersecurity outcomes into owned, evidence-backed work. For the framework's concepts and boundaries, start with [NIST Cybersecurity Framework: Functions and Profiles](/blog/nist-csf-implementation-guide). This companion guide focuses on the working process.
 
 [NIST's CSF 2.0 quick-start guides](https://www.nist.gov/cyberframework/quick-start-guides) explain organizational profiles, Tiers and supporting tools. The sequence below is an editorial planning approach, not a mandatory certification procedure. NIST does not issue a CSF certificate.
 

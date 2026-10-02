@@ -12,7 +12,7 @@ last_updated: "2026-09-26"
 
 # SAST vs DAST: Choosing Application Security Tests
 
-This guide focuses on comparing test approaches and delivery-pipeline placement. For building a broader application-testing program and evidence trail, see [Application Security Testing: SAST, DAST and SCA](/blog/sast-vs-dast-application-security-testing).
+This guide focuses on comparing test approaches and delivery-pipeline placement. For building a broader application-testing program and evidence trail, see [Application Security Testing: SAST, DAST and SCA](/blog/sast-vs-dast-guide).
 
 Application security testing is a cornerstone of every major compliance framework. Whether you are pursuing SOC 2, ISO 27001, PCI DSS, or HIPAA certification, auditors will ask how you identify vulnerabilities in your code before they reach production. The two primary methodologies -- Static Application Security Testing (SAST) and Dynamic Application Security Testing (DAST) -- serve complementary purposes, and understanding when and how to use each is essential for both security and compliance.
 

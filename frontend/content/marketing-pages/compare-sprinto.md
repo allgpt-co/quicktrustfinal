@@ -1,6 +1,6 @@
 ---
 path: "/compare/quicktrust-vs-sprinto"
-title: "QuickTrust vs Sprinto"
+title: "QuickTrust vs Sprinto: Controls, Operations and Cost"
 description: "Evaluate Sprinto and QuickTrust using your control backlog, operating responsibilities, evidence requirements, and continuous compliance needs."
 eyebrow: "Compliance buying guide"
 indexable: true

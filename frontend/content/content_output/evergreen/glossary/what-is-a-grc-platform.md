@@ -209,6 +209,8 @@ Open-source. Engineering-included. 100% audit pass rate across 100+ audits.
 
 ---
 
+Evaluating platforms rather than definitions? Read [GRC tools: how to evaluate governance, risk and compliance platforms](/blog/grc-tools-guide), which walks through tool categories, capability areas and vendor questions.
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

@@ -12,7 +12,7 @@ title: "SOC 2 for AI Startups: Data and Model Security"
 
 # SOC 2 for AI Startups: Data and Model Security
 
-This guide focuses on reviewing training data, model access and startup implementation questions. For mapping AI-related operating risks to security controls, see [SOC 2 for AI: Control Mapping and Evidence](/blog/soc2-for-ai-companies-guide).
+This guide focuses on reviewing training data, model access and startup implementation questions. For mapping AI-related operating risks to security controls, see [SOC 2 for AI: Control Mapping and Evidence](/blog/soc2-for-ai-companies).
 
 Enterprise buyers want AI products. They also want proof that those products are secure, governed, and auditable. That tension -- between rapid AI innovation and enterprise-grade trust -- is why SOC 2 compliance has become a non-negotiable checkpoint for AI companies trying to close six- and seven-figure contracts.
 

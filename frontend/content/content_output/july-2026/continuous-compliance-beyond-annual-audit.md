@@ -11,7 +11,7 @@ title: "Continuous Compliance: Quarterly Operating Calendar"
 
 # Continuous Compliance: Quarterly Operating Calendar
 
-This guide focuses on organizing recurring reviews and program responsibilities. For handling operational changes, evidence and exceptions between assessments, see [Continuous Compliance: Managing Changes Between Audits](/blog/continuous-compliance-guide).
+This guide focuses on organizing recurring reviews and program responsibilities. For handling operational changes, evidence and exceptions between assessments, see [Continuous Compliance: Managing Changes Between Audits](/blog/continuous-compliance-beyond-annual-audit).
 
 There is a pattern that plays out at thousands of SaaS companies every year. The audit is six weeks away. Suddenly, compliance becomes the top priority. Engineers get pulled off product work. Someone discovers that the access review process stopped four months ago. The incident response plan references a Slack channel that no longer exists. Three policies were never updated after last year's infrastructure migration. Evidence folders are empty or disorganized. The next six weeks are a scramble — late nights, rushed documentation, and a growing sense that the entire compliance program exists only during audit season.
 

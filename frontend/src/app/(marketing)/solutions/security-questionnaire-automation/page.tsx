@@ -439,8 +439,12 @@ export default function SecurityQuestionnaireAutomationPage() {
                 Pricing
               </Link>
               <span className="text-slate-700">|</span>
-              <Link href="/blog/security-questionnaire-response-guide" className="text-slate-500 hover:text-teal-400 no-underline transition-colors">
-                Security Questionnaire Response Guide
+              <Link href="/blog/security-questionnaires-playbook" className="text-slate-500 hover:text-teal-400 no-underline transition-colors">
+                Security Questionnaire Playbook
+              </Link>
+              <span className="text-slate-700">|</span>
+              <Link href="/blog/best-security-questionnaire-automation-software" className="text-slate-500 hover:text-teal-400 no-underline transition-colors">
+                Compare Questionnaire Automation Vendors
               </Link>
             </div>
           </div>

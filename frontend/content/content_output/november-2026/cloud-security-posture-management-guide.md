@@ -118,7 +118,7 @@ Each misconfiguration finding is mapped to the specific control requirements of 
 
 This mapping is what transforms CSPM from a security tool into a compliance tool. Instead of presenting engineers with a list of technical misconfigurations, CSPM presents compliance teams with a framework-organized view of which controls are satisfied and which have gaps -- and what specific configuration changes are needed to close those gaps.
 
-For a deeper dive into encryption requirements across frameworks, see our [Encryption at Rest and In Transit Compliance Guide](/blog/encryption-at-rest-in-transit-compliance).
+For a deeper dive into encryption requirements across frameworks, see our [Encryption at Rest and In Transit Compliance Guide](/blog/encryption-compliance-guide).
 
 ### Drift Detection
 
@@ -282,7 +282,7 @@ For detailed guidance on access control policies, see our [Access Control Policy
 
 **Compliance impact:** Violations of SOC 2 CC6.1, ISO 27001 A.8.24, PCI DSS Requirement 3.5, HIPAA 164.312(a)(2)(iv).
 
-For a comprehensive guide to encryption requirements, see our [Encryption at Rest and In Transit Compliance Guide](/blog/encryption-at-rest-in-transit-compliance).
+For a comprehensive guide to encryption requirements, see our [Encryption at Rest and In Transit Compliance Guide](/blog/encryption-compliance-guide).
 
 ### 4. Network Exposure
 
@@ -608,7 +608,7 @@ Instead of managing CSPM alerts in one tool, compliance evidence in another, and
 ### Related resources
 
 - [Data Security in the Cloud: The Compliance Controls AWS, GCP, and Azure Customers Cannot Skip](/blog/cloud-security-compliance-aws-gcp-azure)
-- [Encryption at Rest and In Transit: The Complete Compliance Guide](/blog/encryption-at-rest-in-transit-compliance)
+- [Encryption at Rest and In Transit: The Complete Compliance Guide](/blog/encryption-compliance-guide)
 - [Access Control Policy: The Complete Compliance Guide](/blog/access-control-policy-compliance-guide)
 - [Vulnerability Management Program Guide](/blog/vulnerability-management-program-guide)
 - [Network Segmentation Compliance Guide](/blog/network-segmentation-compliance-guide)

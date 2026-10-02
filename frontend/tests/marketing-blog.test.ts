@@ -12,7 +12,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('migrated marketing content', () => {
   test('lists each canonical published article once', () => {
     const articles = getAllArticles();
-    expect(articles).toHaveLength(166);
+    expect(articles).toHaveLength(141);
     expect(new Set(articles.map((article) => article.slug)).size).toBe(articles.length);
     expect(getAllSlugs()).toEqual(articles.map((article) => article.slug));
     expect(articles.every((article) => article.title && article.published)).toBe(true);
@@ -36,7 +36,7 @@ describe('migrated marketing content', () => {
   });
   test('sitemap contains only public canonical URLs and valid dates', async () => {
     const entries = sitemap();
-    expect(entries.length).toBe(197);
+    expect(entries.length).toBe(172);
     expect(new Set(entries.map((entry) => entry.url)).size).toBe(entries.length);
     expect(entries.every((entry) => entry.url.startsWith('https://quicktrustapp.com'))).toBe(true);
     expect(entries.some((entry) => /\/login|\/dashboard|\/blog\/quicktrust-vs-(vanta|drata)$/.test(entry.url))).toBe(false);

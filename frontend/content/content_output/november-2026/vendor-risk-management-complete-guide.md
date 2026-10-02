@@ -12,7 +12,7 @@ title: "Vendor Risk Management: Program Design and Scoring"
 
 # Vendor Risk Management: Program Design and Scoring
 
-This guide focuses on designing supplier tiers, assessment methods and program ownership. For running supplier reviews and tracking ongoing responsibilities, see [Vendor Risk Reviews: Due Diligence and Monitoring](/blog/vendor-risk-management-guide).
+This guide focuses on designing supplier tiers, assessment methods and program ownership. For running supplier reviews and tracking ongoing responsibilities, see [Vendor Risk Reviews: Due Diligence and Monitoring](/blog/vendor-risk-management-complete-guide).
 
 In December 2020, the SolarWinds breach gave attackers access to the internal systems of 18,000 organizations -- including the U.S. Treasury, the Department of Homeland Security, and dozens of Fortune 500 companies. The attackers did not break through a firewall or exploit a zero-day vulnerability in any of those organizations. They compromised a single vendor's software update mechanism, and every downstream customer inherited the risk.
 

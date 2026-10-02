@@ -12,7 +12,7 @@ title: "Threat Modeling for SaaS: Workflow and Review Records"
 
 # Threat Modeling for SaaS: Workflow and Review Records
 
-This guide focuses on conducting a service-specific threat review and retaining decisions. For comparing methods for identifying and prioritizing threats, see [Threat Modeling Methods: STRIDE, PASTA and Attack Trees](/blog/threat-modeling-guide).
+This guide focuses on conducting a service-specific threat review and retaining decisions. For comparing methods for identifying and prioritizing threats, see [Threat Modeling Methods: STRIDE, PASTA and Attack Trees](/blog/threat-modeling-compliance-guide).
 
 The most expensive vulnerability is the one you discover after it has been exploited. The second most expensive is the one you discover during a penetration test, weeks before an audit, when there is no time to redesign the system that introduced it. The least expensive -- by orders of magnitude -- is the one you identify during design, before a single line of code has been written.
 

@@ -1,6 +1,6 @@
 ---
 path: "/compare/quicktrust-vs-secureframe"
-title: "QuickTrust vs Secureframe"
+title: "QuickTrust vs Secureframe: Evidence, Implementation and Cost"
 description: "Compare Secureframe and QuickTrust by evidence workflows, implementation ownership, audit responsibilities, and the scope of your engagement."
 eyebrow: "Compliance buying guide"
 indexable: true

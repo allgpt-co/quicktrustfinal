@@ -12,7 +12,7 @@ last_updated: "2026-09-26"
 
 # Encryption Compliance: Key Management and Evidence
 
-This guide focuses on reviewing key-management operations and evidence needs. For distinguishing protection boundaries and practical implementation choices, see [Encryption at Rest and in Transit: Implementation Guide](/blog/encryption-at-rest-in-transit-compliance).
+This guide focuses on reviewing key-management operations and evidence needs. For distinguishing protection boundaries and practical implementation choices, see [Encryption at Rest and in Transit: Implementation Guide](/blog/encryption-compliance-guide).
 
 Encryption is one of the most scrutinized controls in any compliance audit. Every major framework -- SOC 2, ISO 27001, HIPAA, and PCI DSS -- requires organizations to protect sensitive data through encryption, both when it is stored (at rest) and when it moves between systems (in transit). Despite this universal requirement, encryption remains a frequent source of audit findings, not because organizations fail to encrypt, but because they encrypt inconsistently, manage keys poorly, or cannot produce evidence of their encryption posture.
 

@@ -12,7 +12,7 @@ last_updated: "2026-09-26"
 
 # Cloud Misconfiguration Reviews for Compliance
 
-This guide focuses on identifying configuration issues and their supporting evidence. For evaluating posture-management capabilities and ongoing operation, see [CSPM: Capabilities, Selection and Operating Workflow](/blog/cloud-security-posture-management-guide).
+This guide focuses on identifying configuration issues and their supporting evidence. For evaluating posture-management capabilities and ongoing operation, see [CSPM: Capabilities, Selection and Operating Workflow](/blog/cspm-cloud-compliance-guide).
 
 Cloud misconfigurations are the leading cause of cloud security breaches. Research consistently shows that the vast majority of cloud security incidents stem not from sophisticated attacks but from preventable misconfigurations: public storage buckets, overly permissive security groups, unencrypted databases, and misconfigured identity policies.
 

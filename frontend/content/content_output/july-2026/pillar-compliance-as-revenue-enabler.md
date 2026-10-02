@@ -13,7 +13,7 @@ title: "Compliance and Enterprise Sales: A Planning Guide"
 
 # Compliance and Enterprise Sales: A Planning Guide
 
-This guide focuses on building a broader procurement and assurance roadmap. For using current security evidence to answer enterprise buyer questions, see [Security as a Revenue Enabler: Procurement Readiness](/blog/compliance-revenue-enabler).
+This guide focuses on building a broader procurement and assurance roadmap. For using current security evidence to answer enterprise buyer questions, see [Security as a Revenue Enabler: Procurement Readiness](/blog/pillar-compliance-as-revenue-enabler).
 
 Your product is ready. The demo crushed it. The champion is bought in. Legal is circling. And then procurement sends a five-word question that kills your quarter: *"Where's your SOC 2 report?"*
 

@@ -12,7 +12,7 @@ title: "SOC 1 Reports: Types, Contents and Audit Process"
 
 # SOC 1 Reports: Types, Contents and Audit Process
 
-This guide focuses on understanding report structure and the examination process. For deciding how to respond to a customer request for financial-control assurance, see [Do You Need a SOC 1 Report? A Buyer Request Guide](/blog/what-is-soc1).
+This guide focuses on understanding report structure and the examination process. For deciding how to respond to a customer request for financial-control assurance, see [Do You Need a SOC 1 Report? A Buyer Request Guide](/blog/what-is-soc-1).
 
 A SOC 1 report (System and Organization Controls 1) is an independent audit report that evaluates a service organization's internal controls relevant to its clients' financial reporting. Issued by a licensed CPA firm under the SSAE 18 attestation standard, a SOC 1 report gives your clients — and their auditors — assurance that your organization will not introduce errors, misstatements, or fraud risks into their financial statements.
 

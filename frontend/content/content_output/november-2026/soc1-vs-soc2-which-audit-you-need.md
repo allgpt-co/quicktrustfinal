@@ -12,7 +12,7 @@ title: "Choosing SOC 1, SOC 2 or Both for Your Service"
 
 # Choosing SOC 1, SOC 2 or Both for Your Service
 
-This guide focuses on selecting an examination scope based on the service and buyer requirements. For comparing the purpose and coverage of the two reports, see [SOC 1 vs SOC 2: Differences at a Glance](/blog/what-is-soc1-vs-soc2).
+This guide focuses on selecting an examination scope based on the service and buyer requirements. For comparing the purpose and coverage of the two reports, see [SOC 1 vs SOC 2: Differences at a Glance](/blog/soc1-vs-soc2-which-audit-you-need).
 
 Last quarter, a Series B fintech company came to us with a problem that was costing them roughly $1.2 million in stalled pipeline. Their prospects -- mid-market banks and credit unions -- kept asking for "a SOC report." The company's compliance lead interpreted that as SOC 2 and spent five months preparing. When the first prospect's vendor risk team reviewed the report, they sent back a single line: *"We require a SOC 1 report covering controls relevant to our financial reporting. Please advise on timeline."*
 

@@ -11,7 +11,7 @@ title: "CI/CD Compliance: Controls Across the Delivery Pipeline"
 
 # CI/CD Compliance: Controls Across the Delivery Pipeline
 
-This guide focuses on mapping control work to individual delivery stages. For organizing reviewable evidence from the software-delivery process, see [DevSecOps Evidence for Compliance Reviews](/blog/devsecops-compliance-guide).
+This guide focuses on mapping control work to individual delivery stages. For organizing reviewable evidence from the software-delivery process, see [DevSecOps Evidence for Compliance Reviews](/blog/devsecops-compliance-cicd-guide).
 
 Most engineering teams treat compliance as a documentation exercise. They write a change management policy, file it in a shared drive, and then continue deploying the way they always have — merging to main, running a build, shipping to production. When the auditor arrives, someone scrambles to reconstruct evidence from Git logs, Slack messages, and memory.
 
