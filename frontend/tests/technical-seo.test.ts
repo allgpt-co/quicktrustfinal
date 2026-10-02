@@ -74,6 +74,6 @@ describe('technical SEO safeguards', () => {
   test('legal pages advertise their noindex status and homepage owns one brand suffix', () => {
     expect(privacyMetadata.robots).toMatchObject({ index: false, follow: true });
     expect(termsMetadata.robots).toMatchObject({ index: false, follow: true });
-    expect(homepageMetadata.title).toBe('Compliance Automation Platform');
+    expect(homepageMetadata.title).toEqual({ absolute: 'SOC 2, ISO 27001 and HIPAA Compliance Automation Platform | QuickTrust' });
   });
 });

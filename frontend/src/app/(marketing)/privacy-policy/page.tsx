@@ -112,6 +112,14 @@ export default function PrivacyPolicyPage() {
                   ))}
                 </ul>
 
+                <p className="text-slate-400 leading-relaxed mb-6">
+                  Our public website uses Google Analytics in Google Consent Mode. Until you choose
+                  &quot;Allow&quot; in the analytics preferences control, it runs without analytics
+                  cookies or stored identifiers and sends only aggregate, cookieless measurements.
+                  Choosing &quot;Allow&quot; enables analytics cookies; you can withdraw that choice at
+                  any time from the same control, which also removes the Google Analytics cookies.
+                </p>
+
                 <h3 className="font-display text-lg font-semibold text-slate-100 mb-3">
                   Information from Third Parties
                 </h3>

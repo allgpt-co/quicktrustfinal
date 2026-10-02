@@ -63,7 +63,7 @@ describe('global directory publication controls', () => {
       ),
     ).toBe(false);
     expect(directorySitemapEntries('2027-01-01')).toHaveLength(2);
-    expect(sitemap()).toHaveLength(197);
+    expect(sitemap()).toHaveLength(172);
     expect(sitemapIndexXml()).toContain('/sitemaps/0.xml');
     expect(sitemapPageXml(0, '2026-09-27')).toContain('<lastmod>2026-09-27</lastmod>');
     expect(sitemapPageXml(1)).toBeNull();
@@ -88,7 +88,7 @@ describe('global directory publication controls', () => {
     );
     expect(d.requirements.find((r) => r.id === 'soc-2')!.canonicalPath).toBe('/soc-2-compliance');
     expect(d.requirements.find((r) => r.id === 'nist-csf')!.canonicalPath).toBe(
-      '/blog/pillar-nist-cybersecurity-framework-guide',
+      '/blog/nist-csf-implementation-guide',
     );
     expect(d.requirements.find((r) => r.id === 'gdpr')!.canonicalPath).toBe(
       '/blog/gdpr-compliance-us-saas-guide',

@@ -50,12 +50,13 @@ const howToSchema = serializeJsonLd({
 const BASE = 'https://quicktrustapp.com';
 
 export const metadata: Metadata = {
-  title: 'Compliance Automation Platform',
+  // The layout's title template only applies to child segments, so the homepage sets its full title.
+  title: { absolute: 'SOC 2, ISO 27001 and HIPAA Compliance Automation Platform | QuickTrust' },
   description:
     'Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA. Free readiness assessment.',
   alternates: { canonical: BASE },
   openGraph: {
-    title: 'Compliance Automation Platform | QuickTrust',
+    title: 'SOC 2, ISO 27001 and HIPAA Compliance Automation Platform | QuickTrust',
     description:
       'Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA.',
     url: BASE,
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Compliance Automation Platform | QuickTrust',
+    title: 'SOC 2, ISO 27001 and HIPAA Compliance Automation Platform | QuickTrust',
     description: 'Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them.',
     images: [`${BASE}/og/home`],
   },
@@ -82,7 +83,7 @@ export default function HomePage() {
       <ServiceSchema />
       <SoftwareApplicationSchema />
       <WebPageSchema
-        name="Compliance Automation Platform | QuickTrust"
+        name="SOC 2, ISO 27001 and HIPAA Compliance Automation Platform | QuickTrust"
         description="Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA. Free readiness assessment."
         url="https://quicktrustapp.com"
       />

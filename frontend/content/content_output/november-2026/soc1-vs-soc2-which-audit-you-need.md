@@ -1,18 +1,18 @@
 ---
 meta_description: "Choosing SOC 1, SOC 2 or Both for Your Service. Practical guidance for selecting an examination scope based on the service and buyer requirements."
 target_keyword: "soc 1 vs soc 2"
-secondary_keywords: "soc 1 vs soc 2 difference, soc 1 audit, soc 1 report, soc 1 vs soc 2 vs soc 3"
+secondary_keywords: "soc 1 vs soc 2 difference, soc 1 audit, soc 1 report, soc 1 vs soc 2 vs soc 3, soc 1 vs soc 2"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "Choosing SOC 1, SOC 2 or Both for Your Service"
 ---
 
 
 # Choosing SOC 1, SOC 2 or Both for Your Service
 
-This guide focuses on selecting an examination scope based on the service and buyer requirements. For comparing the purpose and coverage of the two reports, see [SOC 1 vs SOC 2: Differences at a Glance](/blog/what-is-soc1-vs-soc2).
+This guide compares the purpose and coverage of the two reports, then walks through selecting an examination scope based on your service and what your buyers are actually asking for.
 
 Last quarter, a Series B fintech company came to us with a problem that was costing them roughly $1.2 million in stalled pipeline. Their prospects -- mid-market banks and credit unions -- kept asking for "a SOC report." The company's compliance lead interpreted that as SOC 2 and spent five months preparing. When the first prospect's vendor risk team reviewed the report, they sent back a single line: *"We require a SOC 1 report covering controls relevant to our financial reporting. Please advise on timeline."*
 
@@ -125,6 +125,10 @@ This is the section most people come to this article for. Here is a detailed, si
 
 These are not interchangeable. A SOC 2 report, no matter how comprehensive, does not satisfy a client auditor's requirement for SOC 1 assurance over financial reporting controls. And a SOC 1 report does not tell a prospect's InfoSec team whether your platform encrypts data at rest or has an incident response plan.
 
+### The two reports in one sentence each
+
+If the comparison table is more than you need, this is the short version. SOC 1 asks: "Can our client trust that this vendor will not introduce errors into their financial numbers?" SOC 2 asks: "Can our client trust this vendor to keep their data secure and their service available?" The first question is asked by finance and audit teams and answered with custom control objectives. The second is asked by security and procurement teams and answered against the five Trust Services Criteria. Everything else in this guide is detail on top of that distinction.
+
 ---
 
 ## When You Need SOC 1
@@ -154,6 +158,10 @@ Companies that calculate net asset values (NAV), process subscriptions and redem
 ### 6. Revenue recognition and billing platforms
 
 If your SaaS platform handles invoicing, subscription billing, revenue recognition, or accounts receivable management for clients, those outputs flow directly into their financial statements. Think of billing platforms like Zuora, Chargebee, or Recurly -- their enterprise clients' auditors often require SOC 1 reports.
+
+### 7. Managed hosting for financial applications
+
+General-purpose cloud hosting does not normally trigger a SOC 1. But if you host or operate a client's ERP, general ledger, accounting or billing system on their behalf, the availability, change management and data integrity controls around that hosting become relevant to the client's financial reporting. Their auditors may ask for a SOC 1 covering those specific services, even if the rest of your business only needs SOC 2.
 
 ### The litmus test for SOC 1
 
@@ -369,6 +377,8 @@ If you are still unsure which report you need, work through this decision tree. 
 **If the request comes from a prospect's InfoSec team, procurement department, or legal team** --> You likely need **SOC 2**. These stakeholders are evaluating your security posture as part of vendor due diligence.
 
 **If both types of stakeholders are asking** --> You may need **both**. Continue to Step 2.
+
+A useful tell is the regulation behind the request. SOC 1 requests are usually driven by Sarbanes-Oxley obligations or the client's own financial statement audit. SOC 2 requests are driven by enterprise procurement policy, customer contracts and vendor risk programs. If the person asking cannot say which of those applies, ask them to check with whoever will actually read the report.
 
 ### Step 2: What does your service do for your clients?
 

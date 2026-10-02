@@ -1,6 +1,6 @@
 ---
 path: "/compare/quicktrust-vs-thoropass"
-title: "QuickTrust vs Thoropass"
+title: "QuickTrust vs Thoropass: Audit Delivery, Readiness and Cost"
 description: "Compare Thoropass and QuickTrust by audit delivery, readiness work, engineering ownership, evidence handoff, and engagement scope."
 eyebrow: "Compliance buying guide"
 indexable: true

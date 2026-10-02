@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { trackMarketingTool } from '@/lib/marketing-analytics';
 
 const domains = [
   'Access control', 'Encryption', 'Monitoring and logging', 'Incident response',
@@ -9,6 +10,12 @@ const domains = [
 
 export default function ReadinessAssessment() {
   const [scores, setScores] = useState<number[]>(Array.from({ length: 8 }, () => 0));
+  const reported = useRef(false);
+  const recordUse = () => {
+    if (reported.current) return;
+    reported.current = true;
+    trackMarketingTool('readiness_assessment_used');
+  };
   const total = useMemo(() => scores.reduce((sum, value) => sum + value, 0), [scores]);
   const percentage = Math.round((total / 16) * 100);
   const band = total >= 14 ? 'Higher reported coverage' : total >= 10 ? 'Review remaining gaps' : total >= 6 ? 'Implementation in progress' : 'Early stage';
@@ -23,7 +30,10 @@ export default function ReadinessAssessment() {
             <span className="block font-medium">{domain}</span>
             <select
               value={scores[index]}
-              onChange={(event) => setScores((current) => current.map((value, item) => item === index ? Number(event.target.value) : value))}
+              onChange={(event) => {
+                recordUse();
+                setScores((current) => current.map((value, item) => item === index ? Number(event.target.value) : value));
+              }}
               className="mt-3 w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-slate-200"
               aria-label={`${domain} score`}
             >

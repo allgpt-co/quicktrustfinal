@@ -3,6 +3,7 @@ import {
   isAllowedAnalyticsPath,
   trackMarketingLead,
   trackMarketingPageView,
+  trackMarketingTool,
 } from "@/lib/marketing-analytics";
 
 const gtag = vi.fn();
@@ -61,13 +62,31 @@ describe("trackMarketingLead", () => {
     expect(gtag).not.toHaveBeenCalled();
   });
 
-  test("does not emit before explicit analytics consent", () => {
+  test("emits cookieless events before an explicit cookie decision", () => {
     vi.stubEnv("NEXT_PUBLIC_GA4_MEASUREMENT_ID", "G-QUICKTRUST123");
     window.gtag = gtag;
+    window.history.replaceState({}, "", "/contact");
 
     trackMarketingLead("contact");
 
-    expect(gtag).not.toHaveBeenCalled();
+    expect(gtag).toHaveBeenCalledWith("event", "generate_lead", expect.objectContaining({ form_type: "contact" }));
+  });
+
+  test("records bounded tool usage events without inputs or results", () => {
+    vi.stubEnv("NEXT_PUBLIC_GA4_MEASUREMENT_ID", "G-QUICKTRUST123");
+    window.gtag = gtag;
+    window.history.replaceState({}, "", "/tools/soc-2-readiness-assessment");
+
+    expect(trackMarketingTool("readiness_assessment_used")).toBe(true);
+    expect(gtag).toHaveBeenCalledWith("event", "readiness_assessment_used", expect.objectContaining({
+      content_group: "marketing_tools",
+      page_location: "http://localhost:3000/tools/soc-2-readiness-assessment",
+    }));
+    expect(JSON.stringify(gtag.mock.calls[0])).not.toMatch(/score|investment|acv|deal/i);
+    expect(trackMarketingTool("something_else" as never)).toBe(false);
+    window.history.replaceState({}, "", "/dashboard");
+    expect(trackMarketingTool("roi_calculator_used")).toBe(false);
+    expect(gtag).toHaveBeenCalledTimes(1);
   });
 
   test("emits a sanitized page view without query strings or referrer data", () => {

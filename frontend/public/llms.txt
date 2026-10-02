@@ -31,6 +31,15 @@ Pages under historical case-study URLs are explicitly hypothetical illustrative
 scenarios, not verified customer case studies or evidence of achieved outcomes.
 Tool outputs depend on visitor inputs and are not audit opinions, guarantees or forecasts.
 
+## Buying guides and checklists
+- [SOC 2 compliance checklist](https://quicktrustapp.com/blog/soc2-compliance-checklist)
+- [Security questionnaire automation software: vendors and evaluation](https://quicktrustapp.com/blog/best-security-questionnaire-automation-software)
+- [GRC tools: how to evaluate platforms](https://quicktrustapp.com/blog/grc-tools-guide)
+- [Vanta pricing explained](https://quicktrustapp.com/blog/vanta-pricing-explained)
+- [Drata pricing: what is public](https://quicktrustapp.com/blog/drata-pricing-explained)
+- [QuickTrust vs Vanta](https://quicktrustapp.com/compare/quicktrust-vs-vanta)
+- [QuickTrust vs Drata](https://quicktrustapp.com/compare/quicktrust-vs-drata)
+
 ## Contact
 - [Discuss scope](https://quicktrustapp.com/contact)
 - [Pricing](https://quicktrustapp.com/pricing)

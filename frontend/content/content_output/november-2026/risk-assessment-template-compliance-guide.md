@@ -1,18 +1,18 @@
 ---
 meta_description: "Risk Assessment Records for Compliance Programs. Practical guidance for organizing assessment documentation, owners and review decisions."
 target_keyword: "risk assessment template"
-secondary_keywords: "security risk assessment, risk assessment matrix, cyber risk assessment, risk assessment methodology, compliance risk assessment"
+secondary_keywords: "security risk assessment, risk assessment matrix, cyber risk assessment, risk assessment methodology, compliance risk assessment, security risk assessment compliance"
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "Risk Assessment Records for Compliance Programs"
 ---
 
 
 # Risk Assessment Records for Compliance Programs
 
-This guide focuses on organizing assessment documentation, owners and review decisions. For choosing a method and evaluating likelihood, impact and treatment, see [Security Risk Assessment: Scoring and Prioritization](/blog/risk-assessment-guide).
+This guide covers how to organize assessment documentation, owners and review decisions, and also how to choose a method and evaluate likelihood, impact and treatment so the two halves of the process stay connected.
 
 Every compliance framework begins in the same place: understanding what can go wrong. Before you write a single security policy, configure a monitoring tool, or engage an auditor, you must systematically identify the threats facing your organization, evaluate how likely they are to materialize, assess the damage they would cause, and decide what to do about each one. That process is a risk assessment, and it is the foundation on which every SOC 2, ISO 27001, HIPAA, PCI DSS, and NIST-aligned compliance program is built.
 
@@ -64,6 +64,8 @@ SOC 2 addresses risk assessment under **CC3.2 (Risk Assessment)**, which require
 - The entity identifies risks to the achievement of its objectives across the entity and analyzes risks as a basis for determining how the risks should be managed
 - The entity considers the potential for fraud in assessing risks
 
+CC3.2 sits within a group of related criteria. CC3.1 requires objectives to be specified clearly enough that risks to them can be identified. CC3.3 requires the assessment to consider fraud risk, including the incentives, pressures and opportunities for fraud that exist in your environment. CC3.4 requires you to identify and assess changes that could significantly affect your control environment, such as new technologies, changes to the business model, leadership changes or shifts in the external environment. Auditors expect the controls they test during the examination to trace back to risks in your register; a control with no corresponding risk, or a risk with no corresponding control, invites questions.
+
 SOC 2 is principles-based, meaning it does not prescribe a specific risk assessment methodology or template. Your auditor determines whether your approach is "suitably designed" and "operating effectively." This gives you flexibility, but it also means you cannot hide behind a checklist. You must demonstrate that your risk assessment reflects your actual environment, that it informed your control selection, and that it is maintained over time.
 
 For a complete overview of SOC 2 requirements, see our [SOC 2 Compliance Guide](/soc-2-compliance).
@@ -81,6 +83,8 @@ ISO 27001 contains the most prescriptive risk assessment requirements of any maj
 
 ISO 27001 auditors will examine your risk assessment methodology document, verify that the methodology was followed consistently, review the risk register, check that risk owners are assigned and aware of their responsibilities, and confirm that the risk assessment informed your Statement of Applicability and risk treatment plan. The assessment must be repeated at planned intervals or when significant changes occur.
 
+The Statement of Applicability deserves particular attention. The risk assessment is the primary justification for which Annex A controls you include and which you exclude. Certification auditors trace the chain in both directions: from a risk in the register to the control that treats it in the SoA, and from an applicable control in the SoA back to the risk that justifies it. Build the register and the SoA so that this traceability is explicit rather than implied.
+
 For ISO 27001 implementation guidance, see our [ISO 27001 Certification Guide](/iso-27001-certification).
 
 ### HIPAA: Section 164.308(a)(1)(ii)(A)
@@ -91,6 +95,8 @@ HIPAA takes a direct and non-negotiable approach. The Security Rule requires eve
 
 The Office for Civil Rights (OCR) has issued tens of millions of dollars in penalties to healthcare organizations whose violations stemmed from failure to conduct or maintain a proper risk assessment. OCR guidance specifies that a compliant risk assessment must include: scoping of all ePHI, identification of where ePHI is stored, received, maintained, or transmitted, threat identification, vulnerability identification, assessment of current security measures, determination of likelihood and impact, risk level determination, documentation, and periodic review.
 
+Two features distinguish the HIPAA assessment from the others. First, its scope is defined by data rather than by organization: it must cover every location where ePHI is created, received, maintained or transmitted, and nothing outside that boundary is required. Second, OCR publishes a Security Risk Assessment (SRA) Tool that walks through the required elements in a structured way. Using the SRA Tool is optional; any methodology that produces an accurate and thorough assessment of ePHI risk is acceptable, and the 5x5 matrix in this guide qualifies when scoped correctly.
+
 HIPAA risk assessments must be updated annually and whenever material changes occur to operations, systems, or the threat environment. For HIPAA-specific risk assessment guidance, see our [HIPAA Risk Assessment Template](/content/evergreen/lead-magnets/hipaa-risk-assessment-template).
 
 ### PCI DSS: Requirement 12.2
@@ -100,6 +106,8 @@ PCI DSS v4.0 Requirement 12.2 requires organizations to perform a risk assessmen
 - Identify critical assets, threats, and vulnerabilities
 - Result in a formal, documented analysis of risk
 - Be performed by qualified personnel
+
+PCI DSS v4.0 also introduced a second layer: targeted risk analyses. Wherever a requirement gives the organization flexibility in how it is implemented, such as defining how often a periodic control activity is performed, the organization must document a targeted risk analysis that justifies the chosen frequency or approach. In practice this means a PCI DSS program needs both the broad organizational assessment described in this guide and a set of short, requirement-specific analyses tied to each flexible control. Keep the targeted analyses in the same repository as the main register so they are reviewed on the same cadence.
 
 PCI DSS assessors (QSAs) will request documentation of the methodology, the completed assessment, evidence of annual review, and proof that the assessment influenced security control decisions. For PCI DSS implementation guidance, see our [PCI DSS Compliance Guide](/content/may-2026/pillar-pci-dss-complete-guide).
 
@@ -165,6 +173,18 @@ For each asset or asset group, identify the threats that could compromise its co
 - **Regulatory changes:** New compliance requirements, enforcement actions, cross-border data transfer restrictions
 
 Use threat intelligence feeds, industry-specific threat reports (such as the Verizon DBIR), and your own incident history as inputs. Do not limit your analysis to threats you have experienced. Assess threats that are plausible for your industry, size, and technology stack.
+
+#### Sources for systematic threat identification
+
+The most common weakness in a first assessment is that threats are identified from memory rather than from a structured source, which means the register reflects what the team happens to worry about rather than what could actually go wrong. Work through each of these sources in turn and record which ones you used in the methodology document:
+
+- **Asset-by-asset review.** Take each entry in the asset inventory and ask what would compromise its confidentiality, integrity and availability. This is slow but it is the only method that guarantees coverage of every in-scope system.
+- **Published threat catalogs.** NIST SP 800-30 includes a catalog of threat sources and threat events. ISO 27005 provides a comparable list aligned to ISO 27001. The OWASP Top 10 covers application-specific threats. These catalogs are starting points, not finished lists, but they prevent you from overlooking well-understood categories.
+- **Historical incidents and near-misses.** Review past security incidents, near-misses that were caught before harm occurred, and findings from prior audits and penetration tests. These are realized or nearly realized risks and belong in the register regardless of whether they have since been addressed.
+- **Industry threat intelligence.** Healthcare, fintech and infrastructure companies face different threat profiles. Ransomware, insider misuse, third-party compromise and regulatory change are common across most sectors, but the relative weighting differs.
+- **Stakeholder interviews.** Engage system owners, engineering leads and business unit managers. Technical staff routinely identify risks that are invisible at the policy level: the undocumented cron job, the shared service account, the integration everyone forgot about.
+
+Once identified, group threats into technical, human, environmental and third-party categories. Grouping makes gaps visible: a register with forty technical risks and no human or vendor risks is a sign that the identification step was incomplete, not that those risks do not exist.
 
 ### Step 3: Vulnerability Analysis
 
@@ -236,6 +256,8 @@ For each identified risk, select a treatment strategy:
 - **Avoid:** Eliminate the risk entirely by removing the activity or asset. Example: stop collecting a category of sensitive data you do not need.
 
 Every treatment decision must be documented, justified, and approved by the designated risk owner. Acceptance of high or critical risks requires explicit sign-off from senior management or the board, depending on your risk governance structure.
+
+Two points about transfer and acceptance catch organizations out during audits. Transferring a risk shifts its financial consequence, not your compliance obligation: cyber insurance may fund breach response, but you remain responsible for the controls that every framework requires, and an auditor will not accept an insurance policy as a substitute for a missing control. Acceptance is a decision with an expiry date, not a permanent classification. Each accepted risk should carry the name of the approver, the date of approval and the condition or date on which the acceptance will be re-evaluated, and accepted risks should be revisited at every scheduled review.
 
 ### Step 8: Documentation
 
@@ -364,6 +386,32 @@ The following table provides a template populated with example entries relevant 
 | R-013 | Shadow IT -- employees use unapproved SaaS tools to process customer data | Employee Devices/SaaS | Operational | 3 | 3 | 9 | Medium | IT Manager | Mitigate | Implement SaaS discovery and monitoring, enforce acceptable use policy, conduct annual software audit, provide approved alternatives for common needs | In Progress | 2026-06-30 |
 | R-014 | API key or secret leaked in source code repository | Source Code Repository | Insider Threat | 3 | 4 | 12 | High | Engineering Lead | Mitigate | Implement pre-commit secret scanning hooks, deploy automated secret detection in CI/CD, rotate all secrets on regular cadence, use secrets management vault | Complete | -- |
 | R-015 | Inadequate logging results in inability to investigate a security incident | Monitoring Systems | Operational | 2 | 4 | 8 | Medium | Head of Security | Mitigate | Implement centralized log management, define minimum log retention periods (1 year), configure alerting for security-relevant events, test log integrity regularly | In Progress | 2026-05-15 |
+
+### Tracking inherent and residual risk
+
+The template above records a single score per risk. As the program matures, split that into inherent risk (the score before any controls) and residual risk (the score after the controls you actually have), and add a target residual score that the treatment plan is expected to achieve. Auditors use this split to confirm two things: that you understand which existing controls are doing the work, and that your treatment plans are proportionate to the gap between where the risk is and where you want it to be.
+
+Add the following fields to each register entry:
+
+| Field | Description | Example |
+|---|---|---|
+| Existing Controls | Controls already in place that reduce this risk | Password policy, role-based access control |
+| Inherent Likelihood / Impact / Score | Scores assuming no controls exist | 3 / 4 / 12 (High) |
+| Residual Likelihood / Impact / Score | Scores after existing controls are considered | 2 / 4 / 8 (Medium) |
+| Target Residual Score | Expected score once the treatment plan is complete | 4 (Low) |
+| Treatment Deadline | Date by which treatment must be complete | 2026-06-30 |
+| Last Reviewed | Date of the most recent review of this entry | 2026-03-15 |
+
+A worked example shows how the fields interact. The entries below use the same 5x5 scale as the matrix in this guide:
+
+| Risk ID | Risk Description | Inherent L | Inherent I | Inherent Score | Existing Controls | Residual L | Residual I | Residual Score | Treatment |
+|---|---|---|---|---|---|---|---|---|---|
+| R-002 | Ransomware encrypts production data | 4 | 5 | 20 (Critical) | Endpoint protection, daily backups | 3 | 4 | 12 (High) | Mitigate: EDR, network segmentation, immutable backups |
+| R-001 | Unauthorized access via compromised credentials | 3 | 4 | 12 (High) | Password policy, RBAC | 2 | 4 | 8 (Medium) | Mitigate: MFA, SSO |
+| R-004 | Data exposure through misconfigured cloud storage | 3 | 4 | 12 (High) | Manual configuration reviews | 2 | 3 | 6 (Medium) | Mitigate: CSPM tooling, IaC policy checks |
+| R-003 | Vendor breach exposes shared data | 3 | 3 | 9 (Medium) | Vendor security questionnaires | 2 | 3 | 6 (Medium) | Transfer: require vendor cyber insurance; Mitigate: restrict vendor access |
+
+Three patterns are worth noting. Existing controls usually reduce likelihood more than impact, because most preventive controls stop an event from happening rather than limiting the damage once it does; a residual impact that drops sharply without a corresponding recovery or containment control is a scoring error. The residual score, not the inherent score, is what you compare against your risk acceptance threshold. And when a treatment plan is completed, the residual score is rescored and the target residual score is retired, so the register always shows one current residual value per risk.
 
 ### How to maintain the risk register
 

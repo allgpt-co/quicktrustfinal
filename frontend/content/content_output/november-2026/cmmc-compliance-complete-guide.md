@@ -5,14 +5,14 @@ secondary_keywords: "cmmc certification, cmmc 2.0, cmmc requirements, cmmc level
 word_count_target: 4500+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "CMMC Program Planning for Technology Suppliers"
 ---
 
 
 # CMMC Program Planning for Technology Suppliers
 
-This guide focuses on organizing a supplier implementation program and evidence needs. For identifying the contracting scope and readiness questions to validate, see [CMMC Readiness: Scope and Assessment Planning](/blog/cmmc-compliance-guide).
+This guide focuses on organizing a supplier implementation program and evidence needs. For identifying the contracting scope and readiness questions to validate, see CMMC Readiness: Scope and Assessment Planning.
 
 The United States Department of Defense spends over $400 billion annually on contracts with private companies. That money flows through a defense industrial base (DIB) of more than 300,000 organizations -- from trillion-dollar prime contractors building fighter jets to five-person machine shops milling specialized brackets. Every one of these companies handles some form of government information. And starting with the phased rollout that began in late 2024, every one of them must prove their cybersecurity meets a defined standard before they can win or retain those contracts.
 
@@ -80,14 +80,24 @@ Each CMMC level builds on the one below it. The level required for a specific co
 
 **Controls:** 17 practices drawn from FAR clause 52.204-21, "Basic Safeguarding of Covered Contractor Information Systems." These are fundamental cybersecurity hygiene controls that any business should have in place.
 
-**Key practices include:**
-- Limit system access to authorized users
+**The 17 practices:**
+- Limit system access to authorized users, processes acting on behalf of users, and authorized devices
 - Limit information system access to the types of transactions and functions that authorized users are permitted to execute
 - Verify and control connections to external information systems
 - Control information posted on publicly accessible information systems
-- Identify and authenticate users before granting access
+- Identify information system users and processes acting on behalf of users
+- Authenticate users, processes, or devices before allowing access
 - Sanitize or destroy media containing FCI before disposal or reuse
-- Physically limit access to information systems, equipment, and operating environments
+- Limit physical access to organizational systems, equipment, and operating environments to authorized individuals
+- Escort visitors and monitor visitor activity
+- Maintain audit logs of physical access
+- Control and manage physical access devices
+- Monitor, control, and protect organizational communications at external and key internal boundaries
+- Implement subnetworks for publicly accessible system components that are separated from internal networks
+- Identify, report, and correct information and system flaws in a timely manner
+- Provide protection from malicious code at appropriate locations
+- Update malicious code protection mechanisms when new releases are available
+- Perform periodic scans of systems and real-time scans of files from external sources
 
 **Assessment method:** Annual self-assessment. The contractor's senior official (typically a C-suite executive or owner) must affirm the self-assessment results and submit an annual score to SPRS. There is no third-party assessor involvement.
 
@@ -99,20 +109,22 @@ Each CMMC level builds on the one below it. The level required for a specific co
 
 **Controls:** All 110 security requirements from NIST SP 800-171 Rev 2, "Protecting Controlled Unclassified Information in Nonfederal Systems and Organizations." These 110 requirements span 14 control families:
 
-1. Access Control (22 requirements)
-2. Awareness and Training (3 requirements)
-3. Audit and Accountability (9 requirements)
-4. Configuration Management (9 requirements)
-5. Identification and Authentication (11 requirements)
-6. Incident Response (3 requirements)
-7. Maintenance (6 requirements)
-8. Media Protection (9 requirements)
-9. Personnel Security (2 requirements)
-10. Physical Protection (6 requirements)
-11. Risk Assessment (3 requirements)
-12. Security Assessment (4 requirements)
-13. System and Communications Protection (16 requirements)
-14. System and Information Integrity (7 requirements)
+1. **Access Control (AC), 22 requirements.** Account management, access enforcement, information flow control, least privilege, remote access, and wireless access.
+2. **Awareness and Training (AT), 3 requirements.** Security awareness training, role-based training, and insider threat awareness.
+3. **Audit and Accountability (AU), 9 requirements.** Audit logging, event correlation, audit review, protection of audit information, and audit reporting.
+4. **Configuration Management (CM), 9 requirements.** Baseline configurations, configuration settings, change tracking, access restrictions for change, and least functionality.
+5. **Identification and Authentication (IA), 11 requirements.** User identification, multi-factor authentication, authenticator management, and cryptographic authentication.
+6. **Incident Response (IR), 3 requirements.** Incident handling, incident reporting, and response capability testing.
+7. **Maintenance (MA), 6 requirements.** System maintenance, maintenance tools, nonlocal maintenance, and maintenance personnel.
+8. **Media Protection (MP), 9 requirements.** Media access, marking, storage, transport, sanitization, and CUI handling on media.
+9. **Personnel Security (PS), 2 requirements.** Personnel screening and termination or transfer procedures.
+10. **Physical Protection (PE), 6 requirements.** Physical access control, visitor management, and physical monitoring.
+11. **Risk Assessment (RA), 3 requirements.** Periodic risk assessments, vulnerability scanning, and vulnerability remediation.
+12. **Security Assessment (CA), 4 requirements.** Security control assessments, plans of action, continuous monitoring, and system interconnections.
+13. **System and Communications Protection (SC), 16 requirements.** Boundary protection, cryptographic protection, collaborative computing devices, session termination, CUI in transit and at rest, and mobile code.
+14. **System and Information Integrity (SI), 7 requirements.** Flaw remediation, malicious code protection, security alerts and advisories, system monitoring, and information integrity.
+
+Reading the families this way is useful during scoping: each one maps to an owner (identity team, infrastructure team, HR, facilities) and to a set of evidence artifacts that the System Security Plan must describe.
 
 **Assessment method:** This depends on the contract. For contracts involving CUI, Level 2 certification requires a **triennial assessment by a CMMC Third-Party Assessment Organization (C3PAO)** accredited by the Cyber AB. A limited number of Level 2 contracts may allow self-assessment with senior official affirmation, but this exception applies only where the DoD has determined the CUI involved does not warrant third-party verification.
 
@@ -229,6 +241,20 @@ CUI is identified by markings on documents and data -- typically the banner "CUI
 **The practical challenge:** If you are uncertain whether information you receive is CUI, treat it as CUI and protect it accordingly. Under-protecting CUI creates both security and contractual risk. Over-protecting it costs money but keeps you compliant.
 
 CUI requires CMMC Level 2 protection at minimum -- all 110 NIST 800-171 security requirements.
+
+### CUI handling requirements
+
+Knowing what CUI is only gets you halfway. The CUI Registry maintained by the National Archives lists every category and subcategory, and the handling obligations that follow from it are what assessors test in practice. At minimum, your environment must support:
+
+- **Marking.** Documents and media containing CUI carry the appropriate CUI designation and category markings, and your procedures say who applies them and when.
+- **Encryption.** CUI is encrypted in transit and at rest using FIPS 140-2 validated cryptography. Encryption that is strong but not FIPS validated does not satisfy the requirement.
+- **Need-to-know access.** Access to CUI is limited to individuals with a legitimate need, enforced through the access control and identification and authentication families.
+- **Authorized storage.** CUI is stored and processed only in systems that are inside the assessed boundary and meet the NIST 800-171 requirements. CUI that leaks into email, chat tools, or personal devices outside the boundary is a scoping failure as much as a security one.
+- **Sanitization and destruction.** Media containing CUI is sanitized or destroyed using approved methods before disposal or reuse, with records kept.
+- **Lifecycle tracking.** You can show where CUI enters your environment, where it flows, where it rests, and how it leaves, from creation through destruction.
+- **Incident reporting.** Cyber incidents affecting CUI are reported to the DoD within 72 hours of discovery, as required by DFARS 252.204-7012, and the incident response family controls must support meeting that window.
+
+Each of these should appear in the System Security Plan with a pointer to the control or procedure that implements it.
 
 ---
 
@@ -397,6 +423,10 @@ The [NIST Cybersecurity Framework](/blog/nist-cybersecurity-framework) provides 
 - NIST CSF helps you build an overall cybersecurity strategy and governance framework
 - NIST 800-171 / CMMC Level 2 specifies the exact controls required for CUI protection
 - Many organizations use NIST CSF as their enterprise security framework and CMMC / NIST 800-171 as the specific control baseline for defense contract work
+
+### CMMC and FedRAMP
+
+FedRAMP is an authorization program for cloud services used by federal agencies, not a contractor certification, but it matters for CMMC in two ways. First, cloud services that store, process, or transmit CUI on a contractor's behalf are expected to meet the FedRAMP Moderate baseline or an equivalent, which is why government-oriented cloud regions and environments are so common in CUI enclaves. Second, controls that the cloud provider implements at the infrastructure layer can be inherited in your System Security Plan, which reduces the number of requirements you must implement and evidence yourself. Inheritance does not transfer responsibility for application, data, and user-level controls; those remain yours under the shared responsibility model.
 
 ### Cross-Framework Mapping Summary
 

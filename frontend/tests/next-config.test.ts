@@ -98,3 +98,17 @@ describe("next security headers", () => {
     expect(withoutId).not.toContain("https://www.googletagmanager.com");
   });
 });
+
+describe("canonical host", () => {
+  test("www requests redirect permanently to the apex domain in one hop", async () => {
+    vi.resetModules();
+    const { default: nextConfig } = await import("../next.config");
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toContainEqual({
+      source: "/:path*",
+      has: [{ type: "host", value: "www.quicktrustapp.com" }],
+      destination: "https://quicktrustapp.com/:path*",
+      permanent: true,
+    });
+  });
+});

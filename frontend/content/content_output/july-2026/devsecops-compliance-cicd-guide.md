@@ -1,23 +1,23 @@
 ---
 meta_description: "CI/CD Compliance: Controls Across the Delivery Pipeline. Practical guidance for mapping control work to individual delivery stages."
 target_keyword: "devsecops compliance, ci/cd compliance, secure sdlc"
-secondary_keywords: "soc 2 ci/cd requirements, devops security, change management compliance"
+secondary_keywords: "soc 2 ci/cd requirements, devops security, change management compliance, DevSecOps compliance"
 word_count_target: "3000"
 publish_date: "July 2026"
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "CI/CD Compliance: Controls Across the Delivery Pipeline"
 ---
 
 
 # CI/CD Compliance: Controls Across the Delivery Pipeline
 
-This guide focuses on mapping control work to individual delivery stages. For organizing reviewable evidence from the software-delivery process, see [DevSecOps Evidence for Compliance Reviews](/blog/devsecops-compliance-guide).
+This guide maps control work to individual delivery stages and shows how to organize the evidence each stage produces so it is reviewable at audit time.
 
-Most engineering teams treat compliance as a documentation exercise. They write a change management policy, file it in a shared drive, and then continue deploying the way they always have — merging to main, running a build, shipping to production. When the auditor arrives, someone scrambles to reconstruct evidence from Git logs, Slack messages, and memory.
+Most engineering teams treat compliance as a documentation exercise. They write a change management policy, file it in a shared drive, and then continue deploying the way they always have, merging to main, running a build, shipping to production. When the auditor arrives, someone scrambles to reconstruct evidence from Git logs, Slack messages, and memory.
 
 This approach fails. SOC 2 Trust Services Criteria CC8.1 (Change Management) and ISO 27001 Annex A controls A.8.25 through A.8.33 require documented, repeatable, and verifiable controls over how code moves from a developer's machine to production. An auditor does not want a policy document that says "we do code reviews." An auditor wants timestamped proof that every production change went through a defined approval workflow, passed automated security checks, and was logged in an immutable audit trail.
 
-The good news: if you build your CI/CD pipeline correctly, compliance evidence generates itself. Every pull request, every scan result, every approval, every deployment becomes an audit artifact — produced automatically, stored permanently, and queryable on demand. This guide maps specific CI/CD pipeline stages to SOC 2 CC8 and ISO 27001 Annex A controls, with concrete tool configurations, code examples, and implementation patterns for GitHub Actions, GitLab CI, and ArgoCD.
+The good news: if you build your CI/CD pipeline correctly, compliance evidence generates itself. Every pull request, every scan result, every approval, every deployment becomes an audit artifact, produced automatically, stored permanently, and queryable on demand. This guide maps specific CI/CD pipeline stages to SOC 2 CC8 and ISO 27001 Annex A controls, with concrete tool configurations, code examples, and implementation patterns for GitHub Actions, GitLab CI, and ArgoCD.
 
 ---
 
@@ -42,6 +42,24 @@ Before building anything, understand exactly which audit controls map to which p
 
 This is not a "nice-to-have" checklist. Every row represents a control point that a SOC 2 Type II auditor or an ISO 27001 certification body will evaluate. If you cannot produce evidence for a given row, you have a control gap.
 
+### What the Controls Actually Say
+
+Auditors are not CI/CD experts. They will not read your workflow files line by line. They ask questions that map to specific control requirements and expect evidence that those controls are enforced consistently. It helps to know what the underlying requirements say in plain language.
+
+**SOC 2 CC8.1 (Changes to infrastructure and software).** The organization authorizes, designs, develops or acquires, configures, documents, tests, approves, and implements changes to infrastructure, data, software, and procedures. In practice: every production change is authorized by someone other than the author, tested by automated checks that pass, and documented with a record of what changed, who approved it, and when it was deployed.
+
+**SOC 2 CC7.1 (Detection and monitoring).** The organization detects and monitors for security events and vulnerabilities. In the pipeline, this is your SAST, SCA, secrets, IaC, and container scanning.
+
+**SOC 2 CC6.1 (Logical access).** Controls over who can access what. For CI/CD this means who can merge to protected branches, who can trigger production deployments, and who can modify pipeline configuration.
+
+**ISO 27001 A.8.25 (Secure development life cycle).** Rules for secure development of software and systems are established and applied: code review, testing, security scanning, and change management.
+
+**ISO 27001 A.8.26 (Application security requirements) and A.8.27 (Secure system architecture and engineering principles).** Security requirements are identified and approved when developing or acquiring applications, and secure engineering principles are documented and applied to development activity.
+
+**ISO 27001 A.8.28 (Secure coding).** Secure coding principles are applied. Auditors look for SAST results, code review practice, and enforced coding standards.
+
+**ISO 27001 A.8.32 (Change management).** Changes to information processing facilities and systems follow a change management procedure, including the handling of failed changes.
+
 ---
 
 ## Stage 1: Branch Protection and Access Controls
@@ -50,7 +68,7 @@ The pipeline starts before any code is written. Branch protection rules are the 
 
 ### What the Frameworks Require
 
-**SOC 2 CC8.1** requires that changes to infrastructure and software are authorized through a defined process. A developer pushing directly to `main` and triggering a production deployment is, by definition, an unauthorized change — even if the developer is the CTO.
+**SOC 2 CC8.1** requires that changes to infrastructure and software are authorized through a defined process. A developer pushing directly to `main` and triggering a production deployment is, by definition, an unauthorized change, even if the developer is the CTO.
 
 **ISO 27001 A.8.4** requires restricted access to source code. A.8.25 requires a secure development lifecycle that includes defined rules for code changes.
 
@@ -88,7 +106,7 @@ The critical settings for audit purposes:
 - **`enforce_admins: true`** means even repository administrators cannot bypass protection rules. Without this, an auditor will flag that privileged users can circumvent change management.
 - **`dismiss_stale_reviews: true`** ensures that if a developer pushes new commits after receiving approval, the approval resets and a new review is required.
 - **`require_last_push_approval: true`** prevents a developer from approving their own final push.
-- **`required_status_checks.strict: true`** requires the branch to be up to date with `main` before merging — preventing a class of issues where checks passed on a stale branch but fail on the merged result.
+- **`required_status_checks.strict: true`** requires the branch to be up to date with `main` before merging, preventing a class of issues where checks passed on a stale branch but fail on the merged result.
 
 ### GitLab Implementation
 
@@ -194,13 +212,26 @@ sast-scan:
 
 **Tool alternatives:** CodeQL (GitHub-native, strong for compiled languages), SonarQube (broad language support, quality + security), Checkmarx (enterprise-grade, supports compliance-specific rule sets). Semgrep is recommended for most teams because its rules are open source, its configuration is declarative, and it produces SARIF output that integrates directly with GitHub Security.
 
+**SAST tools by language ecosystem:**
+
+| Tool | Languages | Integration |
+|---|---|---|
+| Semgrep | Python, JavaScript, Go, Java, Ruby, and more | GitHub Actions, GitLab CI, CLI |
+| SonarQube / SonarCloud | Broad multi-language support | GitHub Actions, GitLab CI, Jenkins |
+| CodeQL | C/C++, C#, Go, Java, JavaScript, Python, Ruby | Native GitHub Actions |
+| Checkmarx | Enterprise multi-language | Compliance-specific rule sets |
+| Bandit | Python | GitHub Actions, GitLab CI, CLI |
+| Brakeman | Ruby on Rails | GitHub Actions, GitLab CI, CLI |
+
+Whichever tool you pick, upload results in SARIF format. The SARIF upload creates a persistent, auditable record of scan results in your repository's security tab, which is exactly the artifact an auditor asks for.
+
 **The audit requirement:** The scan must run on every change. Results must be stored. Findings above a defined severity threshold must block the merge. If you allow developers to override findings without a documented exception process, the control is ineffective.
 
 ---
 
 ## Stage 3: Software Composition Analysis and SBOM Generation
 
-SCA identifies known vulnerabilities in third-party dependencies. SOC 2 CC7.1 and ISO 27001 A.8.28 both require that organizations identify and remediate vulnerabilities in software components — including components they did not write.
+SCA identifies known vulnerabilities in third-party dependencies. SOC 2 CC7.1 and ISO 27001 A.8.28 both require that organizations identify and remediate vulnerabilities in software components, including components they did not write.
 
 ```yaml
   sca-scan:
@@ -289,13 +320,25 @@ repos:
 
 **Tool alternatives:** TruffleHog (excellent entropy-based detection), GitHub Advanced Security secret scanning (native integration, partner pattern detection), GitLab Secret Detection (built into GitLab Ultimate). Gitleaks is recommended for teams that need a tool that works across any CI system, is fully open source, and supports custom regex patterns for organization-specific secret formats.
 
+**Secrets scanning tools compared:**
+
+| Tool | Approach | Where It Runs |
+|---|---|---|
+| GitHub Secret Scanning | Native GitHub feature with partner pattern detection | Automatic for public repos; private repos with Advanced Security |
+| Gitleaks | Open source, regex-based with custom patterns | GitHub Actions, GitLab CI, pre-commit hook |
+| TruffleHog | Open source, entropy plus regex detection | GitHub Actions, GitLab CI, CLI |
+| detect-secrets (Yelp) | Open source, plugin-based | Pre-commit hook, CI/CD |
+| GitLab Secret Detection | Built into GitLab Ultimate | GitLab CI |
+
+Running a scanner in both places gives you a preventive control (the hook) and a detective control (the CI job). Auditors like to see both.
+
 **Critical configuration:** The `.gitleaks.toml` file must be reviewed and maintained. Allowlisting paths or patterns requires a documented exception with a justification. Auditors will check whether your allowlist effectively disables the scanner.
 
 ---
 
 ## Stage 5: Infrastructure as Code Scanning
 
-If your infrastructure is defined in Terraform, CloudFormation, Pulumi, or Kubernetes manifests, those definitions are code — and they are subject to the same change management requirements as application code. SOC 2 CC8.1 and ISO 27001 A.8.9 (Configuration management) require that infrastructure changes go through a defined review and approval process.
+If your infrastructure is defined in Terraform, CloudFormation, Pulumi, or Kubernetes manifests, those definitions are code, and they are subject to the same change management requirements as application code. SOC 2 CC8.1 and ISO 27001 A.8.9 (Configuration management) require that infrastructure changes go through a defined review and approval process.
 
 ```yaml
   iac-scan:
@@ -362,13 +405,13 @@ If you deploy containers, every image must be scanned before it reaches producti
           sarif_file: trivy-results.sarif
 ```
 
-**Audit evidence produced:** CVE scan results for every container image, linked to the specific Git commit and deployment. Auditors will verify that images with critical vulnerabilities were not deployed to production — or, if they were, that a documented risk acceptance exists.
+**Audit evidence produced:** CVE scan results for every container image, linked to the specific Git commit and deployment. Auditors will verify that images with critical vulnerabilities were not deployed to production, or, if they were, that a documented risk acceptance exists.
 
 ---
 
 ## Stage 7: DAST in Staging Environments
 
-Dynamic Application Security Testing runs against a deployed instance of your application, testing for runtime vulnerabilities that static analysis cannot detect. ISO 27001 A.8.29 specifically requires security testing in development and acceptance — DAST in a staging environment directly satisfies this control.
+Dynamic Application Security Testing runs against a deployed instance of your application, testing for runtime vulnerabilities that static analysis cannot detect. ISO 27001 A.8.29 specifically requires security testing in development and acceptance, DAST in a staging environment directly satisfies this control.
 
 ```yaml
   dast-scan:
@@ -471,6 +514,15 @@ The `environment: production` key is critical. Configure the `production` enviro
 - **Wait timer:** Optional delay (e.g., 15 minutes) to allow for last-minute objections.
 - **Deployment branches:** Restrict to `main` only, preventing deployments from feature branches.
 
+### Environment Separation Requirements
+
+Approval gates only count if the environments they protect are genuinely separate. Auditors look for four things:
+
+- **Isolated environments.** Development, staging, and production are distinct, and developers cannot reach production data from development environments. Infrastructure configuration enforces the separation; a policy document alone does not.
+- **Explicit deployment approval.** Production deployments require sign-off from an authorized person, whether through a GitHub Environment reviewer, a GitLab protected environment, or a change advisory board process.
+- **A deployment audit trail.** Every production deployment records who initiated it, who approved it, what was deployed (the commit SHA), and when.
+- **Rollback capability.** The ability to revert a production deployment quickly, which also supports the Availability and Processing Integrity criteria.
+
 ### GitOps with ArgoCD
 
 For teams using GitOps, ArgoCD provides a declarative deployment model where the desired state of production is defined in a Git repository. ArgoCD continuously reconciles the cluster state with the repository state.
@@ -496,7 +548,7 @@ spec:
     namespace: production
   syncPolicy:
     automated:
-      prune: false       # Do not auto-delete resources — require manual action
+      prune: false       # Do not auto-delete resources, require manual action
       selfHeal: true     # Revert manual cluster changes to match Git state
     syncOptions:
       - CreateNamespace=false
@@ -561,7 +613,7 @@ jobs:
 **Immutability guarantees:**
 
 - **S3 Object Lock** (Compliance mode): Prevents any user, including the root account, from deleting or overwriting objects for the retention period. Configure a 7-year retention period for SOC 2 evidence.
-- **AWS CloudTrail** with log file validation: Provides tamper-evident logging of all API calls to the S3 bucket itself — proving that no one modified the audit logs.
+- **AWS CloudTrail** with log file validation: Provides tamper-evident logging of all API calls to the S3 bucket itself, proving that no one modified the audit logs.
 - **Alternative: GCP Cloud Storage with Bucket Lock** or **Azure Blob Storage with immutability policies** provide equivalent guarantees.
 
 ### What to Log
@@ -618,6 +670,31 @@ SOC 2 CC8.1 requires that changes can be reversed. ISO 27001 A.8.32 (Change mana
 
 ---
 
+## Evidence Collection: Keeping the Pipeline Audit-Ready
+
+The controls above are only valuable if you can prove they exist and operate consistently. Your pipeline already produces the evidence; the work is collecting it in a form an auditor can review.
+
+### Where the Evidence Comes From
+
+- Pull request history, showing code review approvals by someone other than the author
+- Branch protection audit logs, showing that rules are active and have not been bypassed or weakened
+- CI run logs, showing that tests and scans execute on every change
+- SAST, SCA, IaC, and DAST results in SARIF format, showing vulnerabilities tracked and resolved
+- Secrets scanning alerts, showing secrets detected before deployment
+- Deployment records, showing production changes authorized and logged
+
+### Automate the Collection
+
+Do not wait until audit time to gather this. Build collection into the pipeline itself:
+
+- **Export CI run summaries** to a centralized evidence repository on a fixed schedule, not on demand.
+- **Generate compliance reports** from your scanning tools that show trends, remediation times, and current open findings by severity.
+- **Maintain a change log** that correlates every production deployment to its pull request, approvers, test results, and scan outcomes.
+
+For SOC 2 Type II specifically, the auditor needs evidence that controls operated effectively across the entire observation period, not at a single point in time. Continuous collection is the only practical way to produce that.
+
+---
+
 ## Putting It All Together: The Complete Pipeline Architecture
 
 The full compliant pipeline follows this sequence:
@@ -670,7 +747,7 @@ Deployment record logged to immutable storage
 SBOM archived with release metadata
 ```
 
-Every arrow in this diagram produces audit evidence. Every gate is enforceable and verifiable. No manual steps require trust — the pipeline enforces the policy.
+Every arrow in this diagram produces audit evidence. Every gate is enforceable and verifiable. No manual steps require trust, the pipeline enforces the policy.
 
 ---
 
@@ -682,7 +759,7 @@ Even teams with sophisticated pipelines receive audit findings. These are the mo
 
 **Finding: Security scan results are not retained.** Root cause: CI artifacts use default retention (90 days in GitHub Actions), which is insufficient for SOC 2 observation periods. Fix: Set `retention-days: 2555` (7 years) on all compliance-relevant artifacts, or export to immutable external storage.
 
-**Finding: No evidence of scan failures blocking deployment.** Root cause: Scans run but are configured as "informational" — they do not fail the build. Fix: Every scan must use `exit-code: 1` or equivalent hard-fail configuration. Document any exceptions in a risk acceptance register.
+**Finding: No evidence of scan failures blocking deployment.** Root cause: Scans run but are configured as "informational", they do not fail the build. Fix: Every scan must use `exit-code: 1` or equivalent hard-fail configuration. Document any exceptions in a risk acceptance register.
 
 **Finding: Production deployment does not require separate approval.** Root cause: The same developer who wrote the code can merge the PR and deploy to production without any additional gate. Fix: Use GitHub Environments with required reviewers, or ArgoCD RBAC that restricts production sync to a separate team.
 
@@ -697,11 +774,11 @@ Even teams with sophisticated pipelines receive audit findings. These are the mo
 QuickTrust integrates directly with your CI/CD pipeline to automate the evidence collection described in this guide. Instead of manually exporting scan results, archiving deployment records, and mapping artifacts to controls, QuickTrust:
 
 - **Ingests CI/CD events** from GitHub Actions, GitLab CI, and ArgoCD via webhooks and API integrations
-- **Maps pipeline artifacts to controls** automatically — linking your Semgrep scan results to SOC 2 CC7.1, your branch protection configuration to CC8.1, your deployment approvals to ISO 27001 A.8.25
+- **Maps pipeline artifacts to controls** automatically, linking your Semgrep scan results to SOC 2 CC7.1, your branch protection configuration to CC8.1, your deployment approvals to ISO 27001 A.8.25
 - **Generates audit-ready evidence packages** that your auditor can review directly, with timestamped artifacts organized by control objective
-- **Monitors for control drift** — alerting you if branch protection rules are weakened, if scan stages are removed from pipelines, or if deployments bypass approval gates
+- **Monitors for control drift**, alerting you if branch protection rules are weakened, if scan stages are removed from pipelines, or if deployments bypass approval gates
 - **Maintains your SBOM registry** with historical records linked to every production release
 
 The platform is open source. You can inspect the integration code, run it in your own infrastructure, and extend it for custom frameworks.
 
-**Have our DevOps engineers set up your compliant CI/CD pipeline.** [Book a pipeline review](https://trust.quickintell.com/contact) and we will audit your current CI/CD configuration, identify control gaps against SOC 2 CC8 and ISO 27001 Annex A, and implement the pipeline stages described in this guide — configured for your specific tech stack and deployment model.
+**Have our DevOps engineers set up your compliant CI/CD pipeline.** [Book a pipeline review](https://trust.quickintell.com/contact) and we will audit your current CI/CD configuration, identify control gaps against SOC 2 CC8 and ISO 27001 Annex A, and implement the pipeline stages described in this guide, configured for your specific tech stack and deployment model.

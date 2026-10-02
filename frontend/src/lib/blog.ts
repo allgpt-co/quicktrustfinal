@@ -60,6 +60,9 @@ function canonicalArticleHref(href: string, sourceFilename: string, files: Map<s
     slug = path.basename(pathPart).replace(/\.md$/, '');
   } else if (pathPart.startsWith('/blog/') && pathPart.endsWith('.md')) {
     slug = path.basename(pathPart, '.md');
+  } else if (/^\/blog\/[^/]+$/.test(pathPart)) {
+    // A plain link to a consolidated article goes straight to its canonical URL.
+    slug = pathPart.slice('/blog/'.length);
   } else if ((pathPart.startsWith('./') || pathPart.startsWith('../')) && pathPart.endsWith('.md')) {
     const target = path.resolve(path.dirname(sourceFilename), pathPart);
     slug = path.basename(target, '.md');

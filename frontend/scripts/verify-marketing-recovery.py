@@ -102,9 +102,13 @@ def main():
         path = '/resources/' + slug
         status, headers, content = fetch(base + path)
         checks.append({'path': path, 'status': status, 'ok': status == 200 and 'attachment' in header(headers, 'content-disposition') and 'text/markdown' in header(headers, 'content-type') and header(headers, 'x-robots-tag') == 'noindex' and len(content) > 1000})
-    for path in ['/dashboard', '/settings', '/settings/trust-center', '/settings/integrations', '/integrations/123', '/resources/private', '/content/private']:
+    for path in ['/dashboard', '/settings', '/settings/trust-center', '/settings/integrations', '/integrations/123']:
         status, headers, _ = fetch(base + path)
         checks.append({'path': path, 'status': status, 'ok': status == 307 and urllib.parse.urlsplit(header(headers, 'location')).path == '/login'})
+    # Unknown public paths are real 404s, never login redirects that crawlers record as soft errors.
+    for path in ['/resources/private', '/content/private', '/no-such-page', '/Blog', '/blog/no-such-article']:
+        status, _, _ = fetch(base + path)
+        checks.append({'path': path, 'status': status, 'kind': 'not-found', 'ok': status == 404})
     status, _, xml = fetch(base + '/sitemap.xml')
     sitemap_ok, url_count = False, 0
     sitemap_paths = []

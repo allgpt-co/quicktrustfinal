@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { trackMarketingTool } from '@/lib/marketing-analytics';
 
 export default function ComplianceRoiCalculator() {
   const [investment, setInvestment] = useState(77400);
@@ -9,6 +10,12 @@ export default function ComplianceRoiCalculator() {
   const [daysSaved, setDaysSaved] = useState(25);
   const [dealsPerYear, setDealsPerYear] = useState(15);
   const [insuranceSavings, setInsuranceSavings] = useState(12000);
+  const reported = useRef(false);
+  const recordUse = () => {
+    if (reported.current) return;
+    reported.current = true;
+    trackMarketingTool('roi_calculator_used');
+  };
   // Timing of existing revenue is not incremental revenue; show it separately.
   const impact = useMemo(() => blockedDeals * acv + insuranceSavings, [blockedDeals, acv, insuranceSavings]);
   const timing = acv * dealsPerYear * (daysSaved / 365);
@@ -18,7 +25,7 @@ export default function ComplianceRoiCalculator() {
   const numberInput = (label: string, value: number, setValue: (value: number) => void, min = 0, max = 1_000_000_000) => (
     <label className="block rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
       <span className="block font-medium">{label}</span>
-      <input type="number" min={min} max={max} value={value} onChange={(event) => setValue(Math.min(max, Math.max(min, Number(event.target.value) || 0)))} className="mt-2 w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-slate-100" />
+      <input type="number" min={min} max={max} value={value} onChange={(event) => { recordUse(); setValue(Math.min(max, Math.max(min, Number(event.target.value) || 0))); }} className="mt-2 w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-slate-100" />
     </label>
   );
 

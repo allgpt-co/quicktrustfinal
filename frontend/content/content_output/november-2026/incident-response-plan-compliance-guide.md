@@ -5,14 +5,14 @@ secondary_keywords: "incident response plan template, incident response procedur
 word_count_target: 4500+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "Incident Response Plans: Governance and Review Evidence"
 ---
 
 
 # Incident Response Plans: Governance and Review Evidence
 
-This guide focuses on maintaining a response program and documenting its review. For defining operational responsibilities and response steps, see [Incident Response: Roles and Response Procedures](/blog/incident-response-plan-guide).
+This guide covers how to define operational responsibilities and response steps, maintain the response program and document its review.
 
 The average cost of a data breach in 2025 reached $4.88 million globally, according to IBM's annual Cost of a Data Breach Report. But buried in that same report is a statistic that should change how every security team allocates its time: organizations with a tested incident response plan saved an average of $1.49 million per breach compared to those without one.
 
@@ -24,7 +24,7 @@ This guide walks through how to build an incident response plan that does two th
 
 ## What Is an Incident Response Plan?
 
-An incident response plan is a documented, structured approach for detecting, responding to, containing, and recovering from security incidents. It defines who does what, when, and how when something goes wrong — whether that is a ransomware attack, an unauthorized data exposure, a misconfigured cloud resource leaking customer data, or an employee clicking a phishing link that compromises credentials.
+An incident response plan is a documented, structured approach for detecting, responding to, containing, and recovering from security incidents. It defines who does what, when, and how when something goes wrong -- whether that is a ransomware attack, an unauthorized data exposure, a misconfigured cloud resource leaking customer data, or an employee clicking a phishing link that compromises credentials.
 
 The IRP is not a single document sitting on a shelf. At maturity, it is a system: a master plan supported by playbooks for specific incident types, a communication plan, a severity classification matrix, escalation procedures, and evidence collection templates. It names real people, references real tools, and has been tested under conditions that approximate real incidents.
 
@@ -33,7 +33,7 @@ The IRP is not a single document sitting on a shelf. At maturity, it is a system
 An incident response plan reduces breach costs, but it does more than that:
 
 - **Speed of containment.** The average time to identify and contain a breach is 258 days. Organizations with a tested IRP cut that timeline substantially, and every day of containment delay increases cost.
-- **Legal exposure.** A documented, followed IRP demonstrates reasonable care — a critical legal standard in breach litigation and regulatory enforcement actions. A company that can show it had a plan, followed the plan, and notified affected parties within required timelines is in a fundamentally different legal position than one that improvised.
+- **Legal exposure.** A documented, followed IRP demonstrates reasonable care -- a critical legal standard in breach litigation and regulatory enforcement actions. A company that can show it had a plan, followed the plan, and notified affected parties within required timelines is in a fundamentally different legal position than one that improvised.
 - **Customer retention.** How a company handles an incident matters more to customers than whether the incident occurred. A coordinated, transparent response preserves trust. A chaotic, delayed response destroys it.
 - **Insurance coverage.** Cyber insurance underwriters increasingly require evidence of a tested IRP as a condition of coverage. Claims may be denied if the insured cannot demonstrate that an IRP existed and was followed.
 
@@ -41,7 +41,7 @@ An incident response plan reduces breach costs, but it does more than that:
 
 ## Why Every Compliance Framework Requires an IRP
 
-Every major compliance framework includes specific requirements for incident response. This is not coincidental — incident response is one of the few controls that auditors universally treat as non-negotiable. A company can have minor gaps in access control documentation or incomplete asset inventories and still pass an audit. A company without an incident response plan will not.
+Every major compliance framework includes specific requirements for incident response. This is not coincidental -- incident response is one of the few controls that auditors universally treat as non-negotiable. A company can have minor gaps in access control documentation or incomplete asset inventories and still pass an audit. A company without an incident response plan will not.
 
 Here is where each framework sets its requirements:
 
@@ -49,10 +49,10 @@ Here is where each framework sets its requirements:
 
 SOC 2 addresses incident response across several Common Criteria:
 
-- **CC7.2 — Monitoring for anomalies and indicators of compromise.** The organization monitors system components and the operation of those components for anomalies that are indicative of malicious acts, natural disasters, and errors affecting the entity's ability to meet its objectives.
-- **CC7.3 — Evaluation of events to determine whether they are incidents.** The organization evaluates events to determine whether they constitute security incidents.
-- **CC7.4 — Response to identified security incidents.** The organization responds to identified security incidents by executing a defined incident response program to understand, contain, remediate, and communicate security incidents, as appropriate.
-- **CC7.5 — Recovery from identified security incidents.** The organization identifies, develops, and implements activities to recover from identified security incidents.
+- **CC7.2 -- Monitoring for anomalies and indicators of compromise.** The organization monitors system components and the operation of those components for anomalies that are indicative of malicious acts, natural disasters, and errors affecting the entity's ability to meet its objectives.
+- **CC7.3 -- Evaluation of events to determine whether they are incidents.** The organization evaluates events to determine whether they constitute security incidents.
+- **CC7.4 -- Response to identified security incidents.** The organization responds to identified security incidents by executing a defined incident response program to understand, contain, remediate, and communicate security incidents, as appropriate.
+- **CC7.5 -- Recovery from identified security incidents.** The organization identifies, develops, and implements activities to recover from identified security incidents.
 
 What auditors specifically examine: documented IRP with defined roles, evidence of IRP testing (tabletop exercises), evidence of actual incident handling (if incidents occurred during the audit period), and post-incident review documentation.
 
@@ -60,11 +60,11 @@ What auditors specifically examine: documented IRP with defined roles, evidence 
 
 ISO 27001:2022 dedicates five controls to incident management:
 
-- **A.5.24 — Information security incident management planning and preparation.** Requires a documented approach for managing information security incidents, including defined responsibilities and procedures.
-- **A.5.25 — Assessment and decision on information security events.** Requires evaluation of information security events to classify them as incidents.
-- **A.5.26 — Response to information security incidents.** Requires response according to documented procedures.
-- **A.5.27 — Learning from information security incidents.** Requires that knowledge from incidents is used to strengthen controls and reduce future incidents.
-- **A.5.28 — Collection of evidence.** Requires procedures for identification, collection, acquisition, and preservation of evidence related to information security events.
+- **A.5.24 -- Information security incident management planning and preparation.** Requires a documented approach for managing information security incidents, including defined responsibilities and procedures.
+- **A.5.25 -- Assessment and decision on information security events.** Requires evaluation of information security events to classify them as incidents.
+- **A.5.26 -- Response to information security incidents.** Requires response according to documented procedures.
+- **A.5.27 -- Learning from information security incidents.** Requires that knowledge from incidents is used to strengthen controls and reduce future incidents.
+- **A.5.28 -- Collection of evidence.** Requires procedures for identification, collection, acquisition, and preservation of evidence related to information security events.
 
 Certification auditors will ask to see the documented plan, evidence of management review, training records, and post-incident analysis reports.
 
@@ -72,8 +72,8 @@ Certification auditors will ask to see the documented plan, evidence of manageme
 
 HIPAA is direct and non-negotiable:
 
-- **Section 164.308(a)(6)(i) — Security Incident Procedures.** Covered entities and business associates must implement policies and procedures to address security incidents.
-- **Section 164.308(a)(6)(ii) — Response and Reporting.** Requires identifying and responding to suspected or known security incidents, mitigating harmful effects, and documenting incidents and their outcomes.
+- **Section 164.308(a)(6)(i) -- Security Incident Procedures.** Covered entities and business associates must implement policies and procedures to address security incidents.
+- **Section 164.308(a)(6)(ii) -- Response and Reporting.** Requires identifying and responding to suspected or known security incidents, mitigating harmful effects, and documenting incidents and their outcomes.
 
 For breaches involving unsecured Protected Health Information (PHI), HIPAA's Breach Notification Rule (Section 164.400-414) imposes strict notification timelines: individual notification within 60 days of discovery, HHS notification within 60 days (or annually for breaches affecting fewer than 500 individuals), and media notification for breaches affecting 500+ individuals in a state or jurisdiction.
 
@@ -81,14 +81,14 @@ For breaches involving unsecured Protected Health Information (PHI), HIPAA's Bre
 
 PCI DSS v4.0 Requirement 12.10 is among the most prescriptive incident response requirements of any framework:
 
-- **12.10.1 — Establish an incident response plan.** The plan must be ready to activate immediately upon breach detection. PCI DSS specifies the plan must include roles, responsibilities, communication strategies, notification requirements, specific incident response procedures, business recovery and continuity procedures, data backup processes, legal requirements for reporting compromises, and coverage for all critical system components.
-- **12.10.2 — Review and test the plan at least annually.**
-- **12.10.3 — Designate specific personnel to be available on a 24/7 basis to respond to alerts.**
-- **12.10.4 — Provide appropriate training to staff with security breach response responsibilities.**
-- **12.10.4.1 — Perform periodic training for incident response personnel.** (New in v4.0)
-- **12.10.5 — Include alerts from security monitoring systems in the incident response plan.**
-- **12.10.6 — Develop a process to modify and evolve the incident response plan per lessons learned and industry developments.**
-- **12.10.7 — Have incident response procedures in place for detection of stored PAN anywhere it is not expected.** (New in v4.0)
+- **12.10.1 -- Establish an incident response plan.** The plan must be ready to activate immediately upon breach detection. PCI DSS specifies the plan must include roles, responsibilities, communication strategies, notification requirements, specific incident response procedures, business recovery and continuity procedures, data backup processes, legal requirements for reporting compromises, and coverage for all critical system components.
+- **12.10.2 -- Review and test the plan at least annually.**
+- **12.10.3 -- Designate specific personnel to be available on a 24/7 basis to respond to alerts.**
+- **12.10.4 -- Provide appropriate training to staff with security breach response responsibilities.**
+- **12.10.4.1 -- Perform periodic training for incident response personnel.** (New in v4.0)
+- **12.10.5 -- Include alerts from security monitoring systems in the incident response plan.**
+- **12.10.6 -- Develop a process to modify and evolve the incident response plan per lessons learned and industry developments.**
+- **12.10.7 -- Have incident response procedures in place for detection of stored PAN anywhere it is not expected.** (New in v4.0)
 
 PCI DSS assessors (QSAs) will request documentation of the plan, evidence of annual testing, 24/7 coverage assignments, and training records.
 
@@ -96,7 +96,7 @@ PCI DSS assessors (QSAs) will request documentation of the plan, evidence of ann
 
 ## The 6 Phases of Incident Response
 
-The industry-standard incident response framework comes from NIST Special Publication 800-61 Revision 2, "Computer Security Incident Handling Guide." It defines six phases that form a cycle — because lessons learned from one incident feed directly into preparation for the next.
+The industry-standard incident response framework comes from NIST Special Publication 800-61 Revision 2, "Computer Security Incident Handling Guide." It defines six phases that form a cycle -- because lessons learned from one incident feed directly into preparation for the next.
 
 ### Phase 1: Preparation
 
@@ -108,10 +108,12 @@ Preparation is everything that happens before an incident occurs. It is, by a si
 - Documenting the IRP, playbooks, and communication procedures
 - Deploying detection and monitoring tools (SIEM, EDR, IDS/IPS, cloud security monitoring)
 - Creating evidence preservation procedures and chain-of-custody templates
-- Establishing communication channels that remain available during an incident (out-of-band communication — do not rely solely on corporate email if email may be compromised)
+- Establishing communication channels that remain available during an incident (out-of-band communication -- do not rely solely on corporate email if email may be compromised)
 - Conducting tabletop exercises and simulations at least annually
 - Maintaining a current contact list for internal responders, external counsel, forensics vendors, law enforcement contacts, and regulatory notification contacts
 - Securing forensic tools, network diagrams, and system architecture documentation where the response team can access them during an incident
+
+**Pre-authorized emergency actions.** Decide in advance who can shut down systems, isolate network segments, revoke credentials at scale, or engage an outside forensics firm without waiting for a normal approval chain. Write those authorizations into the plan. The middle of an incident is the wrong time to discover that nobody is sure they are allowed to pull a production system offline.
 
 **Audit evidence produced:** Documented IRP, training records, tabletop exercise reports, tool inventory, contact lists.
 
@@ -128,7 +130,9 @@ Identification is the process of detecting that a security event has occurred an
 - Documenting the initial indicators of compromise (IOCs), affected systems, and timeline
 - Formally declaring an incident and activating the IRP
 
-**Key considerations:** The identification phase is where most organizations lose time. Alert fatigue — the overwhelming volume of false positives — causes teams to miss genuine incidents or respond too slowly. Your IRP should define specific thresholds and criteria for when an event becomes an incident and who has the authority to declare one.
+**Detection sources to account for.** Alerts from tooling are only part of the picture. Your plan should also define how employee reports (a suspicious email, unusual system behavior), customer reports (unauthorized access, exposed data), and third-party notifications (a vendor breach notice, a threat intelligence feed) enter the same triage process and get the same classification treatment as a SIEM alert.
+
+**Key considerations:** The identification phase is where most organizations lose time. Alert fatigue -- the overwhelming volume of false positives -- causes teams to miss genuine incidents or respond too slowly. Your IRP should define specific thresholds and criteria for when an event becomes an incident and who has the authority to declare one.
 
 **Audit evidence produced:** Alert logs, triage documentation, incident declaration record with timestamp, initial severity classification.
 
@@ -163,7 +167,7 @@ Eradication removes the root cause of the incident from the environment.
 
 - Removing malware, backdoors, and unauthorized access mechanisms
 - Patching the vulnerability that was exploited
-- Resetting all compromised credentials (not just the ones you know about — assume lateral movement occurred)
+- Resetting all compromised credentials (not just the ones you know about -- assume lateral movement occurred)
 - Reviewing all systems that had connectivity to compromised assets for additional indicators
 - Verifying that the attacker's access has been fully removed through threat hunting
 
@@ -177,7 +181,7 @@ Recovery restores affected systems and services to normal operation, with enhanc
 
 **What recovery includes:**
 
-- Restoring systems from clean backups (verified clean — not from a backup taken after the compromise began)
+- Restoring systems from clean backups (verified clean -- not from a backup taken after the compromise began)
 - Gradually bringing systems back online in a controlled sequence
 - Implementing enhanced monitoring and alerting for indicators of the same attack pattern
 - Validating system integrity before returning to production
@@ -189,7 +193,7 @@ Recovery restores affected systems and services to normal operation, with enhanc
 
 ### Phase 6: Lessons Learned (Post-Incident Review)
 
-The lessons learned phase — sometimes called the post-incident review or retrospective — is the phase that auditors care about most after the plan itself. It is also the phase that organizations most frequently skip.
+The lessons learned phase -- sometimes called the post-incident review or retrospective -- is the phase that auditors care about most after the plan itself. It is also the phase that organizations most frequently skip.
 
 **What the post-incident review must cover:**
 
@@ -201,7 +205,7 @@ The lessons learned phase — sometimes called the post-incident review or retro
 - Whether the IRP itself needs to be updated based on the incident
 - Metrics: time to detect, time to contain, time to eradicate, time to recover, total cost
 
-**When to conduct it:** Within 5-10 business days of incident closure, while details are still fresh. Do not let it slip to "when things calm down" — it will never happen.
+**When to conduct it:** Within 5-10 business days of incident closure, while details are still fresh. Do not let it slip to "when things calm down" -- it will never happen.
 
 **Audit evidence produced:** Post-incident review report, updated IRP (if changes were made), action item tracking with completion status.
 
@@ -279,13 +283,38 @@ The engineering team executes the technical containment, eradication, and recove
 - Restore systems from clean backups
 - Implement enhanced monitoring during recovery
 
+### Documentation Lead
+
+The Documentation Lead maintains the incident log for the duration of the response. During a fast-moving incident, the people doing the technical work will not stop to write things down, and reconstructing the timeline afterward from memory produces gaps that auditors and legal counsel will notice.
+
+**Typical assignment:** A security analyst, program manager, or engineer who is not directly executing containment actions.
+
+**Key responsibilities:**
+- Record every action, decision, and rationale with a timestamp and the person responsible
+- Track evidence collected and maintain the chain-of-custody record
+- Capture the inputs the post-incident review will need (timeline, decisions, open questions)
+- Hand the completed log to the Incident Commander at closure
+
+### Executive Sponsor
+
+The Executive Sponsor is the senior leader who is briefed on significant incidents and authorizes decisions that carry business-level consequences: customer notification, regulatory filing, law enforcement engagement, and public statements.
+
+**Typical assignment:** CISO, CTO, or CEO, depending on company size.
+
+**Key responsibilities:**
+- Receive briefings from the Incident Commander at the intervals the plan defines
+- Authorize major external actions and commitments
+- Represent the incident to the board and, where needed, to key customers
+
+Define each of these as a role rather than a person. People leave; roles persist. Each role should have a primary and at least one backup, with after-hours contact methods that are current and reachable.
+
 ### On-Call and Escalation
 
 Your IRP must define 24/7 on-call coverage with clear escalation timelines. A security incident at 2 AM on a Saturday should not wait until Monday morning because no one knew who to call.
 
 **Minimum requirements:**
 - Primary and secondary on-call for each role
-- Contact information for all team members (phone numbers — not just Slack or email)
+- Contact information for all team members (phone numbers -- not just Slack or email)
 - Maximum response time for each severity level (e.g., Sev 1: 15 minutes, Sev 2: 1 hour)
 - Automatic escalation if the primary does not respond within the defined window
 
@@ -318,7 +347,7 @@ Each framework has specific expectations. This checklist consolidates the requir
 
 **HIPAA-specific:** Your IRP must explicitly address breaches involving Protected Health Information (PHI), including the breach risk assessment methodology (the four-factor test from 45 CFR 164.402), individual notification requirements, HHS notification procedures, and media notification triggers. If you process PHI, your IRP must have a PHI-specific playbook. For more on HIPAA requirements, see our [HIPAA Compliance Guide](/hipaa-compliance).
 
-**PCI DSS-specific:** Your IRP must cover detection of stored primary account numbers (PAN) in unauthorized locations (Requirement 12.10.7 — new in PCI DSS v4.0), and must include alerts from security monitoring systems as trigger events. Annual testing is explicitly required, not just recommended.
+**PCI DSS-specific:** Your IRP must cover detection of stored primary account numbers (PAN) in unauthorized locations (Requirement 12.10.7 -- new in PCI DSS v4.0), and must include alerts from security monitoring systems as trigger events. Annual testing is explicitly required, not just recommended.
 
 **ISO 27001-specific:** The IRP must be integrated into the broader Information Security Management System (ISMS). Auditors will check that the IRP references the risk assessment, that incident classifications align with the risk register, and that lessons learned feed back into the risk treatment plan. Read our [ISO 27001 Certification Guide](/iso-27001-certification) for context on how incident response fits into ISMS implementation.
 
@@ -342,7 +371,7 @@ A severity classification scheme is essential for two reasons: it determines the
 - Compromise of the CI/CD pipeline or code signing infrastructure
 
 **Response requirements:**
-- All hands on deck — full IRT activation within 15 minutes
+- All hands on deck -- full IRT activation within 15 minutes
 - Incident Commander and Security Lead engaged immediately
 - Legal Counsel notified within 1 hour
 - Executive leadership briefed within 2 hours
@@ -413,7 +442,7 @@ Communication failures during an incident cause more organizational damage than 
 
 - **IRT communication channel:** Establish a dedicated, out-of-band communication channel before an incident occurs. A dedicated Slack channel or Microsoft Teams channel is acceptable for most incidents, but for Sev 1 incidents, have a phone bridge or conferencing line as a backup. If the incident involves compromise of your primary communication platform, you need a fallback (e.g., Signal group, dedicated Zoom bridge, or a phone tree).
 - **Leadership updates:** Sev 1 incidents require executive briefings within 2 hours and regular updates. Sev 2 incidents require leadership notification within 4 hours. Define who gives the briefing (typically the Incident Commander) and what format it follows.
-- **Company-wide communication:** Employees need to know what is happening — not necessarily the technical details, but what they should and should not do. Should they change their passwords? Avoid accessing certain systems? Refrain from discussing the incident externally? The Communications Lead drafts this, the IC approves it.
+- **Company-wide communication:** Employees need to know what is happening -- not necessarily the technical details, but what they should and should not do. Should they change their passwords? Avoid accessing certain systems? Refrain from discussing the incident externally? The Communications Lead drafts this, the IC approves it.
 
 ### Customer Notification
 
@@ -424,9 +453,21 @@ When an incident affects customer data or service availability, customer notific
 - **Notification content:** What happened, what data was affected, what you are doing about it, and what customers should do (e.g., monitor accounts, rotate credentials). Have a template drafted and approved by Legal before an incident occurs.
 - **Notification channel:** Email, in-app notification, status page, or dedicated incident communication page.
 
+### Communication Templates to Prepare in Advance
+
+Under the stress of an active incident is the worst time to draft a notification. Prepare the following before you need them, each with placeholders for incident-specific details and language that legal counsel has already reviewed:
+
+- Internal escalation notification to the IRT and leadership
+- Customer notification for incidents affecting customer data or availability
+- Regulatory notifications (HHS for a HIPAA breach, supervisory authorities, state attorneys general)
+- Law enforcement notification
+- Media holding statement
+- All-hands employee communication
+- Board briefing
+
 ### Regulatory Notification Timelines
 
-This is where organizations most frequently make errors — either missing deadlines or notifying the wrong regulator. Your IRP must include a reference table:
+This is where organizations most frequently make errors -- either missing deadlines or notifying the wrong regulator. Your IRP must include a reference table:
 
 | Regulation | Notification Deadline | Who to Notify | Threshold |
 |---|---|---|---|
@@ -437,7 +478,7 @@ This is where organizations most frequently make errors — either missing deadl
 | State Breach Notification Laws | Varies (30-90 days, depending on state) | State Attorney General, affected residents | Breach of personal information as defined by state law |
 | CCPA/CPRA | Without unreasonable delay | California AG, affected consumers | Breach of personal information |
 
-**Important:** Multiple regulations may apply to the same incident. A healthcare SaaS company that processes payments may need to notify HHS under HIPAA, the acquiring bank under PCI DSS, and the state AG under state breach notification laws — all with different timelines and content requirements. Your IRP should include a decision tree for determining which notifications apply.
+**Important:** Multiple regulations may apply to the same incident. A healthcare SaaS company that processes payments may need to notify HHS under HIPAA, the acquiring bank under PCI DSS, and the state AG under state breach notification laws -- all with different timelines and content requirements. Your IRP should include a decision tree for determining which notifications apply.
 
 ---
 
@@ -540,9 +581,11 @@ A tabletop exercise is a discussion-based walkthrough of an incident scenario. T
 
 **Tabletop exercise frequency:** At minimum, annually. Best practice is quarterly, with different scenarios each time. New IRT members should participate in an exercise within 90 days of joining.
 
+**Scenarios that match your audit scope.** Choose at least some exercises that exercise the framework-specific parts of the plan: a payment card data exposure if you are in PCI DSS scope, a PHI breach through a misconfigured system if you handle protected health information, a third-party vendor breach that affects your data, or an insider exfiltrating customer records. Auditors look for evidence that the scenario tested the procedures they are assessing, not just a generic ransomware walkthrough.
+
 ### Simulated Incidents (Technical Exercises)
 
-For organizations with mature incident response programs, simulated incidents go beyond tabletop discussions. These involve actually executing response procedures: deploying forensic tools, isolating a test system, collecting evidence, restoring from backup. Purple team exercises — where the red team (or a penetration testing firm) executes an attack while the blue team responds — are the most realistic form of IRP testing.
+For organizations with mature incident response programs, simulated incidents go beyond tabletop discussions. These involve actually executing response procedures: deploying forensic tools, isolating a test system, collecting evidence, restoring from backup. Purple team exercises -- where the red team (or a penetration testing firm) executes an attack while the blue team responds -- are the most realistic form of IRP testing.
 
 ### What to Document for Auditors
 
@@ -567,15 +610,15 @@ When an actual incident occurs, the documentation you produce during the respons
 
 Maintain an incident log from the moment the incident is declared until closure. The log should include:
 
-- **Incident ID and declaration timestamp** — assigned as soon as the incident is declared
-- **Severity classification** — initial classification and any reclassifications during the incident, with rationale
-- **Timeline of events** — every significant event, discovery, decision, and action with timestamps
-- **Actions taken** — containment, eradication, and recovery actions with who performed them and when
-- **Evidence collected** — list of forensic images, log files, screenshots, and other evidence, with hash values and storage locations
-- **Communications sent** — internal updates, executive briefings, customer notifications, regulatory notifications, with timestamps and content
-- **Root cause** — what vulnerability or gap was exploited, and why existing controls did not prevent it
-- **Impact assessment** — what data was affected, how many records, which customers, what systems
-- **Resolution and recovery** — how the incident was resolved, when systems were restored, when the incident was closed
+- **Incident ID and declaration timestamp** -- assigned as soon as the incident is declared
+- **Severity classification** -- initial classification and any reclassifications during the incident, with rationale
+- **Timeline of events** -- every significant event, discovery, decision, and action with timestamps
+- **Actions taken** -- containment, eradication, and recovery actions with who performed them and when
+- **Evidence collected** -- list of forensic images, log files, screenshots, and other evidence, with hash values and storage locations
+- **Communications sent** -- internal updates, executive briefings, customer notifications, regulatory notifications, with timestamps and content
+- **Root cause** -- what vulnerability or gap was exploited, and why existing controls did not prevent it
+- **Impact assessment** -- what data was affected, how many records, which customers, what systems
+- **Resolution and recovery** -- how the incident was resolved, when systems were restored, when the incident was closed
 
 ### Incident Documentation Template
 
@@ -626,7 +669,7 @@ RECOVERY ACTIONS
 
 NOTIFICATIONS SENT
 ------------------
-[Internal, customer, regulatory — with dates and content summaries]
+[Internal, customer, regulatory -- with dates and content summaries]
 
 LESSONS LEARNED
 ---------------
@@ -638,7 +681,7 @@ POST-INCIDENT REVIEW
 ---------------------
 Review date:            [Date]
 Participants:           [List]
-IRP updates required:   [Yes/No — if yes, describe]
+IRP updates required:   [Yes/No -- if yes, describe]
 ```
 
 ### Evidence Retention
@@ -677,7 +720,7 @@ The plan describes what to do during an incident, but all incidents are treated 
 
 ### 4. Missing Regulatory Notification Procedures
 
-The plan addresses technical response but does not document when, how, and to whom regulatory notifications must be made. For HIPAA-covered entities, this is a critical gap — the Breach Notification Rule has specific timelines and procedures that must be documented in the IRP.
+The plan addresses technical response but does not document when, how, and to whom regulatory notifications must be made. For HIPAA-covered entities, this is a critical gap -- the Breach Notification Rule has specific timelines and procedures that must be documented in the IRP.
 
 **Fix:** Build the regulatory notification reference table into your IRP. Assign the Legal Counsel role explicit responsibility for determining notification obligations.
 
@@ -715,7 +758,7 @@ The IRP exists as a standalone document, disconnected from the technical monitor
 
 The IRP has a stated annual review cycle, but the last review date was two years ago. Auditors check the version history and review date on every policy document. An IRP that was last reviewed outside the review cycle will generate a finding.
 
-**Fix:** Set a calendar reminder for annual IRP review. Document the review even if no changes were made — the record of review is the evidence.
+**Fix:** Set a calendar reminder for annual IRP review. Document the review even if no changes were made -- the record of review is the evidence.
 
 ---
 
@@ -723,7 +766,7 @@ The IRP has a stated annual review cycle, but the last review date was two years
 
 ### What is the difference between an incident response plan and a disaster recovery plan?
 
-An incident response plan addresses security incidents — events that compromise the confidentiality, integrity, or availability of information assets through malicious or unauthorized activity. A disaster recovery plan addresses the restoration of IT systems and business operations after any disruption, including natural disasters, hardware failures, and infrastructure outages. The two plans overlap in the recovery phase, but an IRP focuses on investigation, containment, and evidence preservation, while a DRP focuses on restoring systems and maintaining business continuity. Most compliance frameworks require both.
+An incident response plan addresses security incidents -- events that compromise the confidentiality, integrity, or availability of information assets through malicious or unauthorized activity. A disaster recovery plan addresses the restoration of IT systems and business operations after any disruption, including natural disasters, hardware failures, and infrastructure outages. The two plans overlap in the recovery phase, but an IRP focuses on investigation, containment, and evidence preservation, while a DRP focuses on restoring systems and maintaining business continuity. Most compliance frameworks require both.
 
 ### How often should an incident response plan be tested?
 
@@ -731,11 +774,11 @@ At minimum, annually. PCI DSS Requirement 12.10.2 explicitly mandates annual tes
 
 ### Does a small startup need an incident response plan?
 
-Yes. If you are pursuing any compliance certification — SOC 2, ISO 27001, HIPAA, or PCI DSS — an IRP is a mandatory requirement. Even without a compliance driver, any company that stores customer data needs an IRP. The plan can be proportional to the organization's size. A 20-person startup does not need the same IRP as a 5,000-person enterprise, but it needs a documented plan with named roles, a severity scheme, and communication procedures.
+Yes. If you are pursuing any compliance certification -- SOC 2, ISO 27001, HIPAA, or PCI DSS -- an IRP is a mandatory requirement. Even without a compliance driver, any company that stores customer data needs an IRP. The plan can be proportional to the organization's size. A 20-person startup does not need the same IRP as a 5,000-person enterprise, but it needs a documented plan with named roles, a severity scheme, and communication procedures.
 
 ### What happens during an audit if we had an incident but did not follow our IRP?
 
-This is a serious audit risk. If an incident occurred during the audit period and the organization did not follow its documented IRP, the auditor will likely issue an exception (SOC 2) or nonconformity (ISO 27001). The auditor compares what the plan says should happen against what actually happened. Gaps between documented procedures and actual practice are findings. If the plan was not followed at all, it indicates the plan is ineffective or untested — both of which undermine the control.
+This is a serious audit risk. If an incident occurred during the audit period and the organization did not follow its documented IRP, the auditor will likely issue an exception (SOC 2) or nonconformity (ISO 27001). The auditor compares what the plan says should happen against what actually happened. Gaps between documented procedures and actual practice are findings. If the plan was not followed at all, it indicates the plan is ineffective or untested -- both of which undermine the control.
 
 ### Can one incident response plan cover multiple compliance frameworks?
 
@@ -743,11 +786,11 @@ Yes, and this is the recommended approach. Maintaining separate IRPs for SOC 2, 
 
 ### Who should own the incident response plan?
 
-The IRP should be owned by the CISO, VP of Security, or the most senior person responsible for information security. In companies without a dedicated security leader, the CTO or VP of Engineering typically owns the IRP. Ownership means accountability for the plan's accuracy, maintenance, testing, and effectiveness — not that the owner writes every word. The owner ensures the plan is current, tested, and approved by executive leadership.
+The IRP should be owned by the CISO, VP of Security, or the most senior person responsible for information security. In companies without a dedicated security leader, the CTO or VP of Engineering typically owns the IRP. Ownership means accountability for the plan's accuracy, maintenance, testing, and effectiveness -- not that the owner writes every word. The owner ensures the plan is current, tested, and approved by executive leadership.
 
 ### What tools do we need for incident response?
 
-At minimum: a SIEM or centralized log management platform for detection and investigation, an endpoint detection and response (EDR) solution for endpoint visibility and containment, a secure communication channel for IRT coordination, an incident tracking system (can be as simple as a dedicated Jira project or as sophisticated as a SOAR platform), and forensic imaging tools. You should also have retainer agreements in place with an external forensics firm and outside legal counsel before an incident occurs — you do not want to be negotiating contracts during a breach.
+At minimum: a SIEM or centralized log management platform for detection and investigation, an endpoint detection and response (EDR) solution for endpoint visibility and containment, a secure communication channel for IRT coordination, an incident tracking system (can be as simple as a dedicated Jira project or as sophisticated as a SOAR platform), and forensic imaging tools. You should also have retainer agreements in place with an external forensics firm and outside legal counsel before an incident occurs -- you do not want to be negotiating contracts during a breach.
 
 ### How do we handle an incident that spans multiple compliance frameworks?
 
@@ -757,16 +800,16 @@ Identify all applicable regulatory notification requirements immediately when th
 
 ## Automate Your Incident Response Compliance with QuickTrust
 
-Building an incident response plan that satisfies multiple compliance frameworks is complex. Maintaining it — keeping contact information current, tracking testing schedules, documenting incidents, mapping controls to framework requirements, and producing audit-ready evidence — is an ongoing operational burden.
+Building an incident response plan that satisfies multiple compliance frameworks is complex. Maintaining it -- keeping contact information current, tracking testing schedules, documenting incidents, mapping controls to framework requirements, and producing audit-ready evidence -- is an ongoing operational burden.
 
 QuickTrust eliminates that burden. Our platform provides:
 
-- **Pre-built incident response policy templates** mapped to SOC 2, ISO 27001, HIPAA, and PCI DSS requirements — customizable to your organization, not generic boilerplate
+- **Pre-built incident response policy templates** mapped to SOC 2, ISO 27001, HIPAA, and PCI DSS requirements -- customizable to your organization, not generic boilerplate
 - **Automated control mapping** that cross-references your IRP to every applicable framework requirement, so you never miss a control during an audit
 - **Continuous compliance monitoring** that tracks whether your IRP is current, tested, and aligned with your active certifications
-- **Incident documentation workflows** that guide your team through evidence collection, notification tracking, and post-incident review — producing audit-ready documentation in real time
+- **Incident documentation workflows** that guide your team through evidence collection, notification tracking, and post-incident review -- producing audit-ready documentation in real time
 - **Tabletop exercise management** with scenario libraries, facilitator guides, and exercise report templates
 
 Stop treating incident response compliance as a manual, annual exercise. Start treating it as a continuously monitored, always audit-ready capability.
 
-**[Get started with QuickTrust](https://trust.quickintell.com)** and see how companies like yours build incident response programs that pass every audit — the first time.
+**[Get started with QuickTrust](https://trust.quickintell.com)** and see how companies like yours build incident response programs that pass every audit -- the first time.

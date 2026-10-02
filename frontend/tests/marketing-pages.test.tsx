@@ -67,7 +67,7 @@ describe('completed marketing pages', () => {
 
   test('the editorial queue retains every canonical article and eliminates title collisions', () => {
     const articles = getAllArticles();
-    expect(articles).toHaveLength(166);
+    expect(articles).toHaveLength(141);
     expect(new Set(articles.map((a) => a.title.toLowerCase())).size).toBe(articles.length);
     const scenarios = articles.filter((a) => a.slug.startsWith('case-study-'));
     expect(scenarios).toHaveLength(19);

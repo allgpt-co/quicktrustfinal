@@ -745,7 +745,7 @@
     "summary": "A framework for organizing cybersecurity risk outcomes, profiles and improvement priorities.",
     "status": "verified",
     "currentStatus": "NIST publishes CSF 2.0 and supporting implementation resources.",
-    "canonicalPath": "/blog/pillar-nist-cybersecurity-framework-guide",
+    "canonicalPath": "/blog/nist-csf-implementation-guide",
     "sourceIds": [
       "nist-csf-official",
       "nist-csf-faq",

@@ -5,14 +5,14 @@ secondary_keywords: "access control policy template, RBAC policy, least privileg
 word_count_target: 4000+
 published: true
 author: QuickTrust Editorial
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 title: "Access Control Models and Compliance Evidence"
 ---
 
 
 # Access Control Models and Compliance Evidence
 
-This guide focuses on comparing access models and organizing assessment evidence. For defining role-based access, approval and recurring reviews, see [Access Control Policy: Roles and Review Procedures](/blog/access-control-policy-guide).
+This guide focuses on comparing access models and organizing assessment evidence. For defining role-based access, approval and recurring reviews, see Access Control Policy: Roles and Review Procedures.
 
 Access control is the most-tested domain in every compliance audit. It is the area where auditors spend the most time, where the highest volume of evidence requests are generated, and where the most common findings are issued. Whether your auditor is evaluating SOC 2 Common Criteria, ISO 27001 Annex A controls, HIPAA Security Rule safeguards, or PCI DSS requirements, the conversation will always return to the same fundamental question: who has access to what, why do they have it, and can you prove it?
 
@@ -60,6 +60,24 @@ The access control policy sits at the governance layer (Layer 1) of your securit
 - **Procedure:** "To enroll in MFA: log into Okta, navigate to Settings > Security Methods, select your preferred MFA method, and complete the enrollment workflow."
 
 This separation ensures the policy remains stable while technical standards evolve with your technology stack. For more on how to structure the full hierarchy, see our guide on [building a security policy framework from scratch](/blog/security-policy-framework-from-scratch).
+
+### Access control policy outline
+
+A production-ready access control policy usually follows a structure like this. Each numbered section maps to a topic covered later in this guide, so you can use it as a checklist when drafting or reviewing your own document.
+
+1. **Purpose and Scope.** What the policy covers, which systems and environments are in scope, and any documented exclusions.
+2. **Roles and Responsibilities.** The policy owner, access administrators, approvers, and reviewers.
+3. **User Access Management.** Procedures for provisioning, modification, and de-provisioning across the user lifecycle.
+4. **Authentication Standards.** Password requirements, MFA rules, and session management.
+5. **Authorization Model.** The access model in use (RBAC, ABAC, or a combination), role-to-permission mappings, and separation of duties.
+6. **Privileged Access.** Additional controls for administrative, root, and service accounts.
+7. **Remote Access.** VPN or zero trust requirements, conditional access, and device compliance expectations.
+8. **Third-Party Access.** Vendor and contractor access, time-bound grants, and monitoring requirements.
+9. **Access Reviews.** Cadence, responsibilities, and documentation requirements.
+10. **Logging and Monitoring.** What is logged, how long it is retained, and what triggers an alert.
+11. **Enforcement and Exceptions.** Consequences for violations and the process for requesting and approving exceptions.
+
+A policy that covers all eleven areas, even briefly, will answer most of the questions an auditor asks during the documentation review. A policy missing sections 6, 8, or 10 is the one most likely to generate follow-up requests.
 
 ---
 
@@ -156,6 +174,16 @@ RBAC assigns access permissions to predefined roles rather than to individual us
 - Difficult to implement for cross-functional roles that span multiple departments
 
 **Best for:** Most SaaS companies, mid-market organizations, and any company where job functions map cleanly to access requirements. RBAC is the model most auditors expect to see and the easiest to demonstrate compliance with.
+
+**A typical tiered role structure.** Most RBAC implementations settle on a small number of permission tiers that repeat across systems:
+
+1. **Read-only or Viewer:** can view data and dashboards but cannot change configurations or records.
+2. **Contributor or Standard User:** can create and modify records within their own functional domain.
+3. **Manager or Approver:** can approve changes, manage team-level settings, and run reports.
+4. **Administrator:** can change system-level settings, manage user accounts, and configure integrations.
+5. **Super Administrator or Root:** unrestricted access, limited to a very small number of named individuals and protected by break-glass procedures.
+
+Document the mapping between each tier and the specific permissions it grants in each system. Auditors request this mapping and cross-reference it against the live user list, and any gap between the documented model and the implemented reality becomes a finding.
 
 ### Attribute-Based Access Control (ABAC)
 
@@ -480,6 +508,36 @@ Service accounts, machine identities, and automated processes represent a growin
 - Applications that support SSO must be integrated with the organization's identity provider.
 - Application-level roles and permissions must be included in access reviews.
 - Shadow IT (unauthorized SaaS adoption) must be detected and addressed through CASB or SaaS management tooling.
+
+---
+
+## Access Logging and Monitoring
+
+Access logs serve two purposes. They provide the audit trail that demonstrates your access controls are operating as designed, and they enable detection of unauthorized or anomalous access. Both purposes matter to auditors, and your policy should state what is captured, where it is kept, and for how long.
+
+### What access logging must capture
+
+At minimum, your logging should record:
+
+- **Authentication events:** successful and failed login attempts, MFA challenges and failures, password resets, and account lockouts.
+- **Authorization events:** permission changes, role assignments, and group membership modifications.
+- **Administrative events:** configuration changes, user provisioning and de-provisioning, and changes to the access policy settings themselves.
+- **Access to sensitive data:** who accessed which records, when, and from where. For HIPAA-regulated systems this is the basis of the audit controls requirement.
+- **Privileged activity:** elevated sessions, break-glass usage, and service account credential use, logged at higher fidelity than standard user activity.
+
+Logs should flow to a centralized store that administrators of the source systems cannot silently modify. An access log that lives only on the system it describes is not independent evidence.
+
+### Retention expectations by framework
+
+Retention periods are framework-specific, and your policy should state the retention period you have chosen and why:
+
+- **SOC 2 and ISO 27001** do not prescribe a fixed period, but auditors generally expect at least one year of access log retention so that a full audit period can be examined.
+- **HIPAA** requires that documentation of required actions, activities, and assessments be retained for six years. Access logs that support the audit controls standard should be retained in line with that expectation.
+- **PCI DSS** requires that audit log history be retained for at least twelve months, with at least the most recent three months immediately available for analysis.
+
+### Alerting thresholds
+
+Logging without alerting satisfies the audit trail requirement but not the detection requirement. Define alerts for the events that most often indicate a problem: root or super administrator logins, privilege escalations outside a change window, repeated failed authentication against a single account, MFA being disabled, and break-glass credential use. Document who receives each alert and the expected response, and keep a record of alerts that fired and how they were handled. That record is evidence for the monitoring portion of CC6 and A.8.15 style requirements and is routinely requested.
 
 ---
 

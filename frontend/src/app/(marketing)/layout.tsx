@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://quicktrustapp.com"),
   // Page titles provide the descriptive portion; this template owns the brand
   // suffix so it is emitted exactly once across marketing routes.
-  title: { default: "Compliance Automation Platform", template: "%s | QuickTrust" },
+  title: { default: "SOC 2, ISO 27001 and HIPAA Compliance Automation Platform", template: "%s | QuickTrust" },
   description: "Map frameworks to controls, surface gaps, and get audit-ready with engineers who close them. SOC 2, ISO 27001, HIPAA. Free readiness assessment.",
   icons: { icon: "/marketing-icon.svg" },
   manifest: "/site.webmanifest",

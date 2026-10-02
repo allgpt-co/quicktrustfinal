@@ -66,7 +66,10 @@ function initializeGa4(measurementId: string, pathname: string): void {
     window.__qtGa4ConfiguredId = measurementId;
   }
   gtag("set", context);
-  gtag("consent", "update", getAnalyticsConsentParameters(true));
+  // Consent Mode: the visitor's decision only changes storage. Without a "granted"
+  // decision the tag keeps sending cookieless pings, so GA4 still records sessions.
+  gtag("consent", "update", getAnalyticsConsentParameters(hasAnalyticsConsent()));
+  if (!hasAnalyticsConsent()) clearGaCookies();
   if (!document.getElementById(ga4ScriptId)) {
     const script = document.createElement("script");
     script.id = ga4ScriptId;
@@ -76,18 +79,21 @@ function initializeGa4(measurementId: string, pathname: string): void {
   }
 }
 
+function clearGaCookies(): void {
+  if (typeof document === "undefined") return;
+  // Remove only GA cookies; TruConversion and auth cookies are untouched.
+  for (const name of document.cookie.split(";").map((entry) => entry.trim().split("=", 1)[0])) {
+    if (/^_ga(?:_|$)/.test(name)) document.cookie = `${name}=; Max-Age=0; Path=/`;
+  }
+}
+
 function disableGa4(measurementId: string | null): void {
   if (typeof window === "undefined" || !measurementId) return;
   // Set the documented disable flag before changing consent, so a queued or
   // already-loaded tag cannot send a post-revocation event.
   (window as unknown as Record<string, boolean>)[analyticsDisableKey(measurementId)] = true;
   if (typeof window.gtag === "function") window.gtag("consent", "update", getAnalyticsConsentParameters(false));
-  if (typeof document !== "undefined") {
-    // Remove only GA cookies; TruConversion and auth cookies are untouched.
-    for (const name of document.cookie.split(";").map((entry) => entry.trim().split("=", 1)[0])) {
-      if (/^_ga(?:_|$)/.test(name)) document.cookie = `${name}=; Max-Age=0; Path=/`;
-    }
-  }
+  clearGaCookies();
 }
 
 export default function MarketingAnalytics({ allowedPaths, directoryRoutes }: Props) {
@@ -106,11 +112,6 @@ export default function MarketingAnalytics({ allowedPaths, directoryRoutes }: Pr
     const emitForCurrentPath = () => {
       const measurementId = getGa4MeasurementId();
       if (!measurementId || !isAllowedAnalyticsPath(canonicalPathname)) {
-        trackedPath.current = null;
-        disableGa4(measurementId);
-        return;
-      }
-      if (!hasAnalyticsConsent()) {
         trackedPath.current = null;
         disableGa4(measurementId);
         return;
