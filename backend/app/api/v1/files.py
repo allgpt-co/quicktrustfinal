@@ -15,7 +15,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from app.config import get_settings
-from app.core.dependencies import DB, CurrentUser
+from app.core.dependencies import DB, CurrentUser, VerifiedOrgId
 from app.core.storage import upload_file, get_presigned_url, delete_file
 
 router = APIRouter(
@@ -80,7 +80,7 @@ ALLOWED_CONTENT_TYPES = {
 
 @router.post("/upload", response_model=FileUploadResponse, status_code=status.HTTP_201_CREATED)
 async def upload(
-    org_id: _uuid.UUID,
+    org_id: VerifiedOrgId,
     db: DB,
     current_user: CurrentUser,
     file: UploadFile = File(...),
@@ -141,7 +141,7 @@ async def upload(
 
 @router.get("/{file_id}/download")
 async def download(
-    org_id: _uuid.UUID,
+    org_id: VerifiedOrgId,
     file_id: str,
     db: DB,
     current_user: CurrentUser,
@@ -172,8 +172,11 @@ async def download(
 
     bucket, object_name = parts
 
+    if bucket != get_settings().S3_BUCKET:
+        raise HTTPException(status_code=403, detail="Access denied: bucket is not allowed.")
+
     # Ensure the object belongs to the requesting organization
-    if not object_name.startswith(str(org_id)):
+    if not object_name.startswith(f"{org_id}/"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: file does not belong to this organization.",
@@ -191,7 +194,7 @@ async def download(
 
 @router.delete("/{file_id}", response_model=FileDeleteResponse)
 async def delete(
-    org_id: _uuid.UUID,
+    org_id: VerifiedOrgId,
     file_id: str,
     db: DB,
     current_user: CurrentUser,
@@ -213,7 +216,10 @@ async def delete(
 
     bucket, object_name = parts
 
-    if not object_name.startswith(str(org_id)):
+    if bucket != get_settings().S3_BUCKET:
+        raise HTTPException(status_code=403, detail="Access denied: bucket is not allowed.")
+
+    if not object_name.startswith(f"{org_id}/"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: file does not belong to this organization.",

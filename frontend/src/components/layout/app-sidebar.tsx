@@ -99,7 +99,7 @@ const navItems: NavItem[] = [
   { href: "/settings", label: "Settings", icon: Settings, section: "Config", allowedRoles: COMPLIANCE_ROLES },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
   const { userInfo } = useAuth();
   const userRole = userInfo?.role;
@@ -123,7 +123,7 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-sidebar text-sidebar-foreground" role="complementary" aria-label="Sidebar">
+    <aside className={cn("flex w-64 flex-col border-r bg-sidebar text-sidebar-foreground", mobile ? "h-[calc(100dvh-4rem)]" : "h-screen")} role="complementary" aria-label="Sidebar">
       <div className="flex h-14 items-center border-b px-6">
         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg" aria-label="QuickTrust — go to dashboard">
           <Shield className="h-6 w-6 text-primary" aria-hidden="true" />
@@ -145,7 +145,7 @@ export function AppSidebar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                      "flex min-h-11 items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"

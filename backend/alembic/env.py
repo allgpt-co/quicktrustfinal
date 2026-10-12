@@ -48,5 +48,9 @@ async def run_migrations_online() -> None:
 
 if context.is_offline_mode():
     run_migrations_offline()
+elif config.attributes.get("connection") is not None:
+    # Allows migration regression tests to use a connection scoped to a
+    # disposable schema, without connecting to the application's database.
+    do_run_migrations(config.attributes["connection"])
 else:
     asyncio.run(run_migrations_online())

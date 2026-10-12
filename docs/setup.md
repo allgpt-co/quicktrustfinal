@@ -74,6 +74,37 @@ Set `BEDROCK_ENABLED=true`, select an Anthropic Claude Sonnet model or inference
 
 ## Tests
 
+### Database schema alignment
+
+If seeding reports `column frameworks.is_active does not exist` even though
+Alembic reports revision `0012`, upgrade to `0013` before retrying seeding:
+
+```bash
+docker compose exec -T postgres pg_dump -U quicktrust -d quicktrust -Fc > /tmp/quicktrust-before-0013.dump
+docker compose run --rm api alembic upgrade head
+docker compose run --rm api python -m seeds.run_seeds
+```
+
+Revision `0013` adds the application columns and tables omitted by earlier
+migrations. It also supports databases where a failed seed run already created
+some tables. Legacy columns are retained; known legacy values are copied to the
+current fields. Old records without a known code receive a `legacy-<id>` code
+that should not be interpreted as a real compliance requirement identifier.
+PostgreSQL JSON text is converted to JSONB; invalid legacy JSON aborts the
+transaction rather than being discarded. This migration is forward-only: use
+the pre-upgrade backup if rollback is required.
+
+The PostgreSQL regression test creates and removes isolated schemas in a test
+database. It verifies clean/partially seeded upgrades, legacy data preservation,
+and all 20 seed stages including a repeated seed run:
+
+```bash
+cd backend
+QT_SCHEMA_TEST_DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/test_db python tests/test_schema_alignment_regression.py
+```
+
+### Application checks
+
 ```bash
 cd backend
 pytest -v
