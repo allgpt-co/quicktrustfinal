@@ -12,6 +12,7 @@ import {
   useUpdateQuestionnaire,
   useDeleteQuestionnaire,
   useAutoFillQuestionnaire,
+  useAutoFillStatus,
 } from "@/hooks/use-api";
 import {
   ArrowLeft,
@@ -23,6 +24,7 @@ import {
   CheckCircle,
   ExternalLink,
 } from "lucide-react";
+import { AutoFillStatus } from "@/components/questionnaires/auto-fill-status";
 import { useOrgId } from "@/hooks/use-org-id";
 
 const statusColor: Record<string, string> = {
@@ -54,6 +56,8 @@ export default function QuestionnaireDetailPage() {
   const updateQuestionnaire = useUpdateQuestionnaire(orgId);
   const deleteQuestionnaire = useDeleteQuestionnaire(orgId);
   const autoFill = useAutoFillQuestionnaire(orgId);
+  const jobStatus = useAutoFillStatus(orgId, questionnaireId);
+  const autoFillBusy = autoFill.isPending || ["pending", "running"].includes(jobStatus.data?.status ?? "");
 
   // Track answer edits by question index
   const [editedAnswers, setEditedAnswers] = useState<Record<number, string>>(
@@ -113,7 +117,17 @@ export default function QuestionnaireDetailPage() {
 
   if (!questionnaire) return <p>Questionnaire not found.</p>;
 
-  const questions = questionnaire.questions || [];
+  const questions = (questionnaire.questions || []).map((question, index) => {
+    const id = String(question.id || question.question_id || `q_${index}`);
+    const saved = questionnaire.responses?.find((response) => response.question_id === id);
+    return {
+      ...question,
+      id,
+      question_text: question.question_text || question.text || question.question || "",
+      answer: question.answer ?? saved?.answer ?? "",
+      is_approved: question.is_approved ?? saved?.is_approved ?? false,
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -126,8 +140,8 @@ export default function QuestionnaireDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <h1 className="text-3xl font-bold">{questionnaire.title}</h1>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="min-w-0 break-words text-3xl font-bold">{questionnaire.title}</h1>
         <Badge className={statusColor[questionnaire.status] || ""}>
           {questionnaire.status?.replace(/_/g, " ")}
         </Badge>
@@ -139,24 +153,24 @@ export default function QuestionnaireDetailPage() {
             variant="default"
             size="sm"
             onClick={handleAutoFill}
-            disabled={autoFill.isPending}
+            disabled={autoFillBusy || jobStatus.isLoading || jobStatus.isError || !questions.length}
             className="gap-1.5"
           >
-            {autoFill.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+            {autoFillBusy ? (
+              <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
             ) : (
               <Sparkles className="h-4 w-4" />
             )}
-            Auto-Fill
+            {autoFillBusy ? "Processing…" : jobStatus.data?.status === "failed" ? "Retry Auto-Fill" : "Auto-Fill"}
           </Button>
           <Button
             variant="destructive"
             size="sm"
             onClick={handleDelete}
-            disabled={deleteQuestionnaire.isPending}
+            disabled={deleteQuestionnaire.isPending || autoFillBusy}
           >
             {deleteQuestionnaire.isPending ? (
-              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-1 h-4 w-4 animate-spin motion-reduce:animate-none" />
             ) : (
               <Trash2 className="mr-1 h-4 w-4" />
             )}
@@ -164,6 +178,11 @@ export default function QuestionnaireDetailPage() {
           </Button>
         </div>
       </div>
+
+      <AutoFillStatus job={jobStatus.data} error={
+        autoFill.error ? "Could not start Auto-fill. Please try again." :
+        jobStatus.isError ? "Could not refresh Auto-fill status. Reconnecting…" : undefined
+      } />
 
       {/* Questions */}
       <div className="space-y-4">
@@ -205,6 +224,8 @@ export default function QuestionnaireDetailPage() {
                   <textarea
                     className="w-full rounded-md border bg-background p-2 text-sm"
                     rows={3}
+                    aria-label={`Answer to question ${index + 1}`}
+                    disabled={autoFillBusy}
                     placeholder="Enter your answer..."
                     value={currentAnswer}
                     onChange={(e) =>
@@ -234,6 +255,7 @@ export default function QuestionnaireDetailPage() {
                       <input
                         type="checkbox"
                         checked={isApproved}
+                        disabled={autoFillBusy}
                         onChange={() => toggleApproval(index)}
                         className="h-4 w-4 rounded border"
                       />
@@ -251,10 +273,10 @@ export default function QuestionnaireDetailPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleSaveAnswer(index)}
-                      disabled={updateQuestionnaire.isPending}
+                      disabled={updateQuestionnaire.isPending || autoFillBusy}
                     >
                       {updateQuestionnaire.isPending ? (
-                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin motion-reduce:animate-none" />
                       ) : (
                         <Save className="mr-1 h-3 w-3" />
                       )}

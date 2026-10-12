@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -44,9 +45,16 @@ async def lifespan(app: FastAPI):
 
     await _create_schema_for_non_production()
     await start_scheduler()
-    yield
-    await stop_scheduler()
-    await engine.dispose()
+    from app.services.questionnaire_jobs import worker_loop, stop_worker
+    from app.core.database import bg_engine
+    worker = asyncio.create_task(worker_loop(), name="questionnaire-auto-fill")
+    try:
+        yield
+    finally:
+        await stop_worker(worker)
+        await stop_scheduler()
+        await bg_engine.dispose()
+        await engine.dispose()
 
 
 app = FastAPI(

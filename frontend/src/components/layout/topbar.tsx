@@ -2,7 +2,8 @@
 
 import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
-import { LogOut, Moon, Sun, User } from "lucide-react";
+import { LogOut, Menu, Moon, Sun, User } from "lucide-react";
+import { AppSidebar } from "./app-sidebar";
 import { useTheme } from "next-themes";
 
 export function Topbar() {
@@ -10,9 +11,25 @@ export function Topbar() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="flex h-14 items-center justify-between border-b bg-background px-6" role="banner" aria-label="Top bar">
+    <header className="flex h-14 items-center justify-between border-b bg-background px-4 sm:px-6" role="banner" aria-label="Top bar">
       <div className="text-sm text-muted-foreground">
-        {/* Breadcrumbs could go here */}
+        <details className="relative md:hidden" onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.currentTarget.open = false;
+            event.currentTarget.querySelector("summary")?.focus();
+          }
+        }}>
+          <summary aria-label="Toggle navigation" className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </summary>
+          <div className="absolute -left-4 top-12 z-50 shadow-xl" onClick={(event) => {
+            if ((event.target as HTMLElement).closest("a")) {
+              event.currentTarget.closest("details")?.removeAttribute("open");
+            }
+          }}>
+            <AppSidebar mobile />
+          </div>
+        </details>
       </div>
       <div className="flex items-center gap-3">
         <Button
@@ -28,7 +45,7 @@ export function Topbar() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-sm">
               <User className="h-4 w-4" aria-hidden="true" />
-              <span>{userInfo?.name || userInfo?.email}</span>
+              <span className="max-w-32 truncate sm:max-w-xs">{userInfo?.name || userInfo?.email}</span>
             </div>
             <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out">
               <LogOut className="h-4 w-4" aria-hidden="true" />

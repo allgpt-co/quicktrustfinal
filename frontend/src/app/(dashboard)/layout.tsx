@@ -41,10 +41,10 @@ export default function DashboardLayout({
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
-      <AppSidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="hidden shrink-0 md:block"><AppSidebar /></div>
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Topbar />
-        <main id="main-content" role="main" aria-label="Dashboard content" className="flex-1 overflow-y-auto p-6">
+        <main id="main-content" role="main" aria-label="Dashboard content" className="flex-1 overflow-y-auto p-4 sm:p-6">
           <ErrorBoundary>{children}</ErrorBoundary>
         </main>
       </div>

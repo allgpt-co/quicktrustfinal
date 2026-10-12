@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && adduser --disabled-password --gecos "" --uid 1001 appuser
 
 
-COPY pyproject.toml ./
+COPY . .
 
 RUN pip install --no-cache-dir -e .
 
@@ -17,11 +17,10 @@ RUN pip install --no-cache-dir -e .
 # Install it separately or use a dedicated Prowler container for cloud security scans.
 RUN pip install --no-cache-dir semgrep checkov
 
-COPY . .
-
 RUN chown -R appuser:appuser /app
 
 FROM base AS development
+RUN pip install --no-cache-dir "pytest>=8.3,<9" "pytest-asyncio>=0.24,<1"
 USER appuser
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
