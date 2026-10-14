@@ -2,11 +2,14 @@ FROM python:3.12-slim AS base
 
 WORKDIR /app
 
+ARG BUILD_SHA=unknown
+ENV BUILD_SHA=${BUILD_SHA}
+LABEL org.opencontainers.image.revision=${BUILD_SHA}
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git wget gnupg unzip \
     && rm -rf /var/lib/apt/lists/* \
     && adduser --disabled-password --gecos "" --uid 1001 appuser
-
 
 COPY pyproject.toml ./
 
