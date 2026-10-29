@@ -151,6 +151,67 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
 
+    async def test_organization_settings_timestamp_migration(self):
+        await self.migrate("0016")
+        missing_id, existing_id, new_id = (uuid.uuid4() for _ in range(3))
+        async with self.engine.begin() as conn:
+            for org_id, timestamp in ((missing_id, None), (existing_id, "2021-02-03T00:00:00Z")):
+                await conn.execute(sa.text(
+                    "INSERT INTO organizations (id,name,slug,created_at,updated_at) "
+                    "VALUES (:id,'Settings test',:id,'2020-01-01T00:00:00Z',"
+                    "CAST(CAST(:updated AS text) AS timestamptz))"
+                ), {"id": str(org_id), "updated": timestamp})
+        from httpx import ASGITransport, AsyncClient
+        from app.main import app
+        from app.core.dependencies import get_current_user, get_db
+        from app.models.user import User
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        owner = User(id=uuid.uuid4(), org_id=missing_id, role="super_admin", is_platform_admin=False)
+
+        async def current_user():
+            return owner
+
+        async def request_db():
+            async with sessions() as db:
+                yield db
+
+        original = app.dependency_overrides.copy()
+        app.dependency_overrides[get_current_user] = current_user
+        app.dependency_overrides[get_db] = request_db
+        try:
+            async with AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False),
+                                   base_url="http://test") as client:
+                url = f"/api/v1/organizations/{missing_id}"
+                self.assertEqual((await client.get(url)).status_code, 500)
+                await self.migrate("head")
+                response = await client.get(url)
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertEqual(response.json()["updated_at"], response.json()["created_at"])
+                # The timestamp repair must not weaken the new tenant restriction.
+                self.assertEqual((await client.get(f"/api/v1/organizations/{existing_id}")).status_code, 403)
+                owner.org_id = existing_id
+                response = await client.get(f"/api/v1/organizations/{existing_id}")
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertTrue(response.json()["updated_at"].startswith("2021-02-03"))
+                async with self.engine.begin() as conn:
+                    await conn.execute(sa.text(
+                        "INSERT INTO organizations (id,name,slug) VALUES (:id,'New settings',:id)"
+                    ), {"id": str(new_id)})
+                    def check_column(connection):
+                        column = next(c for c in sa.inspect(connection).get_columns("organizations")
+                                      if c["name"] == "updated_at")
+                        self.assertFalse(column["nullable"])
+                        self.assertIsNotNone(column["default"])
+                    await conn.run_sync(check_column)
+                owner.org_id = new_id
+                response = await client.get(f"/api/v1/organizations/{new_id}")
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertIsNotNone(response.json()["updated_at"])
+                await self.migrate("head")
+        finally:
+            app.dependency_overrides.clear()
+            app.dependency_overrides.update(original)
+
     async def test_existing_customer_super_admin_loses_implicit_platform_access(self):
         await self.migrate("0015")
         org_id, user_id = str(uuid.uuid4()), str(uuid.uuid4())
