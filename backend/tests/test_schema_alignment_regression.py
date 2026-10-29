@@ -151,6 +151,50 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
 
+    async def test_user_timestamps_allow_admin_member_listing(self):
+        await self.migrate("0014")
+        org_id = uuid.uuid4()
+        missing_id, existing_id, new_id = (uuid.uuid4() for _ in range(3))
+        async with self.engine.begin() as conn:
+            await conn.execute(sa.text(
+                "INSERT INTO organizations (id,name,slug) VALUES (:id,'Timestamp test',:id)"
+            ), {"id": str(org_id)})
+            for user_id, timestamp in ((missing_id, None), (existing_id, "2021-02-03T00:00:00Z")):
+                await conn.execute(sa.text(
+                    "INSERT INTO users (id,org_id,email,full_name,role,created_at,updated_at) "
+                    "VALUES (:id,:org,:email,'Test member','employee',"
+                    "'2020-01-01T00:00:00Z',CAST(CAST(:updated AS text) AS timestamptz))"
+                ), {"id": str(user_id), "org": str(org_id),
+                    "email": f"{user_id}@example.com", "updated": timestamp})
+        await self.migrate("head")
+        async with self.engine.begin() as conn:
+            self.assertEqual(await conn.scalar(sa.text(
+                "SELECT updated_at = created_at FROM users WHERE id=:id"
+            ), {"id": str(missing_id)}), True)
+            self.assertEqual(await conn.scalar(sa.text(
+                "SELECT extract(year FROM updated_at) FROM users WHERE id=:id"
+            ), {"id": str(existing_id)}), 2021)
+            await conn.execute(sa.text(
+                "INSERT INTO users (id,org_id,email,full_name,role) "
+                "VALUES (:id,:org,:email,'New member','employee')"
+            ), {"id": str(new_id), "org": str(org_id), "email": f"{new_id}@example.com"})
+            def check_column(connection):
+                column = next(c for c in sa.inspect(connection).get_columns("users")
+                              if c["name"] == "updated_at")
+                self.assertFalse(column["nullable"])
+                self.assertIsNotNone(column["default"])
+            await conn.run_sync(check_column)
+        from app.api.v1.users import list_users
+        from app.models.user import User
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            response = await list_users(
+                org_id=org_id, db=db,
+                current_user=User(role="super_admin"), page=1, page_size=100,
+            )
+            self.assertEqual(response.total, 3)
+            self.assertTrue(all(user.updated_at is not None for user in response.items))
+
     async def test_postgres_queue_concurrency_and_saved_answers(self):
         await self.migrate("head")
         from unittest.mock import AsyncMock
