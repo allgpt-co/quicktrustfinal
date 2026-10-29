@@ -73,9 +73,10 @@ async def test_auto_fill(client: AsyncClient):
     auto_resp = await client.post(
         f"/api/v1/organizations/{TEST_ORG_ID}/questionnaires/{questionnaire_id}/auto-fill"
     )
-    assert auto_resp.status_code == 200
+    assert auto_resp.status_code == 202
     data = auto_resp.json()
-    assert "message" in data
+    assert data["status"] == "pending"
+    assert data["id"]
 
 
 @pytest.mark.asyncio

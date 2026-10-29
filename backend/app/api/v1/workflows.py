@@ -1,4 +1,5 @@
 """API endpoints for durable workflow execution tracking."""
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
@@ -28,11 +29,11 @@ class WorkflowResponse(PydanticModel):
     error_message: str | None
     retry_count: int
     max_retries: int
-    started_at: str | None
-    completed_at: str | None
+    started_at: datetime | None
+    completed_at: datetime | None
     triggered_by: UUID | None
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
 
@@ -60,7 +61,7 @@ async def get_workflow(
     org_id: VerifiedOrgId, workflow_id: UUID, db: DB, current_user: AnyInternalUser,
 ):
     wf = await workflow_service.get_workflow(db, workflow_id)
-    if not wf:
+    if not wf or wf.org_id != org_id:
         from app.core.exceptions import NotFoundError
         raise NotFoundError(f"Workflow {workflow_id} not found")
     return wf

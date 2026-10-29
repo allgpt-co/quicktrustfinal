@@ -1,10 +1,12 @@
 import logging
 from uuid import UUID
+from collections.abc import Awaitable, Callable
 
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
+from fastapi import HTTPException
 from app.models.questionnaire import Questionnaire, QuestionnaireResponse
 from app.models.control import Control
 from app.models.policy import Policy
@@ -62,10 +64,28 @@ async def get_questionnaire(db: AsyncSession, org_id: UUID, questionnaire_id: UU
     return questionnaire
 
 
+async def _editable_questionnaire(db, org_id, questionnaire_id):
+    from app.models.workflow import WorkflowExecution
+    questionnaire = (await db.execute(select(Questionnaire).where(
+        Questionnaire.id == questionnaire_id, Questionnaire.org_id == org_id,
+    ).with_for_update())).scalar_one_or_none()
+    if questionnaire is None:
+        raise NotFoundError("Questionnaire not found")
+    active = (await db.execute(select(WorkflowExecution.id).where(
+        WorkflowExecution.org_id == org_id,
+        WorkflowExecution.reference_id == questionnaire_id,
+        WorkflowExecution.workflow_type == "questionnaire_auto_fill",
+        WorkflowExecution.status.in_(("pending", "running")),
+    ).limit(1))).scalar_one_or_none()
+    if active:
+        raise HTTPException(409, "Wait for Auto-fill to finish before editing or deleting this questionnaire.")
+    return questionnaire
+
+
 async def update_questionnaire(
     db: AsyncSession, org_id: UUID, questionnaire_id: UUID, data: QuestionnaireUpdate
 ) -> Questionnaire:
-    questionnaire = await get_questionnaire(db, org_id, questionnaire_id)
+    questionnaire = await _editable_questionnaire(db, org_id, questionnaire_id)
     update_data = data.model_dump(exclude_unset=True)
 
     if "questions" in update_data and update_data["questions"] is not None:
@@ -79,7 +99,7 @@ async def update_questionnaire(
 
 
 async def delete_questionnaire(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> None:
-    questionnaire = await get_questionnaire(db, org_id, questionnaire_id)
+    questionnaire = await _editable_questionnaire(db, org_id, questionnaire_id)
     await db.delete(questionnaire)
     await db.commit()
 
@@ -89,7 +109,7 @@ async def delete_questionnaire(db: AsyncSession, org_id: UUID, questionnaire_id:
 async def upsert_response(
     db: AsyncSession, org_id: UUID, questionnaire_id: UUID, data: QuestionResponseCreate
 ) -> QuestionnaireResponse:
-    await get_questionnaire(db, org_id, questionnaire_id)
+    await _editable_questionnaire(db, org_id, questionnaire_id)
 
     # Check if response already exists for this question_id
     result = await db.execute(
@@ -130,6 +150,7 @@ async def get_response(
         select(QuestionnaireResponse).where(
             QuestionnaireResponse.questionnaire_id == questionnaire_id,
             QuestionnaireResponse.question_id == question_id,
+            QuestionnaireResponse.org_id == org_id,
         )
     )
     response = result.scalar_one_or_none()
@@ -142,6 +163,7 @@ async def update_response(
     db: AsyncSession, org_id: UUID, questionnaire_id: UUID, question_id: str,
     data: QuestionResponseUpdate, approved_by_id: UUID | None = None,
 ) -> QuestionnaireResponse:
+    await _editable_questionnaire(db, org_id, questionnaire_id)
     response = await get_response(db, org_id, questionnaire_id, question_id)
     update_data = data.model_dump(exclude_unset=True)
 
@@ -158,7 +180,7 @@ async def update_response(
 
 # === Auto-Fill ===
 
-async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> int:
+async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, progress: Callable[[int, int], Awaitable[None]] | None = None, strict_errors: bool = False) -> int:
     """Auto-fill questionnaire using keyword matching (first pass) then LLM (second pass).
 
     Returns total count of filled answers across both passes.
@@ -178,8 +200,8 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> i
 
     # ---- Pass 1: keyword matching (existing logic) ----
     for idx, q in enumerate(questions):
-        q_id = q.get("id", f"q_{idx}")
-        q_text = q.get("text", q.get("question", "")).lower()
+        q_id = str(q.get("id") or q.get("question_id") or f"q_{idx}")
+        q_text = (q.get("text") or q.get("question") or q.get("question_text") or "").lower()
         if not q_text:
             continue
 
@@ -221,7 +243,7 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> i
                 questionnaire_id=questionnaire_id,
                 org_id=org_id,
                 question_id=q_id,
-                question_text=q.get("text", q.get("question", "")),
+                question_text=(q.get("text") or q.get("question") or q.get("question_text") or ""),
                 answer=best_match,
                 confidence=0.7,
                 source_type=best_source[0],
@@ -233,7 +255,7 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> i
             # Track for LLM pass
             unanswered_questions.append({
                 "id": q_id,
-                "text": q.get("text", q.get("question", "")),
+                "text": (q.get("text") or q.get("question") or q.get("question_text") or ""),
             })
 
     # Commit keyword-matched answers before LLM pass
@@ -242,6 +264,9 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> i
         if questionnaire.status == "draft":
             questionnaire.status = "in_progress"
         await db.commit()
+
+    if progress:
+        await progress(len(questions) - len(unanswered_questions), len(questions))
 
     # ---- Pass 2: LLM-enhanced auto-fill for remaining questions ----
     if unanswered_questions:
@@ -253,6 +278,9 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID) -> i
             unanswered=unanswered_questions,
             controls=controls,
             policies=policies,
+            progress=progress,
+            total_questions=len(questions),
+            strict_errors=strict_errors,
         )
         filled += llm_filled
 
@@ -267,6 +295,9 @@ async def _llm_auto_fill(
     unanswered: list[dict],
     controls: list,
     policies: list,
+    progress: Callable[[int, int], Awaitable[None]] | None = None,
+    total_questions: int = 0,
+    strict_errors: bool = False,
 ) -> int:
     """Send unanswered questions to LLM with controls/policies as context.
 
@@ -279,6 +310,8 @@ async def _llm_auto_fill(
             build_auto_fill_user_prompt,
         )
     except ImportError:
+        if strict_errors:
+            raise
         logger.warning("LLM module not available; skipping LLM auto-fill pass.")
         return 0
 
@@ -323,10 +356,13 @@ async def _llm_auto_fill(
                 batch_start,
                 exc,
             )
+            if strict_errors:
+                raise
             continue  # Skip this batch; keyword results are still saved
 
         answers = llm_result.get("answers", [])
         batch_filled = 0
+        seen_ids = set()
 
         for ans in answers:
             q_id = ans.get("question_id")
@@ -334,7 +370,7 @@ async def _llm_auto_fill(
             confidence = ans.get("confidence", 0.0)
             source_refs = ans.get("source_references", "")
 
-            if not q_id or not answer_text:
+            if not q_id or not answer_text or q_id in seen_ids:
                 continue
 
             # Skip very low confidence answers (LLM said it cannot answer)
@@ -357,6 +393,7 @@ async def _llm_auto_fill(
                 source_id=None,
             )
             db.add(response)
+            seen_ids.add(q_id)
             batch_filled += 1
 
         if batch_filled > 0:
@@ -365,6 +402,9 @@ async def _llm_auto_fill(
                 questionnaire.status = "in_progress"
             await db.commit()
             total_filled += batch_filled
+
+        if progress:
+            await progress(total_questions - len(unanswered) + batch_start + len(batch), total_questions)
 
     logger.info(
         "LLM auto-fill completed for questionnaire %s: %d answers generated",

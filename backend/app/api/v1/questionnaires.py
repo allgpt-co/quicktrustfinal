@@ -5,6 +5,7 @@ from fastapi import APIRouter, Query
 from app.core.dependencies import DB, CurrentUser, AnyInternalUser, ComplianceUser, VerifiedOrgId
 from app.schemas.common import PaginatedResponse, MessageResponse
 from app.schemas.questionnaire import (
+    AutoFillJobResponse,
     QuestionnaireCreate,
     QuestionnaireUpdate,
     QuestionnaireDetailResponse,
@@ -13,7 +14,7 @@ from app.schemas.questionnaire import (
     QuestionResponseRead,
     QuestionnaireStatsResponse,
 )
-from app.services import questionnaire_service
+from app.services import questionnaire_service, questionnaire_jobs
 
 router = APIRouter(
     prefix="/organizations/{org_id}/questionnaires",
@@ -148,10 +149,14 @@ async def delete_questionnaire(org_id: VerifiedOrgId, questionnaire_id: UUID, db
     await questionnaire_service.delete_questionnaire(db, org_id, questionnaire_id)
 
 
-@router.post("/{questionnaire_id}/auto-fill", response_model=MessageResponse)
+@router.post("/{questionnaire_id}/auto-fill", response_model=AutoFillJobResponse, status_code=202)
 async def auto_fill(org_id: VerifiedOrgId, questionnaire_id: UUID, db: DB, current_user: ComplianceUser):
-    count = await questionnaire_service.auto_fill(db, org_id, questionnaire_id)
-    return MessageResponse(message=f"Auto-filled {count} responses")
+    return await questionnaire_jobs.enqueue(db, org_id, questionnaire_id, current_user.id)
+
+
+@router.get("/{questionnaire_id}/auto-fill", response_model=AutoFillJobResponse | None)
+async def auto_fill_status(org_id: VerifiedOrgId, questionnaire_id: UUID, db: DB, current_user: AnyInternalUser):
+    return await questionnaire_jobs.latest_job(db, org_id, questionnaire_id)
 
 
 @router.get("/{questionnaire_id}/responses/{question_id}", response_model=QuestionResponseRead)

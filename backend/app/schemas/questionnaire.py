@@ -75,3 +75,15 @@ class QuestionnaireStatsResponse(BaseModel):
     in_progress: int = 0
     completed: int = 0
     submitted: int = 0
+
+
+class AutoFillJobResponse(BaseModel):
+    id: UUID
+    status: str
+    current_step: int
+    total_steps: int
+    step_name: str | None
+    output_data: dict | None
+    error_message: str | None
+
+    model_config = {"from_attributes": True}

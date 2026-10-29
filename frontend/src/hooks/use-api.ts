@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import type {
@@ -1326,13 +1327,46 @@ export function useDeleteQuestionnaire(orgId: string) {
   });
 }
 
+export interface AutoFillJob {
+  id: string;
+  status: "pending" | "running" | "completed" | "failed";
+  current_step: number;
+  total_steps: number;
+  step_name: string | null;
+  output_data: { filled_count?: number } | null;
+  error_message: string | null;
+}
+
+export function useAutoFillStatus(orgId: string, questionnaireId: string) {
+  const qc = useQueryClient();
+  const query = useQuery({
+    queryKey: ["questionnaire-auto-fill", orgId, questionnaireId],
+    queryFn: () => api.get<AutoFillJob | null>(
+      `/organizations/${orgId}/questionnaires/${questionnaireId}/auto-fill`
+    ),
+    enabled: !!orgId && !!questionnaireId,
+    refetchInterval: (query) => query.state.error ||
+      ["pending", "running"].includes(query.state.data?.status ?? "") ? 1500 : false,
+  });
+  const jobId = query.data?.id;
+  const status = query.data?.status;
+  useEffect(() => {
+    if (status === "completed" || status === "failed") {
+      qc.invalidateQueries({ queryKey: ["questionnaires", orgId] });
+      qc.invalidateQueries({ queryKey: ["questionnaire-stats", orgId] });
+    }
+  }, [qc, orgId, jobId, status]);
+  return query;
+}
+
 export function useAutoFillQuestionnaire(orgId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (questionnaireId: string) =>
-      api.post<number>(`/organizations/${orgId}/questionnaires/${questionnaireId}/auto-fill`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["questionnaires", orgId] });
+      api.post<AutoFillJob>(`/organizations/${orgId}/questionnaires/${questionnaireId}/auto-fill`),
+    onSuccess: (job, questionnaireId) => {
+      qc.setQueryData(["questionnaire-auto-fill", orgId, questionnaireId], job);
+      qc.invalidateQueries({ queryKey: ["questionnaire-auto-fill", orgId, questionnaireId] });
     },
   });
 }

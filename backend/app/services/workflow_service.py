@@ -152,6 +152,7 @@ async def recover_stale_workflows(db: AsyncSession, timeout_minutes: int = 30) -
     result = await db.execute(
         select(WorkflowExecution).where(
             WorkflowExecution.status == "running",
+            WorkflowExecution.workflow_type != "questionnaire_auto_fill",
             WorkflowExecution.started_at < cutoff,
         )
     )

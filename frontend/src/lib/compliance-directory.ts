@@ -9,9 +9,13 @@ export const DIRECTORY_ORIGIN = 'https://quicktrustapp.com';
 export const DIRECTORY_UPDATED = '2026-09-27';
 let registry: Directory | undefined;
 function contentRoot() {
-  // cwd is the frontend root in CI (`pnpm --dir frontend`) and in Coolify (/app), or the repo root locally.
-  const local = path.join(process.cwd(), 'content', 'compliance-directory');
-  return fs.existsSync(local) ? local : path.join(process.cwd(), 'frontend', 'content', 'compliance-directory');
+  const roots = [
+    path.join(process.cwd(), 'content', 'compliance-directory'),
+    path.join(process.cwd(), 'frontend', 'content', 'compliance-directory'),
+  ];
+  const root = roots.find((candidate) => fs.existsSync(path.join(candidate, 'requirements.json')));
+  if (!root) throw new Error(`Compliance directory content not found. Checked: ${roots.join(', ')}`);
+  return root;
 }
 function json(name: string) {
   return JSON.parse(fs.readFileSync(path.join(contentRoot(), `${name}.json`), 'utf8'));
