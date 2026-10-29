@@ -10,12 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY . .
 
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -c constraints.txt -e .
 
 # Semgrep (SAST code scanner) + Checkov (IaC scanner)
 # Note: Prowler is omitted from dev builds — it pulls ~2GB of cloud SDKs (AWS/Azure/GCP).
 # Install it separately or use a dedicated Prowler container for cloud security scans.
-RUN pip install --no-cache-dir semgrep checkov
+RUN pip install --no-cache-dir -c constraints.txt semgrep checkov
 
 RUN chown -R appuser:appuser /app
 
