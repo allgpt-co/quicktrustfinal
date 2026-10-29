@@ -112,3 +112,61 @@ cd ../frontend
 pnpm test
 pnpm build
 ```
+
+
+## QT-006: organization admins and platform staff
+
+`User.role = super_admin` is the existing **organization administrator** role.
+It no longer grants cross-organization access. The UI/API role string is retained
+for compatibility. Platform staff additionally require `users.is_platform_admin = true`.
+Signup, tenant provisioning, invitations, user creation, and user updates cannot
+set that privilege. Customer admins retain settings and member management for their
+own organization. Tenant directory/provisioning, shared framework writes, global
+organization creation, and auditor verification require platform privilege.
+
+Migration `0016` defaults **all existing and new accounts** to
+`is_platform_admin = false`. No legacy super-admin account is automatically trusted
+as staff, because public registration previously assigned that role. Customer accounts
+keep their organization permissions. Permissions are read from the database on every
+JWT/API-key request, so existing sessions cannot retain the old cross-tenant bypass.
+Do not roll back to the old authorization code after this migration.
+
+Apply the migration and deploy the new API together during a maintenance window.
+For local Compose, stop the API before pulling so the development reload does not
+load the new model before the migration. The default Compose file bind-mounts
+`./backend` into `/app`; no image rebuild is needed for this backend-only change:
+
+```bash
+docker compose stop api
+git pull --ff-only origin bug-fixes
+docker compose run --rm --no-deps api alembic upgrade head
+docker compose up -d --no-deps api
+```
+
+Only after independently verifying an account belongs to authorized platform staff,
+a database operator may grant the separate privilege. Use that account's exact UUID;
+never promote all existing super-admin users or select the first signup. For example,
+run this SQL through the approved database administration channel (replace the UUID):
+
+```sql
+BEGIN;
+UPDATE users
+SET is_platform_admin = true, updated_at = CURRENT_TIMESTAMP
+WHERE id = '<approved-staff-user-uuid>' AND is_active = true
+RETURNING id, role, is_platform_admin;
+COMMIT;
+```
+
+Record the approval and account UUID in the deployment record. Revoke with the same
+scoped update using `false`. The next authenticated request sees the change.
+Platform staff accounts cannot be modified by customer member-management/SCIM APIs
+or moved between organizations through invitation acceptance.
+
+Local verification: register two separate organizations; both owners can list their
+own members (200), but foreign member lists/organization reads and writes return 403.
+An employee still receives 403 for member listing/invitation creation. Customer
+admins receive 403 from `/api/v1/tenants`, and attempts to submit
+`is_platform_admin` in registration/user/invitation payloads return 422. A customer
+admin may invite another organization admin; this does not grant platform access.
+Compliance managers cannot issue administrator invitations, and invitation acceptance
+rechecks that the issuer is still active and authorized.

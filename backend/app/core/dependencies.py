@@ -81,7 +81,7 @@ async def verify_org_access(
     current_user: User = Depends(get_current_user),
 ) -> UUID:
     """Verify the authenticated user belongs to the requested organization."""
-    if current_user.role == SUPER_ADMIN:
+    if current_user.is_platform_admin:
         current_org_var.set(str(org_id))
         return org_id
     if str(current_user.org_id) != str(org_id):
@@ -118,6 +118,7 @@ def require_role(*roles: str):
 DB = Annotated[AsyncSession, Depends(get_db)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
+# Legacy organization-admin role; never sufficient for cross-tenant access.
 SUPER_ADMIN = "super_admin"
 COMPLIANCE_MANAGER = "compliance_manager"
 CONTROL_OWNER = "control_owner"
@@ -145,7 +146,7 @@ class RoleChecker:
     async def __call__(
         self, current_user: User = Depends(get_current_user)
     ) -> User:
-        if current_user.role == SUPER_ADMIN:
+        if current_user.is_platform_admin:
             return current_user
         if current_user.role not in self.allowed_roles:
             raise ForbiddenError(
@@ -161,3 +162,23 @@ ComplianceUser = Annotated[
 ]
 AnyInternalUser = Annotated[User, Depends(RoleChecker(*INTERNAL_ROLES))]
 VerifiedOrgId = Annotated[UUID, Depends(verify_org_access)]
+
+
+async def require_platform_admin(current_user: CurrentUser) -> User:
+    if not current_user.is_platform_admin:
+        raise ForbiddenError("Platform administrator access required")
+    return current_user
+
+
+PlatformAdminUser = Annotated[User, Depends(require_platform_admin)]
+
+
+def require_role_assignment(actor: User, role: str) -> None:
+    """Only organization admins (or platform staff) can appoint organization admins."""
+    if role == SUPER_ADMIN and actor.role != SUPER_ADMIN and not actor.is_platform_admin:
+        raise ForbiddenError("Only organization administrators can assign the administrator role")
+
+
+def protect_platform_account(actor: User, target: User) -> None:
+    if target.is_platform_admin and not actor.is_platform_admin:
+        raise ForbiddenError("Only platform administrators can manage platform accounts")

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from app.core.dependencies import DB, CurrentUser, AdminUser, VerifiedOrgId
+from app.core.dependencies import DB, CurrentUser, AdminUser, VerifiedOrgId, protect_platform_account
 from app.schemas.common import PaginatedResponse
 from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.services import user_service
@@ -42,9 +42,13 @@ async def get_user(org_id: VerifiedOrgId, user_id: UUID, db: DB, current_user: A
 async def update_user(
     org_id: VerifiedOrgId, user_id: UUID, data: UserUpdate, db: DB, current_user: AdminUser
 ):
+    target = await user_service.get_user(db, org_id, user_id)
+    protect_platform_account(current_user, target)
     return await user_service.update_user(db, org_id, user_id, data)
 
 
 @router.delete("/{user_id}", status_code=204)
 async def delete_user(org_id: VerifiedOrgId, user_id: UUID, db: DB, current_user: AdminUser):
+    target = await user_service.get_user(db, org_id, user_id)
+    protect_platform_account(current_user, target)
     await user_service.delete_user(db, org_id, user_id)

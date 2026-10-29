@@ -178,6 +178,9 @@ async def update_user(user_id: UUID, request: Request, authorization: str = Head
         if not user:
             return _scim_error("User not found", 404)
 
+        if user.is_platform_admin:
+            return _scim_error("Platform accounts cannot be managed through SCIM", 403)
+
         body = await request.json()
 
         for op in body.get("Operations", []):
@@ -222,6 +225,9 @@ async def delete_user(user_id: UUID, authorization: str = Header(...)):
         user = result.scalar_one_or_none()
         if not user:
             return _scim_error("User not found", 404)
+
+        if user.is_platform_admin:
+            return _scim_error("Platform accounts cannot be managed through SCIM", 403)
 
         # Soft-deactivate instead of hard delete
         user.is_active = False

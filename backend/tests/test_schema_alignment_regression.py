@@ -89,7 +89,7 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             }
 
     async def test_clean_migration_and_repeated_seed(self):
-        await self.migrate("0013")
+        await self.migrate("head")
         await self.assert_no_missing_columns()
         await self.seed()
         counts = await self.counts()
@@ -127,7 +127,7 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
                                        "VALUES (:control,:org,'Legacy control','Keep these notes')"), ids)
             await conn.execute(sa.text("INSERT INTO audit_logs (id,org_id,action,created_at,ip_address) "
                 "VALUES (:audit,:org,'legacy-event','2020-01-01T00:00:00Z','127.0.0.1')"), ids)
-        await self.migrate("0013")
+        await self.migrate("head")
         await self.assert_no_missing_columns()
         async with self.engine.connect() as conn:
             async def scalar(sql):
@@ -150,6 +150,35 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT actor_ip FROM audit_logs WHERE id=:audit"), "127.0.0.1")
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
+
+    async def test_existing_customer_super_admin_loses_implicit_platform_access(self):
+        await self.migrate("0015")
+        org_id, user_id = str(uuid.uuid4()), str(uuid.uuid4())
+        async with self.engine.begin() as conn:
+            await conn.execute(sa.text(
+                "INSERT INTO organizations (id,name,slug) VALUES (:org,'Legacy customer',:org)"
+            ), {"org": org_id})
+            await conn.execute(sa.text(
+                "INSERT INTO users (id,org_id,email,full_name,role) "
+                "VALUES (:id,:org,'legacy-owner@example.com','Legacy owner','super_admin')"
+            ), {"id": user_id, "org": org_id})
+        await self.migrate("head")
+        from app.models.user import User
+        from app.core.dependencies import verify_org_access, require_platform_admin
+        from fastapi import HTTPException
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            user = await db.get(User, uuid.UUID(user_id))
+            self.assertEqual(user.role, "super_admin")
+            self.assertFalse(user.is_platform_admin)
+            self.assertEqual(await verify_org_access(uuid.UUID(org_id), user), uuid.UUID(org_id))
+            with self.assertRaises(HTTPException) as error:
+                await verify_org_access(uuid.uuid4(), user)
+            self.assertEqual(error.exception.status_code, 403)
+            with self.assertRaises(HTTPException) as error:
+                await require_platform_admin(user)
+            self.assertEqual(error.exception.status_code, 403)
+        await self.migrate("head")  # repeated deploy remains safe
 
     async def test_user_timestamps_allow_admin_member_listing(self):
         await self.migrate("0014")
@@ -193,6 +222,9 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
                 current_user=User(role="super_admin"), page=1, page_size=100,
             )
             self.assertEqual(response.total, 3)
+            users = (await db.execute(sa.select(User))).scalars().all()
+            self.assertTrue(all(user.is_platform_admin is False for user in users))
+            self.assertTrue(all(user.role == "employee" for user in users))
             self.assertTrue(all(user.updated_at is not None for user in response.items))
 
     async def test_postgres_queue_concurrency_and_saved_answers(self):

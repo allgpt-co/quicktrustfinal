@@ -51,6 +51,7 @@ def make_test_user(org_id: uuid.UUID | None = None) -> User:
         email="test@quicktrust.dev",
         full_name="Test User",
         role="super_admin",
+        is_platform_admin=True,
         is_active=True,
     )
 
@@ -114,5 +115,6 @@ def make_test_user_with_role(role: str, org_id: uuid.UUID | None = None) -> User
         email=f"{role}@quicktrust.dev",
         full_name=f"Test {role.title()}",
         role=role,
+        is_platform_admin=False,
         is_active=True,
     )

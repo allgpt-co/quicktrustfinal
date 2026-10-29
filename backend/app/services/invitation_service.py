@@ -8,7 +8,8 @@ from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import BadRequestError, NotFoundError
+from app.core.exceptions import BadRequestError, NotFoundError, ForbiddenError
+from app.core.dependencies import require_role_assignment
 from app.models.invitation import Invitation
 from app.models.user import User
 from app.schemas.invitation import InvitationCreate
@@ -138,6 +139,7 @@ async def accept_invitation(
     if invitation.email.lower() != user_email.lower():
         raise BadRequestError("This invitation was sent to a different email address")
 
+    await validate_invitation_authority(db, invitation)
     invitation.status = "accepted"
     invitation.accepted_at = datetime.now(timezone.utc)
     await db.commit()
@@ -279,3 +281,16 @@ async def _send_invitation_email(invitation: Invitation) -> None:
         logger.info("Invitation email sent to %s", invitation.email)
     except Exception as exc:
         logger.warning("Failed to send invitation email to %s: %s", invitation.email, exc)
+
+
+async def validate_invitation_authority(db: AsyncSession, invitation: Invitation) -> None:
+    """Recheck the issuer so old invitations cannot retain revoked privileges."""
+    inviter = await db.get(User, invitation.invited_by)
+    if not inviter or not inviter.is_active:
+        raise ForbiddenError("Invitation issuer is no longer authorized")
+    if not inviter.is_platform_admin and (
+        str(inviter.org_id) != str(invitation.org_id)
+        or inviter.role not in ("super_admin", "compliance_manager")
+    ):
+        raise ForbiddenError("Invitation issuer is no longer authorized")
+    require_role_assignment(inviter, invitation.role)

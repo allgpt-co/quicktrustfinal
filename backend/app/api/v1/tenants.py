@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
-from app.core.dependencies import DB, AdminUser
+from app.core.dependencies import DB, PlatformAdminUser
 from app.schemas.common import PaginatedResponse
 from app.services import tenant_service
 
@@ -20,8 +20,8 @@ class TenantProvisionRequest(BaseModel):
 
 
 @router.post("/provision", status_code=201)
-async def provision_tenant(data: TenantProvisionRequest, db: DB, current_user: AdminUser):
-    """Provision a new tenant organization (super admin only)."""
+async def provision_tenant(data: TenantProvisionRequest, db: DB, current_user: PlatformAdminUser):
+    """Provision a new tenant organization (platform admin only)."""
     return await tenant_service.provision_tenant(
         db,
         name=data.name,
@@ -36,11 +36,11 @@ async def provision_tenant(data: TenantProvisionRequest, db: DB, current_user: A
 @router.get("", response_model=PaginatedResponse)
 async def list_tenants(
     db: DB,
-    current_user: AdminUser,
+    current_user: PlatformAdminUser,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
 ):
-    """List all tenants (super admin only)."""
+    """List all tenants (platform admin only)."""
     items, total = await tenant_service.list_tenants(db, page=page, page_size=page_size)
     return PaginatedResponse(
         items=items,
@@ -52,6 +52,6 @@ async def list_tenants(
 
 
 @router.get("/{org_id}/isolation-check")
-async def check_tenant_isolation(org_id: UUID, db: DB, current_user: AdminUser):
-    """Run tenant isolation verification checks (super admin only)."""
+async def check_tenant_isolation(org_id: UUID, db: DB, current_user: PlatformAdminUser):
+    """Run tenant isolation verification checks (platform admin only)."""
     return await tenant_service.verify_tenant_isolation(db, org_id)

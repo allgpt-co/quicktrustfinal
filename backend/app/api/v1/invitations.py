@@ -10,6 +10,7 @@ from app.core.dependencies import (
     ComplianceUser,
     CurrentUser,
     VerifiedOrgId,
+    require_role_assignment,
 )
 from app.schemas.invitation import (
     InvitationCreate,
@@ -55,6 +56,7 @@ async def send_invitation(
     current_user: ComplianceUser,
 ):
     """Send an invitation to a new team member."""
+    require_role_assignment(current_user, data.role)
     inv = await invitation_service.create_invitation(
         db, org_id, data, invited_by=current_user.id
     )
@@ -146,6 +148,9 @@ async def accept_invitation(
     current_user: CurrentUser,
 ):
     """Accept an invitation. The authenticated user joins the org with the invited role."""
+    if current_user.is_platform_admin:
+        from app.core.exceptions import ForbiddenError
+        raise ForbiddenError("Platform accounts cannot join organizations through invitations")
     inv = await invitation_service.accept_invitation(
         db, token, current_user.email
     )
