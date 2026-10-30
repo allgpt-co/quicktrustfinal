@@ -233,3 +233,91 @@ notifications, notification_preferences, slack_webhook_configs, auditor_profiles
 and embeddings. This was reproduced on the unchanged QT-006 base (`cb10355`)
 with `app.main` imported before that test. It requires a separate schema repair;
 the Auto-fill usage migration does not change those tables.
+
+## QT-008: plan/subscription foundation
+
+Migration `0019` follows `0018` and creates `billing_plans` and
+`billing_subscriptions`. It does not assign plans, start trials, mark organizations
+as paying, or change access to existing product routes. Existing and new
+organizations without a subscription return `configured: false`, reason
+`unconfigured`. There are no invented prices, trial durations, or package limits.
+
+Plans contain a unique code, display name, named resource limits, and boolean
+features. Plan definitions are immutable through this API: create a new code for
+a revised package, then explicitly move contracted organizations. This prevents a
+package edit from silently changing all existing customer agreements. An inactive
+plan cannot be newly assigned; existing assignments retain their agreement.
+Subscriptions record the plan, status, billing interval, explicit UTC period,
+optional trial end and contract reference, and per-organization overrides. Only
+manual agreements are supported here; Stripe/webhooks/invoicing remain separate.
+There is at most one current subscription per organization. Changes retain
+before/after snapshots in the existing audit log in the same database transaction.
+
+API paths (all under `/api/v1`):
+
+- `POST /admin/billing/plans`: platform staff only; create a plan.
+- `GET /admin/billing/plans?offset=0&limit=50`: platform staff only; list plans.
+- `PUT /admin/organizations/{org_id}/subscription`: platform staff only; fully
+  replace subscription configuration. Send `expected_version: 0` to create, or the
+  current returned `version` to update. Concurrent or stale writes return 409.
+- `GET /organizations/{org_id}/billing/subscription`: the organization's
+  `super_admin` or platform staff; returns subscription (null if unconfigured)
+  and resolved entitlements. Employees/managers cannot read contract details.
+- `GET /organizations/{org_id}/entitlements`: internal organization members or
+  platform staff; exposes only resolved feature/limit information, not contract
+  references. Foreign-organization access is rejected for customer users,
+  including the customer `super_admin` role.
+
+Only the explicit `is_platform_admin` privilege grants write access. Customers
+cannot grant themselves a plan using organization settings or request-body fields.
+Do not promote customer accounts to platform staff for routine testing; the
+isolated automated tests exercise both roles without changing real users.
+
+Example plan payload (illustrative test data, not commercial commitments):
+
+```json
+{
+  "code": "local_test_v1",
+  "name": "Local Test Plan",
+  "limits": {"seats": 5, "documents": 10},
+  "features": {"questionnaire_export": true}
+}
+```
+
+A subscription PUT requires `plan_id`, `expected_version`, `status`,
+`billing_interval` (`month` or `year`), `current_period_start`, and
+`current_period_end` as timezone-aware ISO timestamps. `trialing` also requires
+`trial_ends_at` within that period. Optional `limit_overrides` and
+`feature_overrides` merge by key over the plan. Omitted keys inherit; explicit 0
+and false override; a null limit means no configured cap. Do not treat a missing
+feature as enabled. PUT is a full replacement, so omitted overrides are cleared.
+
+`billing_service.get_entitlements` is the shared resolver. Only active or unexpired
+trialing subscriptions within their explicit period return `access_allowed: true`.
+Other statuses and future/expired periods return false and disable feature grants.
+These are configuration evaluations, not middleware: `enforcement_enabled: false`
+explicitly reports that product routes are not yet gated. Limits are configuration,
+not current consumption or concurrency-safe quota reservations. Seats, AI calls,
+upload gates, signup plan assignment, renewal jobs, payments, and billing UI belong
+to separate findings. The resolver never claims a payment was actually received.
+
+After obtaining the updated code, stop the API, apply `alembic upgrade head`,
+confirm `alembic current` reports `0019 (head)`, then restart the API. Migration
+0019 is forward-only to avoid accidentally deleting commercial records.
+
+Run the isolated test suite (no AWS, Stripe, or production database credentials):
+
+```bash
+docker compose run --rm --no-deps -w /tmp \
+  -e PYTHONPATH=/app \
+  -e DATABASE_URL=sqlite+aiosqlite:////tmp/qt008-app.db \
+  -e BEDROCK_ENABLED=false \
+  api python -m pytest /app/tests/test_billing.py -q -p no:cacheprovider
+```
+
+The tests cover platform-only writes, tenant isolation, employee access, unknown
+plans, overrides, stale writes, validation, expiry, audit atomicity, and unchanged
+settings access for unconfigured organizations. Separate PostgreSQL migration
+regressions cover upgrade from 0018, seed-created tables, database constraints,
+and concurrent subscription updates. The broader pre-existing schema issue
+noted under QT-007 remains outside this change.

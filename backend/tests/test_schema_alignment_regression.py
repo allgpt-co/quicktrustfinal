@@ -151,6 +151,66 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
 
+    async def test_billing_migration_and_concurrent_subscription_updates(self):
+        from datetime import datetime, timedelta, timezone
+        from types import SimpleNamespace
+        from app.models.billing import Plan, Subscription
+        from app.models.organization import Organization
+        from app.models.audit_log import AuditLog
+        from app.schemas.billing import PlanCreate, SubscriptionPut
+        from app.services import billing_service
+        from app.core.exceptions import ConflictError
+        await self.migrate("0018")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Billing test", slug="billing-test")
+            db.add(org)
+            await db.commit()
+            org_id = org.id
+        await self.migrate("head")
+        actor = SimpleNamespace(id=uuid.uuid4(), org_id=org_id, role="super_admin")
+        now = datetime.now(timezone.utc)
+        async with sessions() as db:
+            self.assertIsNone(await billing_service.get_subscription(db, org_id))
+            plan = await billing_service.create_plan(db, PlanCreate(code="test", name="Test", limits={"seats": 5}), actor)
+            payload = dict(plan_id=plan.id, expected_version=0, status="active", billing_interval="month",
+                           current_period_start=now, current_period_end=now + timedelta(days=30))
+            initial = await billing_service.put_subscription(db, org_id, SubscriptionPut(**payload), actor)
+            self.assertEqual(initial.version, 1)
+        payload["expected_version"] = 1
+        async def assign(status):
+            async with sessions() as db:
+                try:
+                    updated = await billing_service.put_subscription(db, org_id, SubscriptionPut(**(payload | {"status": status})), actor)
+                    return updated.version
+                except ConflictError:
+                    return "conflict"
+        outcomes = await asyncio.gather(assign("suspended"), assign("past_due"))
+        self.assertCountEqual(outcomes, [2, "conflict"])
+        async with sessions() as db:
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(Subscription)), 1)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(AuditLog).where(AuditLog.action == "billing.subscription_updated")), 2)
+            effective = await billing_service.get_entitlements(db, org_id)
+            self.assertFalse(effective.access_allowed)
+            self.assertEqual(effective.limits.seats, 5)
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(Subscription).where(Subscription.org_id == org_id).values(status="invalid"))
+            await db.rollback()
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(Subscription).where(Subscription.org_id == org_id).values(plan_id=uuid.uuid4()))
+            await db.rollback()
+        await self.migrate("head")
+
+    async def test_billing_migration_accepts_tables_created_by_seed(self):
+        from app.models.billing import Plan, Subscription
+        await self.migrate("0018")
+        async with self.engine.begin() as conn:
+            await conn.run_sync(lambda c: database.Base.metadata.create_all(c, tables=[Plan.__table__, Subscription.__table__]))
+            await conn.execute(sa.insert(Plan).values(id=uuid.uuid4(), code="seeded", name="Seeded", is_active=True, limits={}, features={}))
+        await self.migrate("head")
+        async with self.engine.connect() as conn:
+            self.assertEqual(await conn.scalar(sa.select(sa.func.count()).select_from(Plan)), 1)
+
     async def test_ai_usage_ledger_survives_answer_deletion_and_duplicate_callbacks(self):
         await self.migrate("head")
         from app.config import get_settings

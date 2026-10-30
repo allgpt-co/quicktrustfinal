@@ -1,3 +1,4 @@
+from app.models.billing import Plan, Subscription
 from app.models.ai_usage import AiUsageEvent
 from app.models.base import BaseModel
 from app.models.organization import Organization
@@ -59,6 +60,8 @@ from app.models.nda_signature import NdaSignature
 from app.models.evidence_request import EvidenceRequest
 
 __all__ = [
+    "Plan",
+    "Subscription",
     "AiUsageEvent",
     "BaseModel",
     "Organization",

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    billing,
     auth,
     organizations,
     users,
@@ -135,3 +136,5 @@ api_router.include_router(credential_rotation.router)
 api_router.include_router(evidence_requests.router)
 # Priority 3: Approved Response Library
 api_router.include_router(response_library.router)
+
+api_router.include_router(billing.router)
