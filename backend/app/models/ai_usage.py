@@ -30,3 +30,8 @@ class AiUsageEvent(Base):
     output_rate_per_million: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     recorded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    # Snapshotted at call start; nullable only for pre-QT009 calls.
+    usage_period_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    usage_period_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    usage_period_source: Mapped[str | None] = mapped_column(String(30))

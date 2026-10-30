@@ -3,7 +3,8 @@ from fastapi import APIRouter, Query
 
 from app.core.dependencies import DB, AdminUser, AnyInternalUser, PlatformAdminUser, VerifiedOrgId
 from app.schemas.billing import BillingResponse, EntitlementResponse, PlanCreate, PlanResponse, SubscriptionPut, SubscriptionResponse
-from app.services import billing_service
+from app.services import billing_service, usage_service
+from app.schemas.usage import UsageResponse
 
 router = APIRouter(tags=["billing"])
 
@@ -32,3 +33,10 @@ async def get_subscription(org_id: VerifiedOrgId, db: DB, current_user: AdminUse
 @router.get("/organizations/{org_id}/entitlements", response_model=EntitlementResponse)
 async def get_entitlements(org_id: VerifiedOrgId, db: DB, current_user: AnyInternalUser):
     return await billing_service.get_entitlements(db, org_id)
+
+
+# Consumption records are server-written only; customers cannot submit billable events.
+@router.get("/organizations/{org_id}/billing/usage", response_model=UsageResponse)
+async def get_usage(org_id: VerifiedOrgId, db: DB, current_user: AdminUser,
+                    offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=100)):
+    return await usage_service.get_usage(db, org_id, offset=offset, limit=limit)

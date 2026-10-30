@@ -151,6 +151,100 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
 
+    async def test_usage_counters_concurrent_receipts_and_atomic_rollback(self):
+        from datetime import datetime, timezone
+        from app.models.organization import Organization
+        from app.models.usage import UsageEvent, UsageCounter
+        from app.services import usage_service as meter
+        await self.migrate("head")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Usage test", slug="usage-test")
+            db.add(org)
+            await db.commit()
+            org_id = org.id
+        at = datetime(2030, 1, 15, tzinfo=timezone.utc)
+        def receipt(key):
+            return dict(org_id=org_id, kind="LLM_COMPLETION", idempotency_key=key,
+                        source_type="test_call", source_id=key, occurred_at=at,
+                        prompt_tokens=12, completion_tokens=3, cost_micros=54)
+        async def write(key):
+            async with sessions() as db:
+                result = await meter.append_event(db, **receipt(key))
+                await db.commit()
+                return result
+        results = await asyncio.gather(*[write("same") for _ in range(12)],
+                                       *[write(f"distinct-{i}") for i in range(12)])
+        self.assertEqual(sum(results), 13)
+        async with sessions() as db:
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual((counter.event_count, counter.quantity, counter.known_cost_micros), (13, 13, 702))
+            self.assertEqual(counter.known_prompt_tokens, 156)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 13)
+            original = meter._insert
+            def fail_counter(session, table):
+                if table is UsageCounter:
+                    raise sa.exc.SQLAlchemyError("forced counter storage failure")
+                return original(session, table)
+            with patch.object(meter, "_insert", fail_counter):
+                with self.assertRaises(sa.exc.SQLAlchemyError):
+                    await meter.append_event(db, **receipt("failed"))
+            await db.rollback()
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 13)
+            self.assertTrue(await meter.append_event(db, **receipt("failed")))
+            await db.commit()
+            await db.refresh(counter)
+            self.assertEqual(counter.quantity, 14)
+            self.assertEqual(counter.known_cost_micros, 756)
+        await self.migrate("head")
+
+    async def test_usage_migration_preserves_legacy_ai_and_backfill_is_repeatable(self):
+        from datetime import datetime, timezone
+        from app.models.ai_usage import AiUsageEvent
+        from app.models.organization import Organization
+        from app.models.usage import UsageEvent, UsageCounter
+        from app.services import usage_service as meter
+        await self.migrate("0019")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Legacy usage", slug="legacy-usage")
+            db.add(org)
+            await db.flush()
+            org_id = org.id
+            await db.execute(sa.insert(AiUsageEvent).values(id=uuid.uuid4(), org_id=org_id,
+                questionnaire_id=uuid.uuid4(), batch_index=0, status="reported", model="test-model",
+                prompt_tokens=1200, completion_tokens=300, cost_micros=5400,
+                created_at=datetime(2026, 1, 31, tzinfo=timezone.utc)))
+            await db.commit()
+        await self.migrate("head")
+        async with sessions() as db:
+            original = await db.scalar(sa.select(AiUsageEvent))
+            self.assertIsNone(original.usage_period_start)
+            self.assertEqual(await meter.backfill_ai_calls(db, org_id), 1)
+            await db.commit()
+            self.assertEqual(await meter.backfill_ai_calls(db, org_id), 0)
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual(counter.known_cost_micros, 5400)
+            self.assertEqual(counter.period_source, "legacy_calendar_month")
+            self.assertEqual(counter.period_start.month, 1)
+            self.assertEqual(counter.period_end.month, 2)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 1)
+            # Accounting constraints remain enforced when bypassing application validation.
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(UsageEvent).values(quantity=-1))
+            await db.rollback()
+
+    async def test_usage_migration_accepts_seed_created_tables(self):
+        from app.models.usage import UsageEvent, UsageCounter
+        await self.migrate("0019")
+        async with self.engine.begin() as conn:
+            await conn.run_sync(lambda c: database.Base.metadata.create_all(c, tables=[UsageEvent.__table__, UsageCounter.__table__]))
+        await self.migrate("head")
+        await self.migrate("head")
+        async with self.engine.connect() as conn:
+            columns = await conn.run_sync(lambda c: {column["name"] for column in sa.inspect(c).get_columns("ai_usage_events")})
+            self.assertTrue({"usage_period_start", "usage_period_end", "usage_period_source"}.issubset(columns))
+
     async def test_billing_migration_and_concurrent_subscription_updates(self):
         from datetime import datetime, timedelta, timezone
         from types import SimpleNamespace
@@ -248,6 +342,10 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(rows[0].prompt_tokens, 1200)
             self.assertEqual(rows[0].completion_tokens, 300)
             self.assertEqual(rows[0].input_rate_per_million, Decimal("2"))
+            from app.models.usage import UsageEvent, UsageCounter
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 1)
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual((counter.quantity, counter.known_cost_micros), (1, 5400))
         await self.migrate("head")
 
     async def test_organization_settings_timestamp_migration(self):

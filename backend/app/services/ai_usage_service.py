@@ -7,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.config import get_settings
 from app.models.ai_usage import AiUsageEvent
+from app.services import usage_service
 
 
 class UsageRecordingError(RuntimeError):
@@ -40,13 +41,16 @@ def estimate_cost_micros(prompt_tokens, completion_tokens, input_rate, output_ra
 
 async def start_call(db, *, org_id, questionnaire_id, user_id=None, job_id=None, batch_index=0):
     settings = get_settings()
+    now = datetime.now(timezone.utc)
+    period = await usage_service.resolve_period(db, org_id, now)
     event = AiUsageEvent(
         org_id=org_id, questionnaire_id=questionnaire_id, user_id=user_id,
         job_id=job_id, batch_index=batch_index,
         model=_model(settings.BEDROCK_MODEL_ID) if settings.BEDROCK_ENABLED else "mock",
         input_rate_per_million=_rate(settings.BEDROCK_INPUT_COST_PER_MILLION),
         output_rate_per_million=_rate(settings.BEDROCK_OUTPUT_COST_PER_MILLION),
-        status="started",
+        status="started", created_at=now,
+        usage_period_start=period.start, usage_period_end=period.end, usage_period_source=period.source,
     )
     try:
         db.add(event)
@@ -79,11 +83,13 @@ async def finish_call(db, event, usage=None):
                   cost_micros=cost, recorded_at=datetime.now(timezone.utc))
     try:
         # Repeated callbacks or finalization retries cannot add consumption twice.
-        await db.execute(update(AiUsageEvent).where(
+        result = await db.execute(update(AiUsageEvent).where(
             AiUsageEvent.id == event.id, AiUsageEvent.org_id == event.org_id,
             AiUsageEvent.status == "started",
         ).values(**values).execution_options(synchronize_session=False))
+        if result.rowcount == 1:
+            await usage_service.project_ai_call(db, event, values=values)
         await db.commit()
-    except SQLAlchemyError as exc:
+    except (SQLAlchemyError, usage_service.UsageConflictError) as exc:
         await db.rollback()
         raise UsageRecordingError("Could not save AI usage record") from exc

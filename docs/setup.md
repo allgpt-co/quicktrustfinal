@@ -321,3 +321,111 @@ settings access for unconfigured organizations. Separate PostgreSQL migration
 regressions cover upgrade from 0018, seed-created tables, database constraints,
 and concurrent subscription updates. The broader pre-existing schema issue
 noted under QT-007 remains outside this change.
+
+## QT-009: durable usage events and counters
+
+Migration `0020` adds `usage_events`, `usage_counters`, and nullable period-snapshot
+fields on `ai_usage_events`. Apply it before restarting the updated API/worker.
+No prices, invoices, or enforcement rules are introduced. The existing Redis agent
+budget counter is not replaced or represented as complete by this change.
+
+`usage_service.append_event` is the internal write primitive. Its caller owns the
+transaction and must roll back on error. A receipt is unique by organization,
+resource kind, and idempotency key. An identical retry preserves the original
+receipt/period and does not increment again; reuse with different consumption
+raises an error. The receipt insert and counter upsert share the same transaction
+as the action they measure. PostgreSQL increments use `ON CONFLICT DO UPDATE`,
+not a read/modify/write sequence. There is no public usage-write endpoint.
+
+Currently connected sources:
+
+- `LLM_COMPLETION`: one receipt per finalized Auto-fill provider invocation, linked
+  to its existing `ai_usage_events` ID. This is an accounting projection, not an
+  additional charge. It counts attempted calls, including failures with unknown
+  consumption. Costs/tokens are recorded only here, so answer/questionnaire
+  counters do not duplicate them. `started` calls remain pending reconciliation.
+- `QUESTION_ANSWERED`: one receipt per persisted, server-generated AI answer, in
+  the same transaction as that answer. Provider calls with invalid output or
+  failed answer saves still retain their call cost but generate no answer count.
+- `QUESTION_MATCHED`: keyword/control/policy matches count separately from AI
+  answers, with no additional provider cost. Client-created answer rows do not
+  constitute proof of metered processing.
+- `QUESTIONNAIRE_PROCESSED`: once per questionnaire ID, on the first successful
+  Auto-fill completion with a surviving answer backed by a non-mock processing
+  receipt. Retries, including completion after earlier answer saves, do not count
+  that questionnaire again, even across periods. This is a defined operational
+  metric, not a finalized commercial charging policy. Empty/unanswerable,
+  manual-only, legacy-only, or mock-only results do not qualify.
+
+The generic service also supports embedding, vector query/upsert, email, and signed
+storage-byte events, but those call sites are not connected in this change. Storage
+quantities are deltas within a period, not a current-storage gauge. Other AI agents,
+real provider invoice reconciliation, alerts, quotas, and billing UI remain separate
+work. Do not claim complete product-wide metering based on these counters.
+
+Period rules:
+
+- Use the organization's configured subscription period when the event timestamp
+  falls in `[current_period_start, current_period_end)`, regardless of its status;
+  already-performed work must still be recorded for a suspended organization.
+- Otherwise use the UTC calendar month, labeled `calendar_month` rather than
+  implying an active subscription. Never reset old counters on renewal.
+- AI call periods are captured before the call. Its answer receipts use that same
+  start timestamp and period. A long-running call remains in its original bucket
+  if staff renews/changes the subscription before the response returns. Keyword
+  answers use their save time; questionnaire completion uses its completion time.
+- Period start/end/source are immutable receipt attributes. Editing a subscription
+  does not rewrite old consumption. The API lists every stored bucket, including
+  previous bounds, so mid-period contract edits do not hide historical usage.
+
+Counters expose event count, quantity, **known** input/output token totals and
+micro-USD cost, plus unknown-token and unpriced-event counts. A known subtotal of
+zero with unpriced events is not proof of zero spend. Mock receipts are retained
+for diagnosis and excluded entirely from consumption counters. Business-unit
+receipts have zero *additional* provider cost; their associated call carries it.
+Receipt references survive questionnaire/answer deletion.
+
+Read `GET /api/v1/organizations/{org_id}/billing/usage?offset=0&limit=50` as the
+organization administrator or platform staff. It returns stored counters,
+`next_offset`, pending AI calls, finalized AI calls awaiting projection, excluded
+mock-event count, and coverage/enforcement information. Foreign-organization
+requests and non-admin customer roles are rejected. Quantities are not invoices
+and do not themselves block any product action.
+
+### Existing AI records
+
+Migration 0020 leaves previous finalized AI records intact. Their new counters are
+not assumed to exist: the read API reports `unprojected_ai_calls`. An operator can
+project an authorized organization's legacy AI records in bounded, resumable
+batches after migration:
+
+```bash
+docker compose run --rm --no-deps api python -m app.scripts.backfill_ai_usage \
+  --org-id YOUR_ORGANIZATION_UUID --batch-size 100 --max-batches 10
+```
+
+This command writes the configured application database; it is not the isolated
+test command below. Repeat it if it reports remaining finalized rows. Existing
+snapshots are respected. Older AI records without snapshots are explicitly placed
+in `legacy_calendar_month`; their historical subscription is unknown and is never
+inferred from the current plan. Started calls and old answer/questionnaire business
+units are not reconstructed. Do not treat historical coverage as complete.
+
+### Local verification without provider credentials
+
+After pulling `bug-fixes`, stop the API, run `alembic upgrade head`, verify
+`alembic current` shows `0020 (head)`, and restart the API. Run the isolated tests:
+
+```bash
+docker compose run --rm --no-deps -w /tmp \
+  -e PYTHONPATH=/app \
+  -e DATABASE_URL=sqlite+aiosqlite:////tmp/qt009-app.db \
+  -e BEDROCK_ENABLED=false \
+  api python -m pytest /app/tests/test_usage.py -q -p no:cacheprovider
+```
+
+Tests use synthetic usage and mocked AI responses. Separate PostgreSQL regressions
+exercise concurrent duplicate/distinct writes, counter failure/rollback, migration
+from 0019, seed-created tables, repeatable legacy backfill, concurrent provider
+finalization, and queue integration. The pre-existing broader schema discrepancy
+noted under QT-007 is unchanged.
