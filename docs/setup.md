@@ -170,3 +170,66 @@ admins receive 403 from `/api/v1/tenants`, and attempts to submit
 admin may invite another organization admin; this does not grant platform access.
 Compliance managers cannot issue administrator invitations, and invitation acceptance
 rechecks that the issuer is still active and authorized.
+
+
+## QT-007: questionnaire Auto-fill usage records
+
+Migration `0018` adds `ai_usage_events`. Each attempted Auto-fill provider call gets
+one durable row containing organization/user/questionnaire/job IDs, batch number,
+model, provider input/output token counts, captured pricing rates, and estimated
+cost in integer micro-USD. No prompts, answers, emails, or document text are stored
+in the ledger. Questionnaire/job/user references are snapshots so deleting a
+questionnaire does not erase its usage history.
+
+A `started` row is committed before calling the provider. The same row is finalized
+once, before JSON parsing or answer persistence. Repeated finalization cannot count
+a call twice. A retry that makes another provider invocation gets a new row because
+it can incur new cost; already answered questions are skipped. Provider usage is
+retained even when JSON parsing or answer persistence fails. A crash, cancellation,
+or failure to finalize may leave `started`, meaning the outcome needs reconciliation.
+A failed provider call or missing provider token data is `unknown`, not free usage.
+Local disabled-Bedrock calls are explicitly `mock` with zero cost and must be excluded
+from paid-usage reports.
+
+`reported` rows contain actual provider token counts. Estimated cost uses
+`BEDROCK_INPUT_COST_PER_MILLION` and `BEDROCK_OUTPUT_COST_PER_MILLION` for the
+configured `BEDROCK_MODEL_ID`, captured at call start. Missing/zero prices or a model
+mismatch yield NULL cost, not zero. The arithmetic uses Decimal and rounds once at
+micro-USD precision. These are estimates, not invoice amounts: cache discounts,
+provider-internal retries, and spend whose usage response was lost are not inferred.
+Do not reconstruct unknown usage as zero or promise exact invoice reconciliation.
+
+Scope: this change meters questionnaire Auto-fill. The existing agent-run Redis
+budget counter/UI and its legacy 50/50 cost estimator are unchanged; the new ledger
+is not yet a billing/subscription/quota system or an all-product AI usage dashboard.
+Aggregate ledger data by `org_id`, UTC period, and status; surface unknown-cost rows
+separately rather than treating a partial known-cost total as complete.
+
+Apply `alembic upgrade head` with the updated API. Keep this branch separate from
+PR #19 until that prerequisite is merged. For the default local Compose bind mount:
+
+```bash
+docker compose stop api
+git switch qt-007-ai-usage
+git pull --ff-only origin qt-007-ai-usage
+docker compose run --rm --no-deps api alembic upgrade head
+docker compose up -d --no-deps api
+```
+
+Run the focused tests without real AWS/Bedrock access or application database writes:
+
+```bash
+docker compose run --rm --no-deps -w /tmp -e PYTHONPATH=/app -e DATABASE_URL=sqlite+aiosqlite:////tmp/qt007-app.db -e BEDROCK_ENABLED=false api python -m pytest /app/tests/test_ai_usage.py -q
+```
+
+The development image must contain pytest (the Dockerfile development target does).
+Tests replace the provider with mocks and use a temporary SQLite database inside the
+removed test container. Test prices are synthetic, not current vendor rates. Production
+verification against Bedrock/provider invoices remains a separate follow-up.
+
+Validation limitation: the broader partial-seed schema regression fails when all
+application models are loaded, due to 22 existing missing columns across
+notifications, notification_preferences, slack_webhook_configs, auditor_profiles,
+and embeddings. This was reproduced on the unchanged QT-006 base (`cb10355`)
+with `app.main` imported before that test. It requires a separate schema repair;
+the Auto-fill usage migration does not change those tables.

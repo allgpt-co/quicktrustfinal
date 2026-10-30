@@ -67,6 +67,7 @@ async def test_bedrock_claude_sonnet_request_preserves_completion_contract(
 
     assert result == {"items": ["ok"]}
     assert usage == {
+        "usage_available": True,
         "prompt_tokens": 12,
         "completion_tokens": 8,
         "total_tokens": 20,

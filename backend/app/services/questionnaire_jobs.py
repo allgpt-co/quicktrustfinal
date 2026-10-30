@@ -56,6 +56,7 @@ async def enqueue(db, org_id, questionnaire_id, user_id):
         return existing
     job = WorkflowExecution(
         org_id=org_id, reference_id=questionnaire_id, workflow_type=JOB_TYPE,
+        created_at=datetime.now(timezone.utc),
         status="pending", current_step=0, total_steps=len(questionnaire.questions or []),
         step_name="Queued", triggered_by=user_id, max_retries=0,
     )
@@ -113,10 +114,14 @@ async def execute_job(job_id, org_id, questionnaire_id):
     try:
         async with asyncio.timeout(JOB_TIMEOUT_SECONDS):
             async with bg_async_session() as db:
+                job = await db.get(WorkflowExecution, job_id)
+                if job is None or job.org_id != org_id or job.reference_id != questionnaire_id:
+                    raise ValueError("Auto-fill job context does not match its organization/questionnaire")
                 count = await questionnaire_service.auto_fill(
                     db, org_id, questionnaire_id,
                     progress=lambda done, total: set_progress(job_id, done, total),
                     strict_errors=True,
+                    usage_user_id=job.triggered_by, usage_job_id=job.id,
                 )
         await finish(job_id, count=count)
     except asyncio.CancelledError:

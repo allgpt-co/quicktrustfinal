@@ -151,6 +151,45 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
 
+    async def test_ai_usage_ledger_survives_answer_deletion_and_duplicate_callbacks(self):
+        await self.migrate("head")
+        from app.config import get_settings
+        from app.models.organization import Organization
+        from app.models.questionnaire import Questionnaire
+        from app.models.ai_usage import AiUsageEvent
+        from app.services import ai_usage_service as meter
+        from decimal import Decimal
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Metering test", slug=str(uuid.uuid4()))
+            db.add(org)
+            await db.flush()
+            questionnaire = Questionnaire(org_id=org.id, title="Metered questionnaire")
+            db.add(questionnaire)
+            await db.commit()
+            with patch.multiple(get_settings(), BEDROCK_ENABLED=True,
+                                BEDROCK_MODEL_ID="test-model",
+                                BEDROCK_INPUT_COST_PER_MILLION=2.0,
+                                BEDROCK_OUTPUT_COST_PER_MILLION=10.0):
+                event = await meter.start_call(db, org_id=org.id, questionnaire_id=questionnaire.id,
+                                              job_id=uuid.uuid4(), user_id=uuid.uuid4())
+            usage = {"model": "test-model", "prompt_tokens": 1200, "completion_tokens": 300}
+            async def finalize():
+                async with sessions() as writer:
+                    await meter.finish_call(writer, event, usage)
+            await asyncio.gather(finalize(), finalize())
+            await db.delete(questionnaire)
+            await db.commit()
+        async with sessions() as db:
+            rows = (await db.execute(sa.select(AiUsageEvent))).scalars().all()
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0].status, "reported")
+            self.assertEqual(rows[0].cost_micros, 5400)
+            self.assertEqual(rows[0].prompt_tokens, 1200)
+            self.assertEqual(rows[0].completion_tokens, 300)
+            self.assertEqual(rows[0].input_rate_per_million, Decimal("2"))
+        await self.migrate("head")
+
     async def test_organization_settings_timestamp_migration(self):
         await self.migrate("0016")
         missing_id, existing_id, new_id = (uuid.uuid4() for _ in range(3))
