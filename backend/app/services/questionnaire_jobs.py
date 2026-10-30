@@ -15,9 +15,10 @@ from sqlalchemy.orm import lazyload
 from app.core.database import bg_async_session
 from app.core.exceptions import NotFoundError
 from app.core.request_context import current_org_var
-from app.models.questionnaire import Questionnaire
+from app.models.questionnaire import Questionnaire, QuestionnaireResponse
+from app.models.usage import UsageEvent
 from app.models.workflow import WorkflowExecution
-from app.services import questionnaire_service
+from app.services import questionnaire_service, usage_service
 
 logger = logging.getLogger(__name__)
 JOB_TYPE = "questionnaire_auto_fill"
@@ -56,6 +57,7 @@ async def enqueue(db, org_id, questionnaire_id, user_id):
         return existing
     job = WorkflowExecution(
         org_id=org_id, reference_id=questionnaire_id, workflow_type=JOB_TYPE,
+        created_at=datetime.now(timezone.utc),
         status="pending", current_step=0, total_steps=len(questionnaire.questions or []),
         step_name="Queued", triggered_by=user_id, max_retries=0,
     )
@@ -102,9 +104,28 @@ async def finish(job_id, *, count=None, error=None):
                       step_name="Failed" if error else "Completed")
         if error is None:
             values.update(output_data={"filled_count": count}, current_step=WorkflowExecution.total_steps)
-        await db.execute(update(WorkflowExecution).where(
+        completed = (await db.execute(update(WorkflowExecution).where(
             WorkflowExecution.id == job_id, WorkflowExecution.status == "running",
-        ).values(**values))
+            WorkflowExecution.workflow_type == JOB_TYPE,
+        ).values(**values).returning(WorkflowExecution.org_id, WorkflowExecution.reference_id,
+                                    WorkflowExecution.triggered_by))).first()
+        if completed and error is None:
+            org_id, questionnaire_id, user_id = completed
+            # One processed questionnaire, even if a retry finishes previously saved work.
+            # Ignore manual-only work and simulated AI answers.
+            recorded_answer = select(UsageEvent.id).where(
+                UsageEvent.org_id == org_id, UsageEvent.kind.in_(["QUESTION_ANSWERED", "QUESTION_MATCHED"]),
+                UsageEvent.is_mock.is_(False), UsageEvent.idempotency_key == QuestionnaireResponse.id,
+            ).exists()
+            has_answers = await db.scalar(select(QuestionnaireResponse.id).where(
+                QuestionnaireResponse.org_id == org_id,
+                QuestionnaireResponse.questionnaire_id == questionnaire_id,
+                recorded_answer,
+            ).limit(1))
+            if has_answers:
+                await usage_service.append_event(db, org_id=org_id, kind="QUESTIONNAIRE_PROCESSED",
+                    idempotency_key=str(questionnaire_id), source_type="questionnaire", source_id=str(questionnaire_id),
+                    user_id=user_id, occurred_at=values["completed_at"], cost_micros=0)
         await db.commit()
 
 
@@ -113,10 +134,14 @@ async def execute_job(job_id, org_id, questionnaire_id):
     try:
         async with asyncio.timeout(JOB_TIMEOUT_SECONDS):
             async with bg_async_session() as db:
+                job = await db.get(WorkflowExecution, job_id)
+                if job is None or job.org_id != org_id or job.reference_id != questionnaire_id:
+                    raise ValueError("Auto-fill job context does not match its organization/questionnaire")
                 count = await questionnaire_service.auto_fill(
                     db, org_id, questionnaire_id,
                     progress=lambda done, total: set_progress(job_id, done, total),
                     strict_errors=True,
+                    usage_user_id=job.triggered_by, usage_job_id=job.id,
                 )
         await finish(job_id, count=count)
     except asyncio.CancelledError:

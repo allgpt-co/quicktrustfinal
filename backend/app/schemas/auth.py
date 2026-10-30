@@ -8,6 +8,8 @@ class TokenRequest(BaseModel):
 
 
 class RegisterRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+
     email: EmailStr
     full_name: str = Field(..., min_length=1, max_length=255)
     password: str = Field(..., min_length=12, max_length=1024)

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from app.core.dependencies import DB, CurrentUser, AnyInternalUser, AdminUser
+from app.core.dependencies import DB, CurrentUser, AnyInternalUser, PlatformAdminUser
 from app.schemas.common import PaginatedResponse
 from app.schemas.auditor_profile import (
     AuditorProfileCreate,
@@ -77,6 +77,6 @@ async def update_my_profile(data: AuditorProfileUpdate, db: DB, current_user: Cu
 # --- Admin verification ---
 
 @router.post("/auditor-marketplace/{profile_id}/verify", response_model=AuditorProfileResponse)
-async def verify_auditor(profile_id: UUID, db: DB, current_user: AdminUser):
+async def verify_auditor(profile_id: UUID, db: DB, current_user: PlatformAdminUser):
     """Admin: verify an auditor's credentials."""
     return await auditor_marketplace_service.verify_auditor(db, profile_id)

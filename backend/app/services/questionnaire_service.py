@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 from uuid import UUID
 from collections.abc import Awaitable, Callable
 
@@ -180,7 +181,7 @@ async def update_response(
 
 # === Auto-Fill ===
 
-async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, progress: Callable[[int, int], Awaitable[None]] | None = None, strict_errors: bool = False) -> int:
+async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, progress: Callable[[int, int], Awaitable[None]] | None = None, strict_errors: bool = False, usage_user_id: UUID | None = None, usage_job_id: UUID | None = None) -> int:
     """Auto-fill questionnaire using keyword matching (first pass) then LLM (second pass).
 
     Returns total count of filled answers across both passes.
@@ -198,6 +199,7 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, p
     filled = 0
     unanswered_questions: list[dict] = []  # questions not matched by keywords
 
+    matched_responses = []
     # ---- Pass 1: keyword matching (existing logic) ----
     for idx, q in enumerate(questions):
         q_id = str(q.get("id") or q.get("question_id") or f"q_{idx}")
@@ -250,6 +252,7 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, p
                 source_id=best_source[1],
             )
             db.add(response)
+            matched_responses.append(response)
             filled += 1
         else:
             # Track for LLM pass
@@ -260,6 +263,14 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, p
 
     # Commit keyword-matched answers before LLM pass
     if filled > 0:
+        from app.services import usage_service
+        at = datetime.now(timezone.utc)
+        period = await usage_service.resolve_period(db, org_id, at)
+        await db.flush()
+        for response in matched_responses:
+            await usage_service.append_event(db, org_id=org_id, kind="QUESTION_MATCHED",
+                idempotency_key=str(response.id), source_type="keyword_answer", source_id=str(response.id),
+                user_id=usage_user_id, occurred_at=at, period=period, cost_micros=0)
         questionnaire.answered_count += filled
         if questionnaire.status == "draft":
             questionnaire.status = "in_progress"
@@ -281,6 +292,7 @@ async def auto_fill(db: AsyncSession, org_id: UUID, questionnaire_id: UUID, *, p
             progress=progress,
             total_questions=len(questions),
             strict_errors=strict_errors,
+            usage_user_id=usage_user_id, usage_job_id=usage_job_id,
         )
         filled += llm_filled
 
@@ -298,6 +310,8 @@ async def _llm_auto_fill(
     progress: Callable[[int, int], Awaitable[None]] | None = None,
     total_questions: int = 0,
     strict_errors: bool = False,
+    usage_user_id: UUID | None = None,
+    usage_job_id: UUID | None = None,
 ) -> int:
     """Send unanswered questions to LLM with controls/policies as context.
 
@@ -328,6 +342,8 @@ async def _llm_auto_fill(
         for pol in policies
     ) or "(no policies defined)"
 
+    from app.services import ai_usage_service, usage_service
+
     # Batch questions (max 20 per LLM call to stay within token limits)
     BATCH_SIZE = 20
     total_filled = 0
@@ -341,16 +357,35 @@ async def _llm_auto_fill(
             policies_context=policies_context,
         )
 
+        usage_event = await ai_usage_service.start_call(
+            db, org_id=org_id, questionnaire_id=questionnaire_id,
+            user_id=usage_user_id, job_id=usage_job_id, batch_index=batch_start // BATCH_SIZE,
+        )
+        usage_recorded = False
+
+        async def record_usage(usage):
+            nonlocal usage_recorded
+            await ai_usage_service.finish_call(db, usage_event, usage)
+            usage_recorded = True
+
         try:
-            llm_result, _usage = await call_llm_json(
+            llm_result, usage = await call_llm_json(
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
                 ],
                 temperature=0.1,
                 max_tokens=4096,
+                usage_callback=record_usage,
             )
+            # Also supports test doubles/adapters returning usage without invoking the callback.
+            if not usage_recorded:
+                await record_usage(usage)
+        except ai_usage_service.UsageRecordingError:
+            raise  # never save an answer after a usage-storage failure
         except Exception as exc:
+            if not usage_recorded:
+                await ai_usage_service.finish_call(db, usage_event)
             logger.warning(
                 "LLM auto-fill call failed for batch starting at %d: %s",
                 batch_start,
@@ -362,6 +397,7 @@ async def _llm_auto_fill(
 
         answers = llm_result.get("answers", [])
         batch_filled = 0
+        saved_answers = []
         seen_ids = set()
 
         for ans in answers:
@@ -394,9 +430,17 @@ async def _llm_auto_fill(
             )
             db.add(response)
             seen_ids.add(q_id)
+            saved_answers.append(response)
             batch_filled += 1
 
         if batch_filled > 0:
+            await db.flush()  # IDs exist; receipt and answer stay in the same transaction.
+            for response in saved_answers:
+                await usage_service.append_event(db, org_id=org_id, kind="QUESTION_ANSWERED",
+                    idempotency_key=str(response.id), source_type="ai_answer", source_id=str(response.id),
+                    user_id=usage_user_id, occurred_at=usage_event.created_at,
+                    period=usage_service.ai_period(usage_event), cost_micros=0,
+                    is_mock=usage_event.model == "mock" or usage.get("model") == "mock")
             questionnaire.answered_count += batch_filled
             if questionnaire.status == "draft":
                 questionnaire.status = "in_progress"

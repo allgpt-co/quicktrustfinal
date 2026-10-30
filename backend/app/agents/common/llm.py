@@ -10,6 +10,7 @@ import json
 import logging
 import re
 from typing import Any
+from collections.abc import Awaitable, Callable
 
 import litellm
 from app.config import get_settings
@@ -63,8 +64,9 @@ def _extract_usage(response) -> dict:
     """Extract token usage from a normalized LiteLLM response."""
     usage = getattr(response, "usage", None)
     if usage is None:
-        return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "usage_available": False}
     return {
+        "usage_available": all(getattr(usage, key, None) is not None for key in ("prompt_tokens", "completion_tokens")),
         "prompt_tokens": getattr(usage, "prompt_tokens", 0) or 0,
         "completion_tokens": getattr(usage, "completion_tokens", 0) or 0,
         "total_tokens": getattr(usage, "total_tokens", 0) or 0,
@@ -176,6 +178,7 @@ async def call_llm_json(
     model: str | None = None,
     temperature: float = 0.1,
     max_tokens: int = 4096,
+    usage_callback: Callable[[dict], Awaitable[None]] | None = None,
 ) -> tuple[dict, dict]:
     """Return a JSON object and normalized usage information.
 
@@ -186,7 +189,10 @@ async def call_llm_json(
     """
     if not _bedrock_enabled():
         logger.debug("Amazon Bedrock is disabled — returning mock JSON response.")
-        return _MOCK_JSON.copy(), _MOCK_USAGE.copy()
+        usage = _MOCK_USAGE.copy()
+        if usage_callback:
+            await usage_callback(usage)
+        return _MOCK_JSON.copy(), usage
 
     model = _bedrock_model(model)
     try:
@@ -201,6 +207,9 @@ async def call_llm_json(
         )
         usage = _extract_usage(response)
         usage["model"] = model
+        # Persist provider usage even if parsing the paid response later fails.
+        if usage_callback:
+            await usage_callback(usage)
         content = response.choices[0].message.content
         return _parse_json_object(content), usage
     except RuntimeError:

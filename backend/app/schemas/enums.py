@@ -95,6 +95,8 @@ class ReportFormat(StrEnum):
 
 
 class UserRole(StrEnum):
+    # Organization roles only. SUPER_ADMIN is the legacy name for an org admin;
+    # platform privileges are stored separately and cannot be assigned via APIs.
     SUPER_ADMIN = "super_admin"
     COMPLIANCE_MANAGER = "compliance_manager"
     CONTROL_OWNER = "control_owner"

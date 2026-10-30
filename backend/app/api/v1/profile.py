@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from app.core.dependencies import DB, CurrentUser, AdminUser, VerifiedOrgId
+from app.core.dependencies import DB, CurrentUser, AdminUser, VerifiedOrgId, protect_platform_account
 from app.models.auth import AuthSession
 from app.models.user import User
 from app.services import auth_service
@@ -179,6 +179,7 @@ async def suspend_user(
         raise HTTPException(status_code=404, detail="User not found")
     if str(target.id) == str(current_user.id):
         raise HTTPException(status_code=400, detail="Cannot suspend yourself")
+    protect_platform_account(current_user, target)
     target.is_active = False
     await auth_service.revoke_all_sessions(db, target.id)
     try:
@@ -202,6 +203,7 @@ async def reactivate_user(
     target = result.scalar_one_or_none()
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
+    protect_platform_account(current_user, target)
     target.is_active = True
     await db.commit()
     return {"message": f"User {target.email} reactivated."}

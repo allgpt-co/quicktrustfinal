@@ -7,6 +7,8 @@ from app.schemas.enums import UserRole
 
 
 class InvitationCreate(BaseModel):
+    model_config = {"extra": "forbid"}
+
     email: EmailStr
     role: UserRole = UserRole.EMPLOYEE
 

@@ -89,7 +89,7 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             }
 
     async def test_clean_migration_and_repeated_seed(self):
-        await self.migrate("0013")
+        await self.migrate("head")
         await self.assert_no_missing_columns()
         await self.seed()
         counts = await self.counts()
@@ -127,7 +127,7 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
                                        "VALUES (:control,:org,'Legacy control','Keep these notes')"), ids)
             await conn.execute(sa.text("INSERT INTO audit_logs (id,org_id,action,created_at,ip_address) "
                 "VALUES (:audit,:org,'legacy-event','2020-01-01T00:00:00Z','127.0.0.1')"), ids)
-        await self.migrate("0013")
+        await self.migrate("head")
         await self.assert_no_missing_columns()
         async with self.engine.connect() as conn:
             async def scalar(sql):
@@ -150,6 +150,340 @@ class SchemaAlignmentTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await scalar("SELECT actor_ip FROM audit_logs WHERE id=:audit"), "127.0.0.1")
             self.assertEqual(await scalar("SELECT ref_code FROM framework_requirements WHERE id=:req"), "SEC.1")
         await self.seed()
+
+    async def test_usage_counters_concurrent_receipts_and_atomic_rollback(self):
+        from datetime import datetime, timezone
+        from app.models.organization import Organization
+        from app.models.usage import UsageEvent, UsageCounter
+        from app.services import usage_service as meter
+        await self.migrate("head")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Usage test", slug="usage-test")
+            db.add(org)
+            await db.commit()
+            org_id = org.id
+        at = datetime(2030, 1, 15, tzinfo=timezone.utc)
+        def receipt(key):
+            return dict(org_id=org_id, kind="LLM_COMPLETION", idempotency_key=key,
+                        source_type="test_call", source_id=key, occurred_at=at,
+                        prompt_tokens=12, completion_tokens=3, cost_micros=54)
+        async def write(key):
+            async with sessions() as db:
+                result = await meter.append_event(db, **receipt(key))
+                await db.commit()
+                return result
+        results = await asyncio.gather(*[write("same") for _ in range(12)],
+                                       *[write(f"distinct-{i}") for i in range(12)])
+        self.assertEqual(sum(results), 13)
+        async with sessions() as db:
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual((counter.event_count, counter.quantity, counter.known_cost_micros), (13, 13, 702))
+            self.assertEqual(counter.known_prompt_tokens, 156)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 13)
+            original = meter._insert
+            def fail_counter(session, table):
+                if table is UsageCounter:
+                    raise sa.exc.SQLAlchemyError("forced counter storage failure")
+                return original(session, table)
+            with patch.object(meter, "_insert", fail_counter):
+                with self.assertRaises(sa.exc.SQLAlchemyError):
+                    await meter.append_event(db, **receipt("failed"))
+            await db.rollback()
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 13)
+            self.assertTrue(await meter.append_event(db, **receipt("failed")))
+            await db.commit()
+            await db.refresh(counter)
+            self.assertEqual(counter.quantity, 14)
+            self.assertEqual(counter.known_cost_micros, 756)
+        await self.migrate("head")
+
+    async def test_usage_migration_preserves_legacy_ai_and_backfill_is_repeatable(self):
+        from datetime import datetime, timezone
+        from app.models.ai_usage import AiUsageEvent
+        from app.models.organization import Organization
+        from app.models.usage import UsageEvent, UsageCounter
+        from app.services import usage_service as meter
+        await self.migrate("0019")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Legacy usage", slug="legacy-usage")
+            db.add(org)
+            await db.flush()
+            org_id = org.id
+            await db.execute(sa.insert(AiUsageEvent).values(id=uuid.uuid4(), org_id=org_id,
+                questionnaire_id=uuid.uuid4(), batch_index=0, status="reported", model="test-model",
+                prompt_tokens=1200, completion_tokens=300, cost_micros=5400,
+                created_at=datetime(2026, 1, 31, tzinfo=timezone.utc)))
+            await db.commit()
+        await self.migrate("head")
+        async with sessions() as db:
+            original = await db.scalar(sa.select(AiUsageEvent))
+            self.assertIsNone(original.usage_period_start)
+            self.assertEqual(await meter.backfill_ai_calls(db, org_id), 1)
+            await db.commit()
+            self.assertEqual(await meter.backfill_ai_calls(db, org_id), 0)
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual(counter.known_cost_micros, 5400)
+            self.assertEqual(counter.period_source, "legacy_calendar_month")
+            self.assertEqual(counter.period_start.month, 1)
+            self.assertEqual(counter.period_end.month, 2)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 1)
+            # Accounting constraints remain enforced when bypassing application validation.
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(UsageEvent).values(quantity=-1))
+            await db.rollback()
+
+    async def test_usage_migration_accepts_seed_created_tables(self):
+        from app.models.usage import UsageEvent, UsageCounter
+        await self.migrate("0019")
+        async with self.engine.begin() as conn:
+            await conn.run_sync(lambda c: database.Base.metadata.create_all(c, tables=[UsageEvent.__table__, UsageCounter.__table__]))
+        await self.migrate("head")
+        await self.migrate("head")
+        async with self.engine.connect() as conn:
+            columns = await conn.run_sync(lambda c: {column["name"] for column in sa.inspect(c).get_columns("ai_usage_events")})
+            self.assertTrue({"usage_period_start", "usage_period_end", "usage_period_source"}.issubset(columns))
+
+    async def test_billing_migration_and_concurrent_subscription_updates(self):
+        from datetime import datetime, timedelta, timezone
+        from types import SimpleNamespace
+        from app.models.billing import Plan, Subscription
+        from app.models.organization import Organization
+        from app.models.audit_log import AuditLog
+        from app.schemas.billing import PlanCreate, SubscriptionPut
+        from app.services import billing_service
+        from app.core.exceptions import ConflictError
+        await self.migrate("0018")
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Billing test", slug="billing-test")
+            db.add(org)
+            await db.commit()
+            org_id = org.id
+        await self.migrate("head")
+        actor = SimpleNamespace(id=uuid.uuid4(), org_id=org_id, role="super_admin")
+        now = datetime.now(timezone.utc)
+        async with sessions() as db:
+            self.assertIsNone(await billing_service.get_subscription(db, org_id))
+            plan = await billing_service.create_plan(db, PlanCreate(code="test", name="Test", limits={"seats": 5}), actor)
+            payload = dict(plan_id=plan.id, expected_version=0, status="active", billing_interval="month",
+                           current_period_start=now, current_period_end=now + timedelta(days=30))
+            initial = await billing_service.put_subscription(db, org_id, SubscriptionPut(**payload), actor)
+            self.assertEqual(initial.version, 1)
+        payload["expected_version"] = 1
+        async def assign(status):
+            async with sessions() as db:
+                try:
+                    updated = await billing_service.put_subscription(db, org_id, SubscriptionPut(**(payload | {"status": status})), actor)
+                    return updated.version
+                except ConflictError:
+                    return "conflict"
+        outcomes = await asyncio.gather(assign("suspended"), assign("past_due"))
+        self.assertCountEqual(outcomes, [2, "conflict"])
+        async with sessions() as db:
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(Subscription)), 1)
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(AuditLog).where(AuditLog.action == "billing.subscription_updated")), 2)
+            effective = await billing_service.get_entitlements(db, org_id)
+            self.assertFalse(effective.access_allowed)
+            self.assertEqual(effective.limits.seats, 5)
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(Subscription).where(Subscription.org_id == org_id).values(status="invalid"))
+            await db.rollback()
+            with self.assertRaises(sa.exc.IntegrityError):
+                await db.execute(sa.update(Subscription).where(Subscription.org_id == org_id).values(plan_id=uuid.uuid4()))
+            await db.rollback()
+        await self.migrate("head")
+
+    async def test_billing_migration_accepts_tables_created_by_seed(self):
+        from app.models.billing import Plan, Subscription
+        await self.migrate("0018")
+        async with self.engine.begin() as conn:
+            await conn.run_sync(lambda c: database.Base.metadata.create_all(c, tables=[Plan.__table__, Subscription.__table__]))
+            await conn.execute(sa.insert(Plan).values(id=uuid.uuid4(), code="seeded", name="Seeded", is_active=True, limits={}, features={}))
+        await self.migrate("head")
+        async with self.engine.connect() as conn:
+            self.assertEqual(await conn.scalar(sa.select(sa.func.count()).select_from(Plan)), 1)
+
+    async def test_ai_usage_ledger_survives_answer_deletion_and_duplicate_callbacks(self):
+        await self.migrate("head")
+        from app.config import get_settings
+        from app.models.organization import Organization
+        from app.models.questionnaire import Questionnaire
+        from app.models.ai_usage import AiUsageEvent
+        from app.services import ai_usage_service as meter
+        from decimal import Decimal
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            org = Organization(name="Metering test", slug=str(uuid.uuid4()))
+            db.add(org)
+            await db.flush()
+            questionnaire = Questionnaire(org_id=org.id, title="Metered questionnaire")
+            db.add(questionnaire)
+            await db.commit()
+            with patch.multiple(get_settings(), BEDROCK_ENABLED=True,
+                                BEDROCK_MODEL_ID="test-model",
+                                BEDROCK_INPUT_COST_PER_MILLION=2.0,
+                                BEDROCK_OUTPUT_COST_PER_MILLION=10.0):
+                event = await meter.start_call(db, org_id=org.id, questionnaire_id=questionnaire.id,
+                                              job_id=uuid.uuid4(), user_id=uuid.uuid4())
+            usage = {"model": "test-model", "prompt_tokens": 1200, "completion_tokens": 300}
+            async def finalize():
+                async with sessions() as writer:
+                    await meter.finish_call(writer, event, usage)
+            await asyncio.gather(finalize(), finalize())
+            await db.delete(questionnaire)
+            await db.commit()
+        async with sessions() as db:
+            rows = (await db.execute(sa.select(AiUsageEvent))).scalars().all()
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0].status, "reported")
+            self.assertEqual(rows[0].cost_micros, 5400)
+            self.assertEqual(rows[0].prompt_tokens, 1200)
+            self.assertEqual(rows[0].completion_tokens, 300)
+            self.assertEqual(rows[0].input_rate_per_million, Decimal("2"))
+            from app.models.usage import UsageEvent, UsageCounter
+            self.assertEqual(await db.scalar(sa.select(sa.func.count()).select_from(UsageEvent)), 1)
+            counter = await db.scalar(sa.select(UsageCounter))
+            self.assertEqual((counter.quantity, counter.known_cost_micros), (1, 5400))
+        await self.migrate("head")
+
+    async def test_organization_settings_timestamp_migration(self):
+        await self.migrate("0016")
+        missing_id, existing_id, new_id = (uuid.uuid4() for _ in range(3))
+        async with self.engine.begin() as conn:
+            for org_id, timestamp in ((missing_id, None), (existing_id, "2021-02-03T00:00:00Z")):
+                await conn.execute(sa.text(
+                    "INSERT INTO organizations (id,name,slug,created_at,updated_at) "
+                    "VALUES (:id,'Settings test',:id,'2020-01-01T00:00:00Z',"
+                    "CAST(CAST(:updated AS text) AS timestamptz))"
+                ), {"id": str(org_id), "updated": timestamp})
+        from httpx import ASGITransport, AsyncClient
+        from app.main import app
+        from app.core.dependencies import get_current_user, get_db
+        from app.models.user import User
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        owner = User(id=uuid.uuid4(), org_id=missing_id, role="super_admin", is_platform_admin=False)
+
+        async def current_user():
+            return owner
+
+        async def request_db():
+            async with sessions() as db:
+                yield db
+
+        original = app.dependency_overrides.copy()
+        app.dependency_overrides[get_current_user] = current_user
+        app.dependency_overrides[get_db] = request_db
+        try:
+            async with AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False),
+                                   base_url="http://test") as client:
+                url = f"/api/v1/organizations/{missing_id}"
+                self.assertEqual((await client.get(url)).status_code, 500)
+                await self.migrate("head")
+                response = await client.get(url)
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertEqual(response.json()["updated_at"], response.json()["created_at"])
+                # The timestamp repair must not weaken the new tenant restriction.
+                self.assertEqual((await client.get(f"/api/v1/organizations/{existing_id}")).status_code, 403)
+                owner.org_id = existing_id
+                response = await client.get(f"/api/v1/organizations/{existing_id}")
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertTrue(response.json()["updated_at"].startswith("2021-02-03"))
+                async with self.engine.begin() as conn:
+                    await conn.execute(sa.text(
+                        "INSERT INTO organizations (id,name,slug) VALUES (:id,'New settings',:id)"
+                    ), {"id": str(new_id)})
+                    def check_column(connection):
+                        column = next(c for c in sa.inspect(connection).get_columns("organizations")
+                                      if c["name"] == "updated_at")
+                        self.assertFalse(column["nullable"])
+                        self.assertIsNotNone(column["default"])
+                    await conn.run_sync(check_column)
+                owner.org_id = new_id
+                response = await client.get(f"/api/v1/organizations/{new_id}")
+                self.assertEqual(response.status_code, 200, response.text)
+                self.assertIsNotNone(response.json()["updated_at"])
+                await self.migrate("head")
+        finally:
+            app.dependency_overrides.clear()
+            app.dependency_overrides.update(original)
+
+    async def test_existing_customer_super_admin_loses_implicit_platform_access(self):
+        await self.migrate("0015")
+        org_id, user_id = str(uuid.uuid4()), str(uuid.uuid4())
+        async with self.engine.begin() as conn:
+            await conn.execute(sa.text(
+                "INSERT INTO organizations (id,name,slug) VALUES (:org,'Legacy customer',:org)"
+            ), {"org": org_id})
+            await conn.execute(sa.text(
+                "INSERT INTO users (id,org_id,email,full_name,role) "
+                "VALUES (:id,:org,'legacy-owner@example.com','Legacy owner','super_admin')"
+            ), {"id": user_id, "org": org_id})
+        await self.migrate("head")
+        from app.models.user import User
+        from app.core.dependencies import verify_org_access, require_platform_admin
+        from fastapi import HTTPException
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            user = await db.get(User, uuid.UUID(user_id))
+            self.assertEqual(user.role, "super_admin")
+            self.assertFalse(user.is_platform_admin)
+            self.assertEqual(await verify_org_access(uuid.UUID(org_id), user), uuid.UUID(org_id))
+            with self.assertRaises(HTTPException) as error:
+                await verify_org_access(uuid.uuid4(), user)
+            self.assertEqual(error.exception.status_code, 403)
+            with self.assertRaises(HTTPException) as error:
+                await require_platform_admin(user)
+            self.assertEqual(error.exception.status_code, 403)
+        await self.migrate("head")  # repeated deploy remains safe
+
+    async def test_user_timestamps_allow_admin_member_listing(self):
+        await self.migrate("0014")
+        org_id = uuid.uuid4()
+        missing_id, existing_id, new_id = (uuid.uuid4() for _ in range(3))
+        async with self.engine.begin() as conn:
+            await conn.execute(sa.text(
+                "INSERT INTO organizations (id,name,slug) VALUES (:id,'Timestamp test',:id)"
+            ), {"id": str(org_id)})
+            for user_id, timestamp in ((missing_id, None), (existing_id, "2021-02-03T00:00:00Z")):
+                await conn.execute(sa.text(
+                    "INSERT INTO users (id,org_id,email,full_name,role,created_at,updated_at) "
+                    "VALUES (:id,:org,:email,'Test member','employee',"
+                    "'2020-01-01T00:00:00Z',CAST(CAST(:updated AS text) AS timestamptz))"
+                ), {"id": str(user_id), "org": str(org_id),
+                    "email": f"{user_id}@example.com", "updated": timestamp})
+        await self.migrate("head")
+        async with self.engine.begin() as conn:
+            self.assertEqual(await conn.scalar(sa.text(
+                "SELECT updated_at = created_at FROM users WHERE id=:id"
+            ), {"id": str(missing_id)}), True)
+            self.assertEqual(await conn.scalar(sa.text(
+                "SELECT extract(year FROM updated_at) FROM users WHERE id=:id"
+            ), {"id": str(existing_id)}), 2021)
+            await conn.execute(sa.text(
+                "INSERT INTO users (id,org_id,email,full_name,role) "
+                "VALUES (:id,:org,:email,'New member','employee')"
+            ), {"id": str(new_id), "org": str(org_id), "email": f"{new_id}@example.com"})
+            def check_column(connection):
+                column = next(c for c in sa.inspect(connection).get_columns("users")
+                              if c["name"] == "updated_at")
+                self.assertFalse(column["nullable"])
+                self.assertIsNotNone(column["default"])
+            await conn.run_sync(check_column)
+        from app.api.v1.users import list_users
+        from app.models.user import User
+        sessions = async_sessionmaker(self.engine, expire_on_commit=False)
+        async with sessions() as db:
+            response = await list_users(
+                org_id=org_id, db=db,
+                current_user=User(role="super_admin"), page=1, page_size=100,
+            )
+            self.assertEqual(response.total, 3)
+            users = (await db.execute(sa.select(User))).scalars().all()
+            self.assertTrue(all(user.is_platform_admin is False for user in users))
+            self.assertTrue(all(user.role == "employee" for user in users))
+            self.assertTrue(all(user.updated_at is not None for user in response.items))
 
     async def test_postgres_queue_concurrency_and_saved_answers(self):
         await self.migrate("head")

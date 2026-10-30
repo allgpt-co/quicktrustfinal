@@ -128,6 +128,8 @@ async def register_user(
             raise BadRequestError("This invitation has expired")
         if invitation.email.strip().lower() != normalized_email:
             raise BadRequestError("This invitation was sent to a different email address")
+        from app.services.invitation_service import validate_invitation_authority
+        await validate_invitation_authority(db, invitation)
         org_id = invitation.org_id
         role = invitation.role
         invitation.status = "accepted"
@@ -144,6 +146,7 @@ async def register_user(
         db.add(org)
         await db.flush()
         org_id = org.id
+        # Legacy role name: administrator of this organization only.
         role = "super_admin"
 
     user = User(
@@ -152,6 +155,7 @@ async def register_user(
         password_hash=hash_password(password, normalized_email),
         full_name=normalized_name,
         role=role,
+        is_platform_admin=False,
         is_active=True,
         password_changed_at=_utcnow(),
     )

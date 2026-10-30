@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel, GUID
@@ -20,6 +20,10 @@ class User(BaseModel):
     password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(50), nullable=False, default="employee")
+    # Platform access is provisioned out of band, never by signup or role APIs.
+    is_platform_admin: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=false(), nullable=False
+    )
     department: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

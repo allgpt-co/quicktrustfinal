@@ -7,6 +7,8 @@ from app.schemas.enums import UserRole
 
 
 class UserCreate(BaseModel):
+    model_config = {"extra": "forbid"}
+
     email: EmailStr
     full_name: str = Field(..., min_length=1, max_length=255)
     role: UserRole = UserRole.EMPLOYEE
@@ -14,6 +16,8 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
+    model_config = {"extra": "forbid"}
+
     full_name: str | None = Field(None, max_length=255)
     role: UserRole | None = None
     department: str | None = Field(None, max_length=100)
